@@ -8,7 +8,9 @@
 	"types": "dist/index.d.ts",
 	"files": [
 		"dist",
-		"dist/*.css"
+		"src",
+		"index.css",
+		"src/styles/tailwind-config.css"
 	],
 	"scripts": {
 		"dev": "vite",
