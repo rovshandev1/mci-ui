@@ -2,7 +2,7 @@ import { ArrowUpDown, Box, ChevronDown, ChevronUp } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { cn } from '../../lib/utils'
 import type { MciTableColumn } from '../../types/MciTableType'
-import { Skeleton } from '../index'
+import Skeleton from "../skeleton/Skeleton.tsx";
 
 interface MciTableProps<T extends Record<string, unknown>> {
 	columns: MciTableColumn<T>[]
