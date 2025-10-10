@@ -1,6 +1,6 @@
 {
 	"name": "@mci-ui/mci-ui",
-	"private": true,
+	"private": false,
 	"version": "0.0.0",
 	"type": "module",
 	"main": "dist/index.cjs",
@@ -11,7 +11,8 @@
 	],
 	"scripts": {
 		"dev": "vite",
-		"build": "tsup",
+		"build": "tsup --tsconfig tsconfig.build.json",
+		"prepublishOnly": "npm run build",
 		"lint": "eslint .",
 		"preview": "vite preview",
 		"release": "npm version patch && npm run build && npm publish"
