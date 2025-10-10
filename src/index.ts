@@ -11,7 +11,6 @@ import Tag from './shared/ui/tag/Tag.tsx'
 import Textarea from './shared/ui/textarea/Textarea.tsx'
 import {ToastContainer} from './shared/ui/toast/ToastContainer.tsx'
 import Tooltip from './shared/ui/tooltip/Tooltip.tsx'
-import './styles/index.css'
 
 export {
     Breadcrumb,
