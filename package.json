@@ -8,8 +8,7 @@
 	"types": "dist/index.d.ts",
 	"files": [
 		"dist",
-		"src",
-		"index.css"
+		"dist/*.css"
 	],
 	"scripts": {
 		"dev": "vite",
