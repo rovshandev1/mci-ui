@@ -1,4 +1,5 @@
-@import './tailwind-config.css';
+@import 'tailwindcss';
+@variant dark (&:where(.dark, .dark *));
 
 * {
 	box-sizing: border-box;
@@ -33,4 +34,295 @@ button,
 select {
 	font: inherit;
 	outline: none;
+}
+
+@theme {
+	/* Main colors */
+	--color-secondary-base: #d4af37;
+	--color-secondary-50: #faf6ea;
+	--color-secondary-100: #f5edd5;
+	--color-secondary-200: #fdebd0;
+	--color-secondary-300: #e1c981;
+	--color-secondary-400: #d7b757;
+	--color-secondary-500: #d4af37;
+	--color-secondary-600: #b8951e;
+	--color-secondary-700: #8a7016;
+	--color-secondary-800: #5c4b0f;
+	--color-secondary-900: #2e2607;
+
+	/*  Green colors */
+	--color-accent-base: #00a651;
+	--color-accent-50: #e6f7ee;
+	--color-accent-100: #ccefdd;
+	--color-accent-200: #99dfbb;
+	--color-accent-300: #66cf99;
+	--color-accent-400: #33bf77;
+	--color-accent-500: #00a651;
+	--color-accent-600: #008541;
+	--color-accent-700: #006431;
+	--color-accent-800: #004320;
+	--color-accent-900: #002110;
+
+	/* Error colors */
+	--color-error-50: #fef2f2;
+	--color-error-100: #fee2e2;
+	--color-error-200: #fecaca;
+	--color-error-300: #fca5a5;
+	--color-error-400: #f87171;
+	--color-error-500: #ef4444;
+	--color-error-600: #dc2626;
+	--color-error-700: #b91c1c;
+	--color-error-800: #991b1b;
+	--color-error-900: #7f1d1d;
+
+	/* Success colors */
+	--color-success-50: #f0fdf4;
+	--color-success-100: #dcfce7;
+	--color-success-200: #bbf7d0;
+	--color-success-300: #86efac;
+	--color-success-400: #4ade80;
+	--color-success-500: #22c55e;
+	--color-success-600: #16a34a;
+	--color-success-700: #15803d;
+	--color-success-800: #166534;
+	--color-success-900: #14532d;
+
+	/* Info colors */
+	--color-info-50: #eff6ff;
+	--color-info-100: #dbeafe;
+	--color-info-200: #bfdbfe;
+	--color-info-300: #93c5fd;
+	--color-info-400: #60a5fa;
+	--color-info-500: #3b82f6;
+	--color-info-600: #2563eb;
+	--color-info-700: #1d4ed8;
+	--color-info-800: #1e40af;
+	--color-info-900: #1e3a8a;
+
+	/* Sarlavhalar */
+	--text-display-2xl: 72px;
+	--text-display-2xl--line-height: 90px;
+	--text-display-2xl--font-weight: 700;
+	--text-display-2xl--letter-spacing: -0.02em;
+
+	--text-display-xl: 60px;
+	--text-display-xl--line-height: 72px;
+	--text-display-xl--font-weight: 700;
+	--text-display-xl--letter-spacing: -0.02em;
+
+	--text-display-lg: 48px;
+	--text-display-lg--line-height: 60px;
+	--text-display-lg--font-weight: 700;
+	--text-display-lg--letter-spacing: -0.01em;
+
+	--text-display-md: 36px;
+	--text-display-md--line-height: 44px;
+	--text-display-md--font-weight: 700;
+	--text-display-md--letter-spacing: -0.01em;
+
+	--text-display-sm: 30px;
+	--text-display-sm--line-height: 38px;
+	--text-display-sm--font-weight: 700;
+
+	--text-H1: 48px;
+	--text-H1--line-height: 60px;
+	--text-H1--font-weight: 700;
+	--text-H1--letter-spacing: -0.01em;
+
+	--text-H2: 40px;
+	--text-H2--line-height: 50px;
+	--text-H2--font-weight: 700;
+	--text-H2--letter-spacing: -0.01em;
+
+	--text-H3: 32px;
+	--text-H3--line-height: 40px;
+	--text-H3--font-weight: 700;
+
+	--text-H4: 24px;
+	--text-H4--line-height: 32px;
+	--text-H4--font-weight: 700;
+
+	--text-H5: 20px;
+	--text-H5--line-height: 28px;
+	--text-H5--font-weight: 600;
+
+	--text-H6: 18px;
+	--text-H6--line-height: 26px;
+	--text-H6--font-weight: 600;
+
+	/* Animatsiyalar */
+	--animate-fade-in: fadeIn 0.5s ease-in-out;
+	--animate-fade-out: fadeOut 0.5s ease-in-out;
+	--animate-slide-up: slideUp 0.5s ease-out;
+	--animate-slide-down: slideDown 0.5s ease-out;
+	--animate-slide-left: slideLeft 0.5s ease-out;
+	--animate-slide-right: slideRight 0.5s ease-out;
+	--animate-scale-up: scaleUp 0.3s ease-out;
+	--animate-scale-down: scaleDown 0.3s ease-out;
+	--animate-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+	--animate-spin: spin 0.3s linear infinite;
+}
+
+/* Animatsiya keyframes */
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes fadeOut {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+	}
+}
+
+@keyframes slideUp {
+	from {
+		transform: translateY(20px);
+		opacity: 0;
+	}
+	to {
+		transform: translateY(0);
+		opacity: 1;
+	}
+}
+
+@keyframes slideDown {
+	from {
+		transform: translateY(-20px);
+		opacity: 0;
+	}
+	to {
+		transform: translateY(0);
+		opacity: 1;
+	}
+}
+
+@keyframes slideLeft {
+	from {
+		transform: translateX(20px);
+		opacity: 0;
+	}
+	to {
+		transform: translateX(0);
+		opacity: 1;
+	}
+}
+
+@keyframes slideRight {
+	from {
+		transform: translateX(-20px);
+		opacity: 0;
+	}
+	to {
+		transform: translateX(0);
+		opacity: 1;
+	}
+}
+
+@keyframes scaleUp {
+	from {
+		transform: scale(0.95);
+		opacity: 0;
+	}
+	to {
+		transform: scale(1);
+		opacity: 1;
+	}
+}
+
+@keyframes scaleDown {
+	from {
+		transform: scale(1.05);
+		opacity: 0;
+	}
+	to {
+		transform: scale(1);
+		opacity: 1;
+	}
+}
+
+@keyframes pulse {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.5;
+	}
+}
+
+@keyframes spin {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@keyframes smooth-shimmer {
+	0% {
+		transform: translateX(-100%);
+	}
+	100% {
+		transform: translateX(100%);
+	}
+}
+
+@keyframes float {
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(-6px);
+	}
+}
+
+@keyframes fadeUp {
+	from {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.shimmer-mask {
+	background: linear-gradient(
+		90deg,
+		transparent 0%,
+		rgba(255, 255, 255, 0.35) 50%,
+		transparent 100%
+	);
+	animation: smooth-shimmer 1.8s ease-in-out infinite;
+	will-change: transform;
+}
+
+/* Modal Fade In / Out */
+.modal-fade-in {
+	animation: fadeIn 0.3s ease-in-out forwards;
+}
+
+.modal-fade-out {
+	animation: fadeOut 0.3s ease-in-out forwards;
+}
+
+/* Modal Scale */
+.modal-scale-in {
+	animation: scaleUp 0.3s ease-out forwards;
+}
+
+/* Close icon aylanish animatsiyasi */
+.rotate-icon {
+	animation: spin 0.3s ease-in-out;
 }

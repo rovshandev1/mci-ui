@@ -9,9 +9,16 @@
 	"files": [
 		"dist",
 		"src",
-		"index.css",
-		"src/styles/tailwind-config.css"
+		"index.css"
 	],
+	"exports": {
+		".": {
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs",
+			"types": "./dist/index.d.ts"
+		},
+		"./style.css": "./dist/index.css"
+	},
 	"scripts": {
 		"dev": "vite",
 		"build": "tsup --tsconfig tsconfig.build.json",

@@ -1,32 +1,13 @@
-import './styles/index.css'
-
-import Breadcrumb from './shared/ui/breadcrumb/Breadcrumb.tsx'
-import Button from './shared/ui/button/Button.tsx'
-import Collapse from './shared/ui/collapse/Collapse.tsx'
-import InputMain from './shared/ui/inputMain/InputMain.tsx'
-import MciTable from './shared/ui/mciTable/MciTable.tsx'
-import Modal from './shared/ui/modal/Modal.tsx'
-import Pagination from './shared/ui/pagination/Pagination.tsx'
-import Skeleton from './shared/ui/skeleton/Skeleton.tsx'
-import Tabs, { TabPanel } from './shared/ui/tabs/Tabs.tsx'
-import Tag from './shared/ui/tag/Tag.tsx'
-import Textarea from './shared/ui/textarea/Textarea.tsx'
-import { ToastContainer } from './shared/ui/toast/ToastContainer.tsx'
-import Tooltip from './shared/ui/tooltip/Tooltip.tsx'
-
-export {
-	Breadcrumb,
-	Button,
-	Collapse,
-	InputMain,
-	MciTable,
-	Modal,
-	Pagination,
-	Skeleton,
-	TabPanel,
-	Tabs,
-	Tag,
-	Textarea,
-	ToastContainer,
-	Tooltip,
-}
+export { default as Breadcrumb } from './shared/ui/breadcrumb/Breadcrumb.tsx'
+export { default as Button } from './shared/ui/button/Button.tsx'
+export { default as Collapse } from './shared/ui/collapse/Collapse.tsx'
+export { default as InputMain } from './shared/ui/inputMain/InputMain.tsx'
+export { default as MciTable } from './shared/ui/mciTable/MciTable.tsx'
+export { default as Modal } from './shared/ui/modal/Modal.tsx'
+export { default as Pagination } from './shared/ui/pagination/Pagination.tsx'
+export { default as Skeleton } from './shared/ui/skeleton/Skeleton.tsx'
+export { TabPanel, default as Tabs } from './shared/ui/tabs/Tabs.tsx'
+export { default as Tag } from './shared/ui/tag/Tag.tsx'
+export { default as Textarea } from './shared/ui/textarea/Textarea.tsx'
+export { ToastContainer } from './shared/ui/toast/ToastContainer.tsx'
+export { default as Tooltip } from './shared/ui/tooltip/Tooltip.tsx'

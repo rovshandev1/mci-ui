@@ -8,9 +8,9 @@ export default defineConfig({
 	build: {
 		lib: {
 			entry: 'src/index.ts',
-			name: 'MCI_UI',
+			name: 'MciUi',
 			formats: ['es', 'cjs'],
-			fileName: format => `mci-ui-lib.${format}.js`,
+			fileName: format => `index.${format === 'es' ? 'js' : 'cjs'}`,
 		},
 		rollupOptions: {
 			external: ['react', 'react-dom'],
