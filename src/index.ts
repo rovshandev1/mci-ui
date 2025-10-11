@@ -1,3 +1,5 @@
+import './index.css'
+
 export { default as Breadcrumb } from './shared/ui/breadcrumb/Breadcrumb.tsx'
 export { default as Button } from './shared/ui/button/Button.tsx'
 export { default as Collapse } from './shared/ui/collapse/Collapse.tsx'

@@ -1,16 +1,15 @@
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
+import path from 'path'
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
 
 export default defineConfig({
-	plugins: [react(), tailwindcss(), dts({ insertTypesEntry: true })],
 	build: {
 		lib: {
-			entry: 'src/index.ts',
-			name: 'MciUi',
-			formats: ['es', 'cjs'],
-			fileName: format => `index.${format === 'es' ? 'js' : 'cjs'}`,
+			entry: path.resolve(__dirname, 'src/index.ts'),
+			name: 'mci-ui',
+			fileName: format => `index.${format}.js`,
 		},
 		rollupOptions: {
 			external: ['react', 'react-dom'],
@@ -21,7 +20,17 @@ export default defineConfig({
 				},
 			},
 		},
+		cssCodeSplit: true,
 		sourcemap: true,
-		minify: true,
+		emptyOutDir: true,
 	},
+	plugins: [
+		react(),
+		dts({
+			insertTypesEntry: true,
+			rollupTypes: true,
+			outDir: 'dist/types',
+		}),
+		tailwindcss(),
+	],
 })
