@@ -1,8 +1,16 @@
 import { ArrowUpDown, Box, ChevronDown, ChevronUp } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { cn } from '../../lib/utils'
-import type { MciTableColumn } from '../../types/MciTableType'
-import Skeleton from "../skeleton/Skeleton.tsx";
+import Skeleton from '../skeleton/Skeleton.tsx'
+
+type MciTableColumn<T> = {
+	key: keyof T
+	title: string
+	sortable?: boolean
+	align?: 'left' | 'center' | 'right'
+	width?: string | number
+	render?: (value: T[keyof T], row: T) => React.ReactNode
+}
 
 interface MciTableProps<T extends Record<string, unknown>> {
 	columns: MciTableColumn<T>[]
