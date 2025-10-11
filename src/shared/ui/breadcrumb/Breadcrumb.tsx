@@ -29,21 +29,21 @@ export default function Breadcrumb({
 			)}
 			aria-label='Breadcrumb'
 		>
-			{items.map((item, index) => {
-				const isLast = index === items.length - 1
+			{items?.map((item, index) => {
+				const isLast = index === items?.length - 1
 
 				return (
 					<div key={index} className='flex items-center'>
-						{item.href ? (
+						{item?.href ? (
 							<a
-								href={item.href}
-								onClick={item.onClick}
+								href={item?.href}
+								onClick={item?.onClick}
 								className={cn(
 									'hover:text-primary-600 dark:hover:text-primary-400 transition-colors',
 									isLast && 'text-primary-600 dark:text-primary-400'
 								)}
 							>
-								{item.label}
+								{item?.label}
 							</a>
 						) : (
 							<span
@@ -53,7 +53,7 @@ export default function Breadcrumb({
 										: 'text-gray-500 dark:text-gray-400'
 								)}
 							>
-								{item.label}
+								{item?.label}
 							</span>
 						)}
 

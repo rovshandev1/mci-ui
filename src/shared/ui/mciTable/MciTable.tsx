@@ -52,8 +52,8 @@ export default function MciTable<T extends Record<string, unknown>>({
 	}
 
 	const getSortIcon = (col: MciTableColumn<T>) => {
-		if (!col.sortable) return null
-		if (!sortConfig || sortConfig.key !== col.key || !sortConfig.direction) {
+		if (!col?.sortable) return null
+		if (!sortConfig || sortConfig.key !== col?.key || !sortConfig.direction) {
 			return <ArrowUpDown size={15} className='opacity-40' />
 		}
 		return sortConfig.direction === 'asc' ? (
@@ -89,14 +89,14 @@ export default function MciTable<T extends Record<string, unknown>>({
 				<table className={variantStyle}>
 					<thead>
 						<tr>
-							{columns.map((col, idx) => (
+							{columns?.map((col, idx) => (
 								<th
-									key={String(col.key)}
+									key={String(col?.key)}
 									onClick={() => handleSort(col)}
 									className={cn(
 										headerCell(col),
 										idx === 0 && 'rounded-tl-lg',
-										idx === columns.length - 1 && 'rounded-tr-lg'
+										idx === columns?.length - 1 && 'rounded-tr-lg'
 									)}
 									style={{ width: col.width }}
 								>
@@ -111,34 +111,34 @@ export default function MciTable<T extends Record<string, unknown>>({
 
 					<tbody>
 						{loading
-							? Array.from({ length: skeletonRows }).map((_, idx) => (
+							? Array.from({ length: skeletonRows })?.map((_, idx) => (
 									<tr key={idx}>
-										{columns.map((_, i) => (
+										{columns?.map((_, i) => (
 											<td key={i} className='px-4 py-3'>
 												<Skeleton height={18} variant='rounded' />
 											</td>
 										))}
 									</tr>
 							  ))
-							: sortedData.map((row, idx) => (
+							: sortedData?.map((row, idx) => (
 									<tr
 										key={idx}
 										className={cn(
 											'border-b border-secondary-100  transition-all duration-200'
 										)}
 									>
-										{columns.map((col, i) => (
+										{columns?.map((col, i) => (
 											<td
 												key={i}
 												className={cn(
 													'px-4 py-3 text-sm text-gray-800',
-													col.align === 'center' && 'text-center',
-													col.align === 'right' && 'text-right'
+													col?.align === 'center' && 'text-center',
+													col?.align === 'right' && 'text-right'
 												)}
 											>
-												{col.render
-													? col.render(row[col.key], row)
-													: String(row[col.key])}
+												{col?.render
+													? col?.render(row[col?.key], row)
+													: String(row[col?.key])}
 											</td>
 										))}
 									</tr>
@@ -147,7 +147,7 @@ export default function MciTable<T extends Record<string, unknown>>({
 				</table>
 			</div>
 
-			{!loading && sortedData.length === 0 && (
+			{!loading && sortedData?.length === 0 && (
 				<div className='flex flex-col items-center justify-center py-10 text-gray-500 dark:text-gray-400 animate-[fadeIn_0.4s_ease-in-out]'>
 					<div className='relative'>
 						<Box

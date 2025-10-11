@@ -11,8 +11,8 @@ export function ToastContainer({
 }) {
 	return (
 		<>
-			{toasts.map(t => (
-				<Toast key={t.id} {...t} onClose={onRemove} position={position} />
+			{toasts?.map(t => (
+				<Toast key={t?.id} {...t} onClose={onRemove} position={position} />
 			))}
 		</>
 	)

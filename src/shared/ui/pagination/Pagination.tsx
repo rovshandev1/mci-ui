@@ -76,7 +76,7 @@ export default function Pagination({
                        focus:outline-none focus:ring-2 focus:ring-secondary-500
                        transition-all duration-200'
 					>
-						{perPageOptions.map(option => (
+						{perPageOptions?.map(option => (
 							<option key={option} value={option}>
 								{option} / page
 							</option>
@@ -103,7 +103,7 @@ export default function Pagination({
 
 				{/* Page numbers */}
 				<div className='flex items-center gap-1 mx-2'>
-					{pages.map((page, idx) => (
+					{pages?.map((page, idx) => (
 						<button
 							key={idx}
 							onClick={() => typeof page === 'number' && onPageChange(page)}

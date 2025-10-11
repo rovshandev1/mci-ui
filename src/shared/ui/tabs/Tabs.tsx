@@ -115,23 +115,23 @@ export default function Tabs({
 					style={indicatorStyle}
 				/>
 
-				{tabs.map((tab, index) => {
+				{tabs?.map((tab, index) => {
 					const isActive = activeTab === tab.id
 					const variantConfig = variantClasses[variant]
 
 					return (
 						<button
-							key={tab.id}
-                            ref={(el) => {
-                                tabsRef.current[index] = el
-                            }}
+							key={tab?.id}
+							ref={el => {
+								tabsRef.current[index] = el
+							}}
 							onClick={() => {
-								if (!tab.disabled) {
-									setActiveTab(tab.id)
-									onChange?.(tab.id)
+								if (!tab?.disabled) {
+									setActiveTab(tab?.id)
+									onChange?.(tab?.id)
 								}
 							}}
-							disabled={tab.disabled}
+							disabled={tab?.disabled}
 							className={cn(
 								'relative flex items-center justify-center gap-2 px-4 py-3 font-medium',
 								'text-sm whitespace-nowrap transition-all duration-200 z-10',
@@ -143,21 +143,21 @@ export default function Tabs({
 											variantConfig.inactive,
 											'hover:bg-white/50 dark:hover:bg-gray-800/50',
 									  ],
-								tab.disabled && variantConfig.disabled,
+								tab?.disabled && variantConfig.disabled,
 								isVertical ? 'w-full justify-start' : 'flex-1'
 							)}
 						>
-							{tab.icon && (
+							{tab?.icon && (
 								<span
 									className={cn(
 										'flex-shrink-0 transition-transform duration-200',
 										isActive && 'scale-110'
 									)}
 								>
-									{tab.icon}
+									{tab?.icon}
 								</span>
 							)}
-							<span className='relative z-10'>{tab.label}</span>
+							<span className='relative z-10'>{tab?.label}</span>
 						</button>
 					)
 				})}
@@ -166,7 +166,7 @@ export default function Tabs({
 			{/* Tab Content with Smooth Transition */}
 			<div className={cn('flex-1 overflow-hidden', contentClasses[position])}>
 				<div key={activeTab} className='animate-fade-in'>
-					{tabs.find(tab => tab.id === activeTab)?.content}
+					{tabs?.find(tab => tab?.id === activeTab)?.content}
 				</div>
 			</div>
 		</div>
