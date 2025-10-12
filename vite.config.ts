@@ -5,6 +5,15 @@ import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
 
 export default defineConfig({
+	plugins: [
+		react(),
+		tailwindcss(),
+		dts({
+			insertTypesEntry: true,
+			rollupTypes: true,
+			outDir: 'dist/types',
+		}),
+	],
 	build: {
 		lib: {
 			entry: path.resolve(__dirname, 'src/index.ts'),
@@ -24,13 +33,4 @@ export default defineConfig({
 		sourcemap: true,
 		emptyOutDir: true,
 	},
-	plugins: [
-		react(),
-		dts({
-			insertTypesEntry: true,
-			rollupTypes: true,
-			outDir: 'dist/types',
-		}),
-		tailwindcss(),
-	],
 })
