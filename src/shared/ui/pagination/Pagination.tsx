@@ -21,7 +21,15 @@ export default function Pagination({
 	perPageOptions = [10, 20, 30],
 	showPerPage = true,
 }: PaginationProps) {
-	const totalPages = Math.ceil(totalItems / perPage)
+	const safeTotalItems =
+		Number.isFinite(totalItems) && totalItems > 0 ? totalItems : 0
+	const safePerPage = Number.isFinite(perPage) && perPage > 0 ? perPage : 10
+	const safeCurrentPage =
+		Number.isFinite(currentPage) && currentPage > 0 ? currentPage : 1
+
+	const totalPages = Math.ceil(safeTotalItems / safePerPage)
+
+	if (safeTotalItems === 0 || totalPages <= 1) return null
 
 	const createPageRange = () => {
 		const totalPageNumbers = siblingCount * 2 + 5
@@ -29,9 +37,9 @@ export default function Pagination({
 			return Array.from({ length: totalPages }, (_, i) => i + 1)
 		}
 
-		const leftSiblingIndex = Math.max(currentPage - siblingCount, 2)
+		const leftSiblingIndex = Math.max(safeCurrentPage - siblingCount, 2)
 		const rightSiblingIndex = Math.min(
-			currentPage + siblingCount,
+			safeCurrentPage + siblingCount,
 			totalPages - 1
 		)
 
@@ -56,25 +64,25 @@ export default function Pagination({
 	const pages = createPageRange()
 
 	const handlePrev = () => {
-		if (currentPage > 1) onPageChange(currentPage - 1)
+		if (safeCurrentPage > 1) onPageChange(safeCurrentPage - 1)
 	}
 
 	const handleNext = () => {
-		if (currentPage < totalPages) onPageChange(currentPage + 1)
+		if (safeCurrentPage < totalPages) onPageChange(safeCurrentPage + 1)
 	}
 
 	return (
 		<div className='w-full flex flex-col md:flex-row md:justify-between md:items-center gap-4 py-4'>
-			{/* Per Page Select */}
-			{showPerPage && onPerPageChange && (
+			{/* Per Page Select faqat data bo‘lsa */}
+			{showPerPage && onPerPageChange && safeTotalItems > 0 && (
 				<div className='flex justify-center md:justify-start w-full md:w-auto'>
 					<select
-						value={perPage}
+						value={safePerPage}
 						onChange={e => onPerPageChange(Number(e.target.value))}
 						className='border rounded-lg px-3 py-2 text-sm bg-white
-                       hover:border-secondary-500 
-                       focus:outline-none focus:ring-2 focus:ring-secondary-500
-                       transition-all duration-200'
+							hover:border-secondary-500 
+							focus:outline-none focus:ring-2 focus:ring-secondary-500
+							transition-all duration-200'
 					>
 						{perPageOptions?.map(option => (
 							<option key={option} value={option}>
@@ -85,37 +93,39 @@ export default function Pagination({
 				</div>
 			)}
 
-			{/* Pagination */}
+			{/* Pagination buttons */}
 			<div className='flex items-center justify-center md:justify-end w-full'>
 				{/* Prev */}
 				<button
 					onClick={handlePrev}
-					disabled={currentPage === 1}
+					disabled={safeCurrentPage === 1}
 					className={`flex items-center justify-center rounded-xl border px-3 py-2 transition-all duration-200
-            ${
-							currentPage === 1
+						${
+							safeCurrentPage === 1
 								? 'opacity-40 cursor-not-allowed'
 								: 'hover:bg-secondary-100 hover:text-secondary-700'
-						}`}
+						}
+					`}
 				>
 					<ChevronLeft size={18} />
 				</button>
 
 				{/* Page numbers */}
 				<div className='flex items-center gap-1 mx-2'>
-					{pages?.map((page, idx) => (
+					{pages.map((page, idx) => (
 						<button
 							key={idx}
 							onClick={() => typeof page === 'number' && onPageChange(page)}
 							disabled={page === '...'}
 							className={`min-w-[40px] rounded-xl border px-3 py-2 text-sm font-medium transition-all duration-200
-                ${
-									page === currentPage
+								${
+									page === safeCurrentPage
 										? 'bg-secondary-500 text-white shadow-md'
 										: page === '...'
 										? 'cursor-default border-none text-gray-400'
 										: 'bg-white text-secondary-700 hover:bg-secondary-100'
-								}`}
+								}
+							`}
 						>
 							{page}
 						</button>
@@ -125,13 +135,14 @@ export default function Pagination({
 				{/* Next */}
 				<button
 					onClick={handleNext}
-					disabled={currentPage === totalPages}
+					disabled={safeCurrentPage === totalPages}
 					className={`flex items-center justify-center rounded-xl border px-3 py-2 transition-all duration-200
-            ${
-							currentPage === totalPages
+						${
+							safeCurrentPage === totalPages
 								? 'opacity-40 cursor-not-allowed'
 								: 'hover:bg-secondary-100 hover:text-secondary-700'
-						}`}
+						}
+					`}
 				>
 					<ChevronRight size={18} />
 				</button>

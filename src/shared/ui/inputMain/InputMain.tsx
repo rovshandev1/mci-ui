@@ -107,7 +107,7 @@ export default function InputMain({
 			return 'border-error-500 focus:border-error-600 focus:ring-error-500/20'
 		if (success)
 			return 'border-success-500 focus:border-success-600 focus:ring-success-500/20'
-		return 'border-gray-300 hover:border-gray-400 focus:border-accent-500 focus:ring-accent-500/20'
+		return 'border-gray-300 hover:border-gray-400 focus:border-secondary-500 focus:ring-secondary-500/20'
 	}, [error, success])
 
 	// Autofill holatini aniqlash
@@ -157,8 +157,8 @@ export default function InputMain({
 										error
 											? 'text-error-600'
 											: success
-											? 'text-success-600'
-											: 'text-accent-600'
+											? 'text-success-500'
+											: 'text-secondary-500'
 								  )
 								: cn(
 										'top-1/2 -translate-y-1/2 text-gray-500',
@@ -184,7 +184,7 @@ export default function InputMain({
 								: success
 								? 'text-success-500'
 								: isFocused
-								? 'text-accent-500'
+								? 'text-secondary-500'
 								: 'text-gray-400'
 						)}
 					>
