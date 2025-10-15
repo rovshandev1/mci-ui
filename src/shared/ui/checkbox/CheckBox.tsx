@@ -47,7 +47,6 @@ export default function CheckBox({
 		[]
 	)
 
-	// ranglar
 	const baseBorder = error
 		? 'border-error-500'
 		: success
@@ -66,11 +65,24 @@ export default function CheckBox({
 		? 'bg-success-500 border-success-500'
 		: 'bg-secondary-500 border-secondary-500'
 
+	const variantStyles =
+		variant === 'minimal'
+			? cn(
+					'border-0',
+					checked ? checkedBg : 'bg-transparent',
+					'rounded transition-all duration-300'
+			  )
+			: cn(
+					'border-2',
+					baseBorder,
+					hoverBorder,
+					checked && checkedBg,
+					'rounded transition-all duration-300'
+			  )
+
 	const stateStyles = cn(
-		'rounded flex items-center justify-center border-2 transition-all duration-300 ease-in-out',
-		baseBorder,
-		hoverBorder,
-		checked && checkedBg,
+		'flex items-center justify-center',
+		variantStyles,
 		'focus-visible:ring-4 focus-visible:ring-secondary-500/20',
 		disabled && 'opacity-60 cursor-not-allowed'
 	)
@@ -100,7 +112,8 @@ export default function CheckBox({
 						className={cn(
 							sizes[size].icon,
 							checked ? 'opacity-100' : 'opacity-0',
-							'text-white stroke-2 transition-opacity duration-200'
+							variant === 'minimal' ? 'text-secondary-500' : 'text-white',
+							'stroke-2 transition-opacity duration-200'
 						)}
 					/>
 				</div>
