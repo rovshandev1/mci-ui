@@ -7,7 +7,7 @@ type ButtonProps = {
 	icon?: React.ReactNode
 	iconPosition?: 'left' | 'right'
 	size?: 'sm' | 'md' | 'lg'
-	variant?: 'primary' | 'secondary' | 'accent'
+	variant?: 'primary' | 'secondary' | 'accent' | 'danger'
 	loading?: boolean
 	disabled?: boolean
 	onClick?: () => void
@@ -61,6 +61,15 @@ export default function Button({
 			active:scale-[0.98]
 			text-white
 		`,
+		danger: `
+      bg-error-500
+      hover:bg-error-600
+      active:bg-error-700
+      hover:shadow-lg
+      hover:shadow-error-500/30
+      active:scale-[0.98]
+      text-white
+    `,
 	}
 
 	return (
