@@ -63,7 +63,7 @@ function Toast({title, description, type = 'info', duration = 5000}: ToastProps)
     return (
         <div
             className={cn(
-                'absolute max-w-sm p-4 rounded-lg border shadow-lg backdrop-blur-sm bg-white/95 pointer-events-auto transition-all duration-300 top-4 right-4',
+                'absolute z-60 max-w-sm p-4 rounded-lg border shadow-lg backdrop-blur-sm bg-white/95 pointer-events-auto transition-all duration-300 top-4 right-4',
                 variantStyles[type],
                 isVisible ? 'animate-scale-up opacity-100' : 'animate-scale-down opacity-0'
             )}

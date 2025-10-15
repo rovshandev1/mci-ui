@@ -32,7 +32,9 @@ export default function CheckBox({
 		controlledChecked !== undefined ? controlledChecked : internalChecked
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (controlledChecked === undefined) setInternalChecked(e.target.checked)
+		if (controlledChecked === undefined) {
+			setInternalChecked(e.target.checked)
+		}
 		onChange?.(e)
 	}
 
@@ -45,33 +47,32 @@ export default function CheckBox({
 		[]
 	)
 
-	const checkedColor = error
-		? 'error-500'
+	// ranglar
+	const baseBorder = error
+		? 'border-error-500'
 		: success
-		? 'success-500'
-		: 'secondary-500'
-	const hoverColor = error ? 'error-600' : success ? 'success-600' : 'gray-400'
-	const baseBorderColor = error
-		? 'error-500'
+		? 'border-success-500'
+		: 'border-gray-300'
+
+	const hoverBorder = error
+		? 'group-hover:border-error-600'
 		: success
-		? 'success-500'
-		: 'gray-300'
+		? 'group-hover:border-success-600'
+		: 'group-hover:border-gray-400'
 
-	const borderStyles =
-		variant === 'default'
-			? `border-2 border-${baseBorderColor} group-hover:border-${hoverColor}`
-			: 'border-0'
+	const checkedBg = error
+		? 'bg-error-500 border-error-500'
+		: success
+		? 'bg-success-500 border-success-500'
+		: 'bg-secondary-500 border-secondary-500'
 
-	const stateStyles = useMemo(
-		() =>
-			cn(
-				borderStyles,
-				`peer-checked:bg-${checkedColor} peer-checked:border-${checkedColor}`,
-				`peer-focus-visible:ring-4 peer-focus-visible:ring-${checkedColor}/20`,
-				'peer-disabled:opacity-60 peer-disabled:cursor-not-allowed',
-				'rounded transition-all duration-300 ease-in-out flex items-center justify-center'
-			),
-		[borderStyles, checkedColor]
+	const stateStyles = cn(
+		'rounded flex items-center justify-center border-2 transition-all duration-300 ease-in-out',
+		baseBorder,
+		hoverBorder,
+		checked && checkedBg,
+		'focus-visible:ring-4 focus-visible:ring-secondary-500/20',
+		disabled && 'opacity-60 cursor-not-allowed'
 	)
 
 	return (
@@ -88,7 +89,7 @@ export default function CheckBox({
 					onChange={handleChange}
 					disabled={disabled}
 					required={required}
-					className='peer sr-only'
+					className='sr-only'
 					aria-invalid={!!error}
 					aria-describedby={
 						error ? 'checkbox-error' : success ? 'checkbox-success' : undefined
@@ -98,7 +99,8 @@ export default function CheckBox({
 					<Check
 						className={cn(
 							sizes[size].icon,
-							'hidden peer-checked:block text-white stroke-2 transition-opacity duration-200'
+							checked ? 'opacity-100' : 'opacity-0',
+							'text-white stroke-2 transition-opacity duration-200'
 						)}
 					/>
 				</div>
@@ -112,7 +114,7 @@ export default function CheckBox({
 								: success
 								? 'text-success-500'
 								: 'text-gray-800',
-							disabled ? 'opacity-60' : ''
+							disabled && 'opacity-60'
 						)}
 					>
 						{label}
