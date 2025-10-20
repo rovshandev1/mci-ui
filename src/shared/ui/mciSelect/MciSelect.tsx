@@ -25,6 +25,7 @@ type SelectProps = {
 	className?: string
 	clearable?: boolean
 	searchable?: boolean
+	onSearch?: (searchTerm: string) => void
 }
 
 export default function MciSelect({
@@ -45,6 +46,7 @@ export default function MciSelect({
 	className,
 	clearable = false,
 	searchable = false,
+	onSearch,
 }: SelectProps) {
 	const [isFocused, setIsFocused] = useState(false)
 	const [isOpen, setIsOpen] = useState(false)
@@ -58,12 +60,22 @@ export default function MciSelect({
 
 	const selectedOption = options.find(opt => opt.value === currentValue)
 
+	const handleSearchChange = (term: string) => {
+		setSearchTerm(term)
+		onSearch?.(term)
+	}
+
 	const filteredOptions = useMemo(() => {
-		if (!searchable || !searchTerm) return options
-		return options.filter(opt =>
-			opt.label.toLowerCase().includes(searchTerm.toLowerCase())
-		)
-	}, [options, searchTerm, searchable])
+		if (!searchable) return options
+
+		if (onSearch) {
+			return options
+		} else {
+			return options.filter(opt =>
+				opt.label.toLowerCase().includes(searchTerm.toLowerCase())
+			)
+		}
+	}, [options, searchTerm, searchable, onSearch])
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -104,6 +116,8 @@ export default function MciSelect({
 		setIsOpen(prev => !prev)
 		if (!isOpen) {
 			handleFocus()
+		} else {
+			setSearchTerm('')
 		}
 	}
 
@@ -201,9 +215,10 @@ export default function MciSelect({
 							ref={searchInputRef}
 							type='text'
 							value={searchTerm}
-							onChange={e => setSearchTerm(e.target.value)}
+							onChange={e => handleSearchChange(e.target.value)}
 							placeholder={placeholder}
 							className='w-full bg-transparent outline-none font-medium'
+							onClick={e => e.stopPropagation()} // Dropdown yopilmasligi uchun
 						/>
 					) : (
 						<span className={cn('truncate', !hasValue && 'text-gray-500')}>
@@ -280,7 +295,7 @@ export default function MciSelect({
 				<div
 					className={cn(
 						'absolute top-1/2 -translate-y-1/2 flex items-center justify-center transition-all duration-300 pointer-events-none',
-						'right-3',
+						clearable && hasValue ? 'right-10' : 'right-3',
 						error
 							? 'text-error-500'
 							: success
