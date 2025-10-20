@@ -34,9 +34,9 @@ export default function Textarea({
 			{label && (
 				<label
 					className={cn(
-						'absolute left-3 top-2 text-gray-500 dark:text-gray-400 transition-all duration-200 pointer-events-none',
+						'absolute left-3 top-2 text-gray-500 transition-all duration-200 pointer-events-none',
 						isFloating
-							? 'text-xs -translate-y-3 bg-white dark:bg-gray-900 px-1'
+							? 'text-xs -translate-y-3 bg-white px-1'
 							: 'text-sm translate-y-0'
 					)}
 				>
@@ -55,8 +55,9 @@ export default function Textarea({
 				onBlur={() => setFocused(false)}
 				disabled={disabled}
 				className={cn(
-					'w-full rounded-md border border-gray-300 dark:border-gray-700 bg-transparent text-gray-900 dark:text-gray-100 px-3 py-2 outline-none transition-all resize-none',
-					'focus:border-primary-500 focus:ring-1 focus:ring-primary-500',
+					'w-full rounded-[7px] border border-gray-300 hover:border-gray-400 bg-white font-medium outline-none transition-all duration-300 ease-in-out',
+					'focus:ring-4 disabled:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 autofill:shadow-[inset_0_0_0px_1000px_white] px-3 py-2 outline-none transition-all resize-none',
+					'hover:border-gray-400 focus:border-secondary-500 focus:ring-secondary-500/20',
 					disabled && 'opacity-50 cursor-not-allowed',
 					error &&
 						'border-error-500 focus:ring-error-500 focus:border-error-500',

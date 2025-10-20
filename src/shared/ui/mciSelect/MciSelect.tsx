@@ -67,14 +67,10 @@ export default function MciSelect({
 
 	const filteredOptions = useMemo(() => {
 		if (!searchable) return options
-
-		if (onSearch) {
-			return options
-		} else {
-			return options.filter(opt =>
-				opt.label.toLowerCase().includes(searchTerm.toLowerCase())
-			)
-		}
+		if (onSearch) return options
+		return options.filter(opt =>
+			opt.label.toLowerCase().includes(searchTerm.toLowerCase())
+		)
 	}, [options, searchTerm, searchable, onSearch])
 
 	useEffect(() => {
@@ -89,14 +85,8 @@ export default function MciSelect({
 				onBlur?.()
 			}
 		}
-
-		if (isOpen) {
-			document.addEventListener('mousedown', handleClickOutside)
-		}
-
-		return () => {
-			document.removeEventListener('mousedown', handleClickOutside)
-		}
+		if (isOpen) document.addEventListener('mousedown', handleClickOutside)
+		return () => document.removeEventListener('mousedown', handleClickOutside)
 	}, [isOpen, onBlur])
 
 	useEffect(() => {
@@ -114,11 +104,8 @@ export default function MciSelect({
 	const handleToggle = () => {
 		if (disabled) return
 		setIsOpen(prev => !prev)
-		if (!isOpen) {
-			handleFocus()
-		} else {
-			setSearchTerm('')
-		}
+		if (!isOpen) handleFocus()
+		else setSearchTerm('')
 	}
 
 	const handleSelect = (optionValue: string) => {
@@ -180,16 +167,14 @@ export default function MciSelect({
 	)
 
 	const stateStyles = useMemo(() => {
-		if (error) {
+		if (error)
 			return isOpen
 				? 'border-error-600 ring-error-500/20'
 				: 'border-error-500 hover:border-error-600'
-		}
-		if (success) {
+		if (success)
 			return isOpen
 				? 'border-success-600 ring-success-500/20'
 				: 'border-success-500 hover:border-success-600'
-		}
 		return isOpen
 			? 'border-secondary-500 ring-secondary-500/20'
 			: 'border-gray-300 hover:border-gray-400'
@@ -198,6 +183,7 @@ export default function MciSelect({
 	return (
 		<div className={cn('w-full', className)} ref={containerRef}>
 			<div className='relative'>
+				{/* Select box */}
 				<div
 					onClick={handleToggle}
 					className={cn(
@@ -208,7 +194,6 @@ export default function MciSelect({
 						sizes[size].padding,
 						stateStyles
 					)}
-					style={{ outline: 'none', boxShadow: isOpen ? undefined : 'none' }}
 				>
 					{searchable && isOpen ? (
 						<input
@@ -218,7 +203,7 @@ export default function MciSelect({
 							onChange={e => handleSearchChange(e.target.value)}
 							placeholder={placeholder}
 							className='w-full bg-transparent outline-none font-medium'
-							onClick={e => e.stopPropagation()} // Dropdown yopilmasligi uchun
+							onClick={e => e.stopPropagation()}
 						/>
 					) : (
 						<span className={cn('truncate', !hasValue && 'text-gray-500')}>
@@ -227,7 +212,7 @@ export default function MciSelect({
 					)}
 				</div>
 
-				{/* FLOATING LABEL */}
+				{/* Floating label */}
 				{label && (
 					<label
 						className={cn(
@@ -237,7 +222,7 @@ export default function MciSelect({
 								: 'left-4',
 							isFocused || hasValue || isOpen
 								? cn(
-										'top-0 -translate-y-1/2 px-1',
+										'top-0 -translate-y-1/2 px-1 scale-[0.9] origin-[0_0]',
 										sizes[size].labelFont,
 										error
 											? 'text-error-600'
@@ -246,7 +231,7 @@ export default function MciSelect({
 											: 'text-secondary-500'
 								  )
 								: cn(
-										'top-[55%] -translate-y-1/2 text-gray-500',
+										'top-[60%] -translate-y-1/2 text-gray-500',
 										sizes[size].input.includes('38') && 'text-sm',
 										sizes[size].input.includes('48') && 'text-base',
 										sizes[size].input.includes('56') && 'text-lg'
@@ -258,44 +243,21 @@ export default function MciSelect({
 					</label>
 				)}
 
-				{/* ICON */}
-				{icon && (
-					<div
-						className={cn(
-							'absolute top-1/2 -translate-y-1/2 flex items-center transition-all duration-300 pointer-events-none',
-							sizes[size].iconWrapper,
-							error
-								? 'text-error-500'
-								: success
-								? 'text-success-500'
-								: isFocused || isOpen
-								? 'text-secondary-500'
-								: 'text-gray-400'
-						)}
-					>
-						<span className={cn(sizes[size].icon)}>{icon}</span>
-					</div>
-				)}
-
-				{/* CLEAR BUTTON */}
+				{/* Clear button */}
 				{clearable && hasValue && !disabled && (
 					<button
 						type='button'
 						onClick={handleClear}
-						className={cn(
-							'absolute top-1/2 -translate-y-1/2 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-all z-10',
-							'right-10'
-						)}
+						className='absolute top-1/2 -translate-y-1/2 right-10 text-gray-400 hover:text-gray-600 transition-all z-10'
 					>
 						<X className={cn(sizes[size].icon)} />
 					</button>
 				)}
 
-				{/* CHEVRON */}
+				{/* Chevron */}
 				<div
 					className={cn(
-						'absolute top-1/2 -translate-y-1/2 flex items-center justify-center transition-all duration-300 pointer-events-none',
-						clearable && hasValue ? 'right-10' : 'right-3',
+						'absolute top-1/2 -translate-y-1/2 right-3 transition-all duration-300',
 						error
 							? 'text-error-500'
 							: success
@@ -309,11 +271,11 @@ export default function MciSelect({
 					<ChevronDown className={cn(sizes[size].icon)} />
 				</div>
 
-				{/* DROPDOWN */}
+				{/* Dropdown with scroll */}
 				{isOpen && (
 					<div
 						className={cn(
-							'absolute z-50 w-full mt-2 bg-white border border-gray-300 rounded-[7px] shadow-lg max-h-60 overflow-y-auto',
+							'absolute z-50 w-full mt-2 bg-white border border-gray-300 rounded-[7px] shadow-xl overflow-y-auto max-h-56',
 							sizes[size].dropdown
 						)}
 					>
@@ -327,7 +289,7 @@ export default function MciSelect({
 									key={option.value}
 									onClick={() => handleSelect(option.value)}
 									className={cn(
-										'px-4 py-3 cursor-pointer transition-colors duration-200 font-medium',
+										'px-4 py-2 cursor-pointer transition-colors duration-200 font-medium',
 										currentValue === option.value
 											? 'bg-secondary-50 text-secondary-600'
 											: 'hover:bg-gray-50 text-gray-700'
@@ -341,16 +303,14 @@ export default function MciSelect({
 				)}
 			</div>
 
-			{/* ERROR MESSAGE */}
+			{/* Messages */}
 			{error && (
-				<p className='mt-1.5 text-sm text-error-600 flex items-center gap-1 animate-[slideDown_0.3s_ease-out]'>
+				<p className='mt-1.5 text-sm text-error-600 animate-[slideDown_0.3s_ease-out]'>
 					{error}
 				</p>
 			)}
-
-			{/* SUCCESS MESSAGE */}
 			{success && !error && (
-				<p className='mt-1.5 text-sm text-success-600 flex items-center gap-1 animate-[slideDown_0.3s_ease-out]'>
+				<p className='mt-1.5 text-sm text-success-600 animate-[slideDown_0.3s_ease-out]'>
 					{success}
 				</p>
 			)}
