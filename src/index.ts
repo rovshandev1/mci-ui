@@ -14,3 +14,4 @@ export { default as Textarea } from './shared/ui/textarea/Textarea.tsx'
 export { default as Tooltip } from './shared/ui/tooltip/Tooltip.tsx'
 export {default as Toast} from './shared/ui/toast/Toast.tsx'
 export {default as CheckBox} from './shared/ui/checkbox/CheckBox.tsx'
+export {default as MciSelect} from "./shared/ui/mciSelect/MciSelect.tsx"
