@@ -13,6 +13,7 @@ type ButtonProps = {
 	disabled?: boolean
 	onClick?: () => void
 	className?: string
+	type?: 'button' | 'submit' | 'reset'
 }
 
 export default function Button({
@@ -26,6 +27,7 @@ export default function Button({
 	disabled = false,
 	onClick,
 	className,
+	type = 'button',
 }: ButtonProps) {
 	const sizes = {
 		sm: 'h-[38px] px-3 text-sm gap-2',
@@ -78,6 +80,7 @@ export default function Button({
 
 	return (
 		<button
+			type={type}
 			onClick={onClick}
 			disabled={disabled || loading}
 			className={cn(
