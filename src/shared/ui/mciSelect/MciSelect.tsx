@@ -187,7 +187,7 @@ export default function MciSelect({
 				<div
 					onClick={handleToggle}
 					className={cn(
-						'w-full rounded-[7px] border-2 bg-white font-medium outline-none transition-all duration-300 ease-in-out cursor-pointer flex items-center',
+						'w-full rounded-[7px] border bg-white font-medium outline-none transition-all duration-300 ease-in-out cursor-pointer flex items-center',
 						isOpen && 'ring-4',
 						disabled && 'bg-gray-50 cursor-not-allowed opacity-60',
 						sizes[size].input,
@@ -206,7 +206,13 @@ export default function MciSelect({
 							onClick={e => e.stopPropagation()}
 						/>
 					) : (
-						<span className={cn('truncate', !hasValue && 'text-gray-500')}>
+						<span
+							className={cn(
+								'truncate transition-opacity duration-200',
+								!hasValue && 'text-gray-500',
+								label && !(isFocused || hasValue || isOpen) && 'opacity-0'
+							)}
+						>
 							{selectedOption?.label || placeholder}
 						</span>
 					)}
@@ -216,27 +222,28 @@ export default function MciSelect({
 				{label && (
 					<label
 						className={cn(
-							'absolute pointer-events-none transition-all duration-300 ease-in-out font-medium bg-white',
-							icon && iconPosition === 'left' && !hasValue && !isFocused
-								? sizes[size].padding
-								: 'left-4',
+							'absolute left-4 pointer-events-none font-medium transition-all duration-300 ease-in-out bg-white px-1 select-none',
 							isFocused || hasValue || isOpen
 								? cn(
-										'top-0 -translate-y-1/2 px-1 scale-[0.9] origin-[0_0]',
+										'-top-2 scale-90 origin-[0_0]',
 										sizes[size].labelFont,
 										error
 											? 'text-error-600'
 											: success
 											? 'text-success-500'
-											: 'text-secondary-500'
+											: 'text-secondary-600'
 								  )
 								: cn(
-										'top-[60%] -translate-y-1/2 text-gray-500',
+										'top-1/2 -translate-y-1/2 text-gray-500',
 										sizes[size].input.includes('38') && 'text-sm',
 										sizes[size].input.includes('48') && 'text-base',
 										sizes[size].input.includes('56') && 'text-lg'
 								  )
 						)}
+						style={{
+							transformOrigin: 'left top',
+							transition: 'all 0.25s ease',
+						}}
 					>
 						{label}
 						{required && <span className='text-error-500 ml-1'>*</span>}

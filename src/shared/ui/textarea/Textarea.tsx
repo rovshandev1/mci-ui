@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { cn } from '../../lib/utils.ts'
 
 type TextareaProps = {
@@ -9,6 +9,7 @@ type TextareaProps = {
 	required?: boolean
 	disabled?: boolean
 	error?: string
+	success?: string
 	className?: string
 	rows?: number
 }
@@ -21,6 +22,7 @@ export default function Textarea({
 	required = false,
 	disabled = false,
 	error,
+	success,
 	className,
 	rows = 4,
 }: TextareaProps) {
@@ -28,46 +30,71 @@ export default function Textarea({
 
 	const isFloating = focused || value.length > 0
 
-	return (
-		<div className='relative w-full'>
-			{/* Label */}
-			{label && (
-				<label
-					className={cn(
-						'absolute left-3 top-2 text-gray-500 transition-all duration-200 pointer-events-none',
-						isFloating
-							? 'text-xs -translate-y-3 bg-white px-1'
-							: 'text-sm translate-y-0'
-					)}
-				>
-					{label}
-					{required && <span className='text-error-500 ml-0.5'>*</span>}
-				</label>
-			)}
+	const stateStyles = useMemo(() => {
+		if (error)
+			return 'border-error-500 focus:border-error-600 focus:ring-error-500/20'
+		if (success)
+			return 'border-success-500 focus:border-success-600 focus:ring-success-500/20'
+		return 'border-gray-300 hover:border-gray-400 focus:border-secondary-500 focus:ring-secondary-500/20'
+	}, [error, success])
 
+	return (
+		<div className={cn('relative w-full', className)}>
 			{/* Textarea */}
 			<textarea
 				rows={rows}
-				placeholder={label ? undefined : placeholder}
 				value={value}
 				onChange={e => onChange?.(e.target.value)}
 				onFocus={() => setFocused(true)}
 				onBlur={() => setFocused(false)}
 				disabled={disabled}
+				placeholder={label ? undefined : placeholder}
 				className={cn(
-					'w-full rounded-[7px] border border-gray-300 hover:border-gray-400 bg-white font-medium outline-none transition-all duration-300 ease-in-out',
-					'focus:ring-4 disabled:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 autofill:shadow-[inset_0_0_0px_1000px_white] px-3 py-2 outline-none transition-all resize-none',
-					'hover:border-gray-400 focus:border-secondary-500 focus:ring-secondary-500/20',
-					disabled && 'opacity-50 cursor-not-allowed',
-					error &&
-						'border-error-500 focus:ring-error-500 focus:border-error-500',
-					label && 'pt-5',
-					className
+					'w-full rounded-[7px] border bg-white font-medium outline-none transition-all duration-300 ease-in-out resize-none',
+					'focus:ring-4 disabled:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 px-4 py-3',
+					stateStyles,
+					label && 'pt-5'
 				)}
 			/>
 
-			{/* Error message */}
-			{error && <p className='mt-1 text-sm text-error-500'>{error}</p>}
+			{/* FLOATING LABEL */}
+			{label && (
+				<label
+					className={cn(
+						'absolute left-4 pointer-events-none font-medium transition-all duration-300 ease-in-out bg-white px-1 select-none',
+						isFloating
+							? cn(
+									'top-0 -translate-y-1/2 scale-90 text-secondary-600',
+									error
+										? 'text-error-600'
+										: success
+										? 'text-success-500'
+										: 'text-secondary-600'
+							  )
+							: 'top-1/2 -translate-y-1/2 text-gray-500'
+					)}
+					style={{
+						transformOrigin: 'left top',
+					}}
+				>
+					{label}
+					{required && <span className='text-error-500 ml-1'>*</span>}
+				</label>
+			)}
+
+			{/* ERROR MESSAGE */}
+			{error && (
+				<p className='mt-1.5 text-sm text-error-600 animate-[slideDown_0.3s_ease-out]'>
+					{error}
+				</p>
+			)}
+
+			{/* SUCCESS MESSAGE */}
+			{success && !error && (
+				<p className='mt-1.5 text-sm text-success-600 animate-[slideDown_0.3s_ease-out]'>
+					{success}
+				</p>
+			)}
 		</div>
 	)
 }

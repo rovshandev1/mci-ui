@@ -74,7 +74,7 @@ export default function MciTable<T extends Record<string, unknown>>({
 	const variantStyle = cn(
 		'w-full border-separate border-spacing-0 transition-all duration-300',
 		variant === 'clean' && 'bg-white',
-		variant === 'elevated' && 'bg-white  shadow-lg',
+		variant === 'elevated' && 'bg-white shadow-lg',
 		variant === 'bordered' && 'border border-secondary-200 rounded-lg'
 	)
 
@@ -121,8 +121,12 @@ export default function MciTable<T extends Record<string, unknown>>({
 						{loading
 							? Array.from({ length: skeletonRows })?.map((_, idx) => (
 									<tr key={idx}>
-										{columns?.map((_, i) => (
-											<td key={i} className='px-4 py-3'>
+										{columns?.map((col, i) => (
+											<td
+												key={i}
+												className='px-4 py-3'
+												style={{ width: col.width }}
+											>
 												<Skeleton height={18} variant='rounded' />
 											</td>
 										))}
@@ -132,12 +136,13 @@ export default function MciTable<T extends Record<string, unknown>>({
 									<tr
 										key={idx}
 										className={cn(
-											'border-b border-secondary-100  transition-all duration-200'
+											'border-b border-secondary-100 transition-all duration-200'
 										)}
 									>
 										{columns?.map((col, i) => (
 											<td
 												key={i}
+												style={{ width: col.width }}
 												className={cn(
 													'px-4 py-3 text-sm text-gray-800',
 													col?.align === 'center' && 'text-center',

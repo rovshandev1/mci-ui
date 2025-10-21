@@ -61,7 +61,7 @@ export default function InputMain({
 		onChange?.(e)
 	}
 
-	const togglePassword = () => setShowPassword(p => !p)
+	const togglePassword = () => setShowPassword(prev => !prev)
 
 	const sizes = useMemo(
 		() => ({
@@ -110,18 +110,15 @@ export default function InputMain({
 		return 'border-gray-300 hover:border-gray-400 focus:border-secondary-500 focus:ring-secondary-500/20'
 	}, [error, success])
 
-	// Autofill holatini aniqlash
 	const handleAutoFill = (e: React.AnimationEvent<HTMLInputElement>) => {
-		if (e.animationName === 'onAutoFillStart') {
-			setAutoFilled(true)
-		} else if (e.animationName === 'onAutoFillCancel') {
-			setAutoFilled(false)
-		}
+		if (e.animationName === 'onAutoFillStart') setAutoFilled(true)
+		else if (e.animationName === 'onAutoFillCancel') setAutoFilled(false)
 	}
 
 	return (
 		<div className={cn('w-full', className)}>
 			<div className='relative flex items-center'>
+				{/* INPUT */}
 				<input
 					type={isPassword && showPassword ? 'text' : type}
 					value={currentValue}
@@ -130,43 +127,48 @@ export default function InputMain({
 					onBlur={handleBlur}
 					onAnimationStart={handleAutoFill}
 					disabled={disabled}
-					placeholder={label ? '' : placeholder}
 					required={required}
+					autoComplete='on'
 					className={cn(
 						'w-full rounded-[7px] border bg-white font-medium outline-none transition-all duration-300 ease-in-out',
-						'focus:ring-4 disabled:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 autofill:shadow-[inset_0_0_0px_1000px_white]',
+						'focus:ring-4 disabled:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60',
 						sizes[size].input,
 						sizes[size].padding,
 						stateStyles
 					)}
-					autoComplete='on'
+					// 🔥 Placeholder label float bo‘lmagan holatda ko‘rinmaydi
+					placeholder={
+						label && !(isFocused || hasValue) ? undefined : placeholder
+					}
 				/>
 
 				{/* FLOATING LABEL */}
 				{label && (
 					<label
 						className={cn(
-							'absolute pointer-events-none transition-all duration-300 ease-in-out font-medium',
-							icon && iconPosition === 'left' && !hasValue && !isFocused
-								? sizes[size].padding
+							'absolute pointer-events-none transition-all duration-300 ease-in-out font-medium bg-white px-1 select-none',
+							icon && iconPosition === 'left' && !(isFocused || hasValue)
+								? 'left-12'
 								: 'left-4',
 							isFocused || hasValue
 								? cn(
-										'top-0 -translate-y-1/2 bg-white px-2',
+										'-top-2 scale-90 origin-[0_0]',
 										sizes[size].labelFont,
 										error
 											? 'text-error-600'
 											: success
 											? 'text-success-500'
-											: 'text-secondary-500'
+											: 'text-secondary-600'
 								  )
 								: cn(
 										'top-1/2 -translate-y-1/2 text-gray-500',
-										sizes[size].input.includes('38') && 'text-sm',
-										sizes[size].input.includes('48') && 'text-base',
-										sizes[size].input.includes('56') && 'text-lg'
+										sizes[size].labelFont
 								  )
 						)}
+						style={{
+							transformOrigin: 'left top',
+							transition: 'all 0.25s ease',
+						}}
 					>
 						{label}
 						{required && <span className='text-error-500 ml-1'>*</span>}

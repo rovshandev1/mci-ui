@@ -3,6 +3,7 @@ import React from 'react'
 import { cn } from '../../lib/utils.ts'
 
 type ButtonProps = {
+	children?: React.ReactNode
 	text?: string
 	icon?: React.ReactNode
 	iconPosition?: 'left' | 'right'
@@ -16,6 +17,7 @@ type ButtonProps = {
 
 export default function Button({
 	text,
+	children,
 	icon,
 	iconPosition = 'left',
 	size = 'md',
@@ -72,6 +74,8 @@ export default function Button({
     `,
 	}
 
+	const content = children || text
+
 	return (
 		<button
 			onClick={onClick}
@@ -97,8 +101,10 @@ export default function Button({
 				</span>
 			)}
 
-			{/* TEXT */}
-			{text && <span className='transition-all duration-300'>{text}</span>}
+			{/* TEXT / CHILDREN */}
+			{content && (
+				<span className='transition-all duration-300'>{content}</span>
+			)}
 
 			{/* ICON RIGHT */}
 			{icon && iconPosition === 'right' && (

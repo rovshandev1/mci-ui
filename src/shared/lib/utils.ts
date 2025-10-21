@@ -24,7 +24,7 @@ export function useEscapeKey(callback: () => void) {
  * Click outside handle qilish
  */
 export function useClickOutside(
-	ref: RefObject<HTMLDivElement>,
+	ref: RefObject<HTMLDivElement | null>,
 	callback: () => void
 ) {
 	const handleClick = (e: MouseEvent) => {
