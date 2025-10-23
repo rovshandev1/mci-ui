@@ -13,6 +13,7 @@ type CheckBoxProps = {
 	required?: boolean
 	className?: string
 	variant?: 'default' | 'minimal'
+	name?: string
 }
 
 export default function CheckBox({
@@ -26,6 +27,7 @@ export default function CheckBox({
 	required = false,
 	className,
 	variant = 'default',
+	name,
 }: CheckBoxProps) {
 	const [internalChecked, setInternalChecked] = useState(false)
 	const checked =
@@ -106,6 +108,7 @@ export default function CheckBox({
 					aria-describedby={
 						error ? 'checkbox-error' : success ? 'checkbox-success' : undefined
 					}
+					name={name}
 				/>
 				<div className={cn(sizes[size].box, stateStyles)}>
 					<Check

@@ -8,7 +8,7 @@ type ButtonProps = {
 	icon?: React.ReactNode
 	iconPosition?: 'left' | 'right'
 	size?: 'sm' | 'md' | 'lg'
-	variant?: 'primary' | 'secondary' | 'accent' | 'danger'
+	variant?: 'primary' | 'secondary' | 'accent' | 'danger' | 'outline'
 	loading?: boolean
 	disabled?: boolean
 	onClick?: () => void
@@ -74,6 +74,11 @@ export default function Button({
       active:scale-[0.98]
       text-white
     `,
+		outline: `
+    bg-transparent hover:bg-secondary-50 active:bg-secondary-100
+    text-secondary-700 border border-secondary-300 hover:border-secondary-400
+    active:scale-[0.98] hover:shadow-md hover:shadow-secondary-500/10
+		`,
 	}
 
 	const content = children || text
@@ -92,6 +97,7 @@ export default function Button({
 				variant === 'primary' && 'focus:ring-secondary-500',
 				variant === 'secondary' && 'focus:ring-secondary-400',
 				variant === 'accent' && 'focus:ring-accent-500',
+				variant === 'outline' && 'focus:ring-secondary-400',
 				variants[variant],
 				sizes[size],
 				className
