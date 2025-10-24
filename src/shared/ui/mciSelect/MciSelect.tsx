@@ -3,7 +3,7 @@ import React, { forwardRef, useEffect, useMemo, useRef, useState } from 'react'
 import { cn } from '../../lib/utils.ts'
 
 type Option = {
-	value: string
+	value: string | number
 	label: string
 }
 
@@ -18,8 +18,8 @@ type SelectProps = {
 	success?: string
 	disabled?: boolean
 	required?: boolean
-	value?: string
-	onChange?: (value: string) => void
+	value?: string | number
+	onChange?: (value: string | number) => void
 	onFocus?: () => void
 	onBlur?: () => void
 	className?: string
@@ -56,7 +56,7 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
 	) => {
 		const [isFocused, setIsFocused] = useState(false)
 		const [isOpen, setIsOpen] = useState(false)
-		const [internalValue, setInternalValue] = useState('')
+		const [internalValue, setInternalValue] = useState<string | number>('')
 		const [searchTerm, setSearchTerm] = useState('')
 		const containerRef = useRef<HTMLDivElement>(null)
 		const searchInputRef = useRef<HTMLInputElement>(null)
@@ -114,7 +114,7 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
 			else setSearchTerm('')
 		}
 
-		const handleSelect = (optionValue: string) => {
+		const handleSelect = (optionValue: string | number) => {
 			if (value === undefined) setInternalValue(optionValue)
 			onChange?.(optionValue)
 			setIsOpen(false)
