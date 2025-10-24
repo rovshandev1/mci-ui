@@ -26,12 +26,16 @@ interface MciPickerProps {
 	allowManualInput?: boolean
 	locale?: Locale
 	showToday?: boolean
+	showWeekNumbers?: boolean
+	startView?: 'day' | 'month' | 'year'
 }
 
 interface CalendarDay {
 	date: Date
 	isCurrentMonth: boolean
 	isDisabled: boolean
+	isWeekend?: boolean
+	weekNumber?: number
 }
 
 const MciPicker: React.FC<MciPickerProps> = ({
@@ -53,6 +57,8 @@ const MciPicker: React.FC<MciPickerProps> = ({
 	allowManualInput = true,
 	locale = 'en',
 	showToday = true,
+	showWeekNumbers = false,
+	startView = 'day',
 }) => {
 	// State management
 	const [isOpen, setIsOpen] = useState<boolean>(false)
@@ -67,6 +73,10 @@ const MciPicker: React.FC<MciPickerProps> = ({
 	})
 	const [tempRange, setTempRange] = useState<RangeValue>([null, null])
 	const [inputValues, setInputValues] = useState<[string, string]>(['', ''])
+	const [currentView, setCurrentView] = useState<'day' | 'month' | 'year'>(
+		startView
+	)
+	const [yearPage, setYearPage] = useState<number>(0)
 
 	// Refs
 	const containerRef = useRef<HTMLDivElement>(null)
@@ -200,13 +210,16 @@ const MciPicker: React.FC<MciPickerProps> = ({
 		[parseDate, isDateDisabled, onChange]
 	)
 
-	// Handle close function
+	// Handle close function - RESET VIEWS
 	const handleClose = useCallback((): void => {
 		setIsOpen(false)
 		if (type === 'range') {
 			setTempRange(currentValue as RangeValue)
 		}
-	}, [type, currentValue])
+		// Reset to original view when closing
+		setCurrentView(startView)
+		setYearPage(0)
+	}, [type, currentValue, startView])
 
 	// Handle escape key
 	useEffect(() => {
@@ -265,6 +278,14 @@ const MciPicker: React.FC<MciPickerProps> = ({
 		[type, parseDate, isDateDisabled, onChange, handleRangeInputChange]
 	)
 
+	// Get week number
+	const getWeekNumber = useCallback((date: Date): number => {
+		const firstDayOfYear = new Date(date.getFullYear(), 0, 1)
+		const pastDaysOfYear =
+			(date.getTime() - firstDayOfYear.getTime()) / 86400000
+		return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7)
+	}, [])
+
 	// Calendar generation
 	const getDaysInMonth = useCallback(
 		(date: Date): CalendarDay[] => {
@@ -285,6 +306,8 @@ const MciPicker: React.FC<MciPickerProps> = ({
 					date: day,
 					isCurrentMonth: false,
 					isDisabled: isDateDisabled(day),
+					isWeekend: day.getDay() === 0 || day.getDay() === 6,
+					weekNumber: showWeekNumbers ? getWeekNumber(day) : undefined,
 				})
 			}
 
@@ -295,6 +318,8 @@ const MciPicker: React.FC<MciPickerProps> = ({
 					date: day,
 					isCurrentMonth: true,
 					isDisabled: isDateDisabled(day),
+					isWeekend: day.getDay() === 0 || day.getDay() === 6,
+					weekNumber: showWeekNumbers ? getWeekNumber(day) : undefined,
 				})
 			}
 
@@ -307,13 +332,30 @@ const MciPicker: React.FC<MciPickerProps> = ({
 					date: day,
 					isCurrentMonth: false,
 					isDisabled: isDateDisabled(day),
+					isWeekend: day.getDay() === 0 || day.getDay() === 6,
+					weekNumber: showWeekNumbers ? getWeekNumber(day) : undefined,
 				})
 			}
 
 			return days
 		},
-		[isDateDisabled]
+		[isDateDisabled, showWeekNumbers, getWeekNumber]
 	)
+
+	// Get months for year view
+	const getMonths = useCallback((): string[] => {
+		return currentLocale.monthsShort
+	}, [currentLocale])
+
+	// Get years for decade view - IMPROVED VERSION
+	const getYears = useCallback((centerYear: number): number[] => {
+		const years: number[] = []
+		const startYear = Math.floor(centerYear / 10) * 10 // 2019 -> 2010-2021
+		for (let i = 0; i < 12; i++) {
+			years.push(startYear + i - 1) // 2009-2020
+		}
+		return years
+	}, [])
 
 	// Date selection
 	const handleDateSelect = useCallback(
@@ -357,7 +399,27 @@ const MciPicker: React.FC<MciPickerProps> = ({
 		]
 	)
 
-	// Date states - FIXED VERSION
+	// Month selection
+	const handleMonthSelect = useCallback(
+		(monthIndex: number): void => {
+			const newDate = new Date(currentMonth.getFullYear(), monthIndex, 1)
+			setCurrentMonth(newDate)
+			setCurrentView('day')
+		},
+		[currentMonth]
+	)
+
+	// Year selection
+	const handleYearSelect = useCallback(
+		(year: number): void => {
+			const newDate = new Date(year, currentMonth.getMonth(), 1)
+			setCurrentMonth(newDate)
+			setCurrentView('month')
+		},
+		[currentMonth]
+	)
+
+	// Date states
 	const isSelected = useCallback(
 		(date: Date): boolean => {
 			const normalizedDate = normalizeDate(date)
@@ -436,6 +498,15 @@ const MciPicker: React.FC<MciPickerProps> = ({
 		[currentMonth, currentMonth2]
 	)
 
+	// Year pagination
+	const handlePrevYears = useCallback((): void => {
+		setYearPage(prev => prev - 1)
+	}, [])
+
+	const handleNextYears = useCallback((): void => {
+		setYearPage(prev => prev + 1)
+	}, [])
+
 	// Clear value
 	const handleClear = useCallback((): void => {
 		const newValue = type === 'range' ? [null, null] : null
@@ -492,6 +563,246 @@ const MciPicker: React.FC<MciPickerProps> = ({
 		return placeholder[0]
 	}, [placeholder])
 
+	// Render day view
+	const renderDayView = (date: Date, calendarIndex: 0 | 1): JSX.Element => {
+		const days = getDaysInMonth(date)
+
+		return (
+			<div className='min-w-[248px] p-3 bg-white rounded-lg border border-secondary-200 shadow-sm'>
+				{/* Calendar Header */}
+				<div className='flex items-center justify-between mb-3 px-1'>
+					<button
+						onClick={() => handlePrevMonth(calendarIndex)}
+						className='p-1 rounded hover:bg-secondary-100 transition-colors duration-200'
+					>
+						<ChevronLeft className='w-4 h-4 text-secondary-600' />
+					</button>
+
+					<div className='flex items-center gap-2'>
+						<button
+							onClick={() => setCurrentView('month')}
+							className='font-medium text-secondary-800 text-sm hover:text-primary-600 transition-colors duration-200 px-2 py-1 rounded hover:bg-secondary-100'
+						>
+							{currentLocale.months[date.getMonth()]}
+						</button>
+						<button
+							onClick={() => setCurrentView('year')}
+							className='font-medium text-secondary-800 text-sm hover:text-primary-600 transition-colors duration-200 px-2 py-1 rounded hover:bg-secondary-100'
+						>
+							{date.getFullYear()}
+						</button>
+					</div>
+
+					<button
+						onClick={() => handleNextMonth(calendarIndex)}
+						className='p-1 rounded hover:bg-secondary-100 transition-colors duration-200'
+					>
+						<ChevronRight className='w-4 h-4 text-secondary-600' />
+					</button>
+				</div>
+
+				{/* Week Days */}
+				<div
+					className={cn(
+						'grid gap-0.5 mb-2',
+						showWeekNumbers ? 'grid-cols-8' : 'grid-cols-7'
+					)}
+				>
+					{showWeekNumbers && (
+						<div className='h-6 flex items-center justify-center text-xs text-secondary-400 font-medium'>
+							Week
+						</div>
+					)}
+					{currentLocale.weekdaysShort.map(day => (
+						<div
+							key={day}
+							className='h-6 flex items-center justify-center text-xs text-secondary-500 font-medium'
+						>
+							{day}
+						</div>
+					))}
+				</div>
+
+				{/* Calendar Days */}
+				<div
+					className={cn(
+						'grid gap-0.5',
+						showWeekNumbers ? 'grid-cols-8' : 'grid-cols-7'
+					)}
+				>
+					{days.map(
+						(
+							{
+								date: dayDate,
+								isCurrentMonth,
+								isDisabled,
+								isWeekend,
+								weekNumber,
+							},
+							index
+						) => {
+							const isToday = isSameDay(dayDate, new Date())
+							const selected = isSelected(dayDate)
+							const inRange = isInRange(dayDate)
+							const isTempEdge = isTempRangeEdge(dayDate)
+
+							return (
+								<React.Fragment key={index}>
+									{showWeekNumbers && index % 7 === 0 && (
+										<div className='h-7 flex items-center justify-center text-xs text-secondary-400 font-medium'>
+											{weekNumber}
+										</div>
+									)}
+									<button
+										onClick={() => !isDisabled && handleDateSelect(dayDate)}
+										disabled={isDisabled}
+										className={cn(
+											'h-7 rounded text-sm transition-all duration-150 relative',
+											'hover:scale-105 active:scale-95',
+											isDisabled && 'opacity-30 cursor-not-allowed',
+											!isCurrentMonth && 'text-secondary-400',
+											isCurrentMonth &&
+												!isDisabled &&
+												!selected &&
+												!isTempEdge &&
+												'text-secondary-700 hover:bg-secondary-100',
+											isToday &&
+												!selected &&
+												!isTempEdge &&
+												'bg-secondary-100 text-secondary-800 font-medium',
+											(selected || isTempEdge) &&
+												'bg-secondary-500 text-white hover:bg-secondary-600',
+											inRange &&
+												!selected &&
+												!isTempEdge &&
+												'bg-secondary-50 text-secondary-700',
+											isWeekend &&
+												!selected &&
+												!isTempEdge &&
+												'text-secondary-600'
+										)}
+									>
+										{dayDate.getDate()}
+									</button>
+								</React.Fragment>
+							)
+						}
+					)}
+				</div>
+			</div>
+		)
+	}
+
+	// Render month view
+	const renderMonthView = (date: Date): JSX.Element => {
+		const months = getMonths()
+
+		return (
+			<div className='min-w-[248px] p-3 bg-white rounded-lg border border-secondary-200 shadow-sm'>
+				{/* Header */}
+				<div className='flex items-center justify-between mb-3 px-1'>
+					<button
+						onClick={() => setCurrentView('day')}
+						className='p-1 rounded hover:bg-secondary-100 transition-colors duration-200'
+					>
+						<ChevronLeft className='w-4 h-4 text-secondary-600' />
+					</button>
+
+					<button
+						onClick={() => setCurrentView('year')}
+						className='font-medium text-secondary-800 text-sm hover:text-primary-600 transition-colors duration-200 px-2 py-1 rounded hover:bg-secondary-100'
+					>
+						{date.getFullYear()}
+					</button>
+
+					<div className='w-8'></div>
+				</div>
+
+				{/* Months Grid */}
+				<div className='grid grid-cols-3 gap-2'>
+					{months.map((month, index) => (
+						<button
+							key={month}
+							onClick={() => handleMonthSelect(index)}
+							className={cn(
+								'h-12 rounded text-sm font-medium transition-all duration-150',
+								'hover:scale-105 active:scale-95',
+								date.getMonth() === index
+									? 'bg-secondary-500 text-white hover:bg-secondary-600'
+									: 'text-secondary-700 hover:bg-secondary-100'
+							)}
+						>
+							{month}
+						</button>
+					))}
+				</div>
+			</div>
+		)
+	}
+
+	// Render year view - IMPROVED VERSION
+	const renderYearView = (date: Date): JSX.Element => {
+		const currentYear = date.getFullYear()
+		const centerYear = currentYear + yearPage * 12
+		const years = getYears(centerYear)
+
+		return (
+			<div className='min-w-[248px] p-3 bg-white rounded-lg border border-secondary-200 shadow-sm'>
+				{/* Header */}
+				<div className='flex items-center justify-between mb-3 px-1'>
+					<button
+						onClick={handlePrevYears}
+						className='p-1 rounded hover:bg-secondary-100 transition-colors duration-200'
+					>
+						<ChevronLeft className='w-4 h-4 text-secondary-600' />
+					</button>
+
+					<div className='font-medium text-secondary-800 text-sm'>
+						{years[0]} - {years[years.length - 1]}
+					</div>
+
+					<button
+						onClick={handleNextYears}
+						className='p-1 rounded hover:bg-secondary-100 transition-colors duration-200'
+					>
+						<ChevronRight className='w-4 h-4 text-secondary-600' />
+					</button>
+				</div>
+
+				{/* Years Grid */}
+				<div className='grid grid-cols-4 gap-2'>
+					{years.map(year => (
+						<button
+							key={year}
+							onClick={() => handleYearSelect(year)}
+							className={cn(
+								'h-12 rounded text-sm font-medium transition-all duration-150',
+								'hover:scale-105 active:scale-95',
+								currentYear === year
+									? 'bg-secondary-500 text-white hover:bg-secondary-600'
+									: 'text-secondary-700 hover:bg-secondary-100'
+							)}
+						>
+							{year}
+						</button>
+					))}
+				</div>
+			</div>
+		)
+	}
+
+	// Render calendar based on current view
+	const renderCalendar = (date: Date, calendarIndex: 0 | 1): JSX.Element => {
+		switch (currentView) {
+			case 'month':
+				return renderMonthView(date)
+			case 'year':
+				return renderYearView(date)
+			default:
+				return renderDayView(date, calendarIndex)
+		}
+	}
+
 	// Render single date input
 	const renderDateInput = (): JSX.Element => (
 		<div className='relative flex-1'>
@@ -521,7 +832,7 @@ const MciPicker: React.FC<MciPickerProps> = ({
 		</div>
 	)
 
-	// Render range input (bitta inputda)
+	// Render range input
 	const renderRangeInput = (): JSX.Element => (
 		<div className='relative flex-1'>
 			<InputMain
@@ -549,96 +860,6 @@ const MciPicker: React.FC<MciPickerProps> = ({
 			)}
 		</div>
 	)
-
-	// Render calendar header
-	const renderCalendarHeader = (
-		date: Date,
-		calendarIndex: 0 | 1
-	): JSX.Element => (
-		<div className='flex items-center justify-between mb-3 px-1'>
-			<button
-				onClick={() => handlePrevMonth(calendarIndex)}
-				className='p-1 rounded hover:bg-secondary-100 transition-colors duration-200'
-			>
-				<ChevronLeft className='w-4 h-4 text-secondary-600' />
-			</button>
-
-			<div className='font-medium text-secondary-800 text-sm'>
-				{currentLocale.months[date.getMonth()]} {date.getFullYear()}
-			</div>
-
-			<button
-				onClick={() => handleNextMonth(calendarIndex)}
-				className='p-1 rounded hover:bg-secondary-100 transition-colors duration-200'
-			>
-				<ChevronRight className='w-4 h-4 text-secondary-600' />
-			</button>
-		</div>
-	)
-
-	// Render calendar
-	const renderCalendar = (date: Date, calendarIndex: 0 | 1): JSX.Element => {
-		const days = getDaysInMonth(date)
-
-		return (
-			<div className='min-w-[248px] p-3 bg-white rounded-lg border border-secondary-200 shadow-sm'>
-				{renderCalendarHeader(date, calendarIndex)}
-
-				{/* Week Days */}
-				<div className='grid grid-cols-7 gap-0.5 mb-2'>
-					{currentLocale.weekdaysShort.map(day => (
-						<div
-							key={day}
-							className='h-6 flex items-center justify-center text-xs text-secondary-500 font-medium'
-						>
-							{day}
-						</div>
-					))}
-				</div>
-
-				{/* Calendar Days */}
-				<div className='grid grid-cols-7 gap-0.5'>
-					{days.map(({ date: dayDate, isCurrentMonth, isDisabled }, index) => {
-						const isToday = isSameDay(dayDate, new Date())
-						const selected = isSelected(dayDate)
-						const inRange = isInRange(dayDate)
-						const isTempEdge = isTempRangeEdge(dayDate)
-
-						return (
-							<button
-								key={index}
-								onClick={() => !isDisabled && handleDateSelect(dayDate)}
-								disabled={isDisabled}
-								className={cn(
-									'h-7 rounded text-sm transition-all duration-150 relative',
-									'hover:scale-105 active:scale-95',
-									isDisabled && 'opacity-30 cursor-not-allowed',
-									!isCurrentMonth && 'text-secondary-400',
-									isCurrentMonth &&
-										!isDisabled &&
-										!selected &&
-										!isTempEdge &&
-										'text-secondary-700 hover:bg-secondary-100',
-									isToday &&
-										!selected &&
-										!isTempEdge &&
-										'bg-secondary-100 text-secondary-800 font-medium',
-									(selected || isTempEdge) &&
-										'bg-secondary-500 text-white hover:bg-secondary-600',
-									inRange &&
-										!selected &&
-										!isTempEdge &&
-										'bg-secondary-50 text-secondary-700'
-								)}
-							>
-								{dayDate.getDate()}
-							</button>
-						)
-					})}
-				</div>
-			</div>
-		)
-	}
 
 	return (
 		<div ref={containerRef} className={cn('relative', className)}>
@@ -668,17 +889,31 @@ const MciPicker: React.FC<MciPickerProps> = ({
 						)}
 					</div>
 
-					{/* Today Button - Minimal footer */}
-					{showToday && (
-						<div className='px-3 py-2 border-t border-secondary-100'>
+					{/* Footer */}
+					<div className='px-3 py-2 border-t border-secondary-100 flex justify-between items-center'>
+						{showToday && (
 							<button
 								onClick={handleToday}
-								className='w-full py-1.5 text-sm text-secondary-600 hover:text-secondary-700 hover:bg-secondary-50 rounded transition-colors duration-200'
+								className='py-1.5 text-sm text-secondary-600 hover:text-secondary-700 hover:bg-secondary-50 rounded transition-colors duration-200 px-3'
 							>
 								{currentLocale.today}
 							</button>
+						)}
+						<div className='flex gap-2'>
+							<button
+								onClick={handleClose}
+								className='py-1.5 px-3 text-sm text-secondary-600 hover:text-secondary-700 hover:bg-secondary-50 rounded transition-colors duration-200'
+							>
+								{currentLocale.cancel}
+							</button>
+							<button
+								onClick={handleClose}
+								className='py-1.5 px-3 text-sm bg-secondary-500 text-white hover:bg-secondary-600 rounded transition-colors duration-200'
+							>
+								{currentLocale.apply}
+							</button>
 						</div>
-					)}
+					</div>
 				</div>
 			)}
 		</div>
