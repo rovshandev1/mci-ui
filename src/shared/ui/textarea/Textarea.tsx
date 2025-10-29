@@ -79,7 +79,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 											? 'text-success-500'
 											: 'text-secondary-600'
 								  )
-								: 'top-1/2 -translate-y-1/2 text-gray-500'
+								: 'top-5 -translate-y-1/2 text-gray-500'
 						)}
 						style={{
 							transformOrigin: 'left top',

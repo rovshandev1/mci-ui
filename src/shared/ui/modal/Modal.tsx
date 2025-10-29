@@ -9,6 +9,7 @@ interface ModalProps {
 	Header?: React.ReactNode
 	Body?: React.ReactNode
 	footer?: React.ReactNode
+	handleClickOutside?: boolean
 }
 
 export default function Modal({
@@ -18,6 +19,7 @@ export default function Modal({
 	Header,
 	Body,
 	footer,
+	handleClickOutside = false,
 }: ModalProps) {
 	const modalRef = useRef<HTMLDivElement>(null!)
 
@@ -34,11 +36,18 @@ export default function Modal({
 	}, [show, handleEscape])
 
 	// Click outside
-	const { handleClick } = useClickOutside(modalRef, () => setShow(false))
+	const { handleClick } = useClickOutside(modalRef, () => {
+		if (handleClickOutside) {
+			setShow(false)
+		}
+	})
+
 	useEffect(() => {
-		if (show) document.addEventListener('mousedown', handleClick)
+		if (show && handleClickOutside) {
+			document.addEventListener('mousedown', handleClick)
+		}
 		return () => document.removeEventListener('mousedown', handleClick)
-	}, [show, handleClick])
+	}, [show, handleClick, handleClickOutside])
 
 	return (
 		<div
