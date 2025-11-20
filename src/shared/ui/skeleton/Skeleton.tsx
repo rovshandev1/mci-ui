@@ -16,7 +16,7 @@ export default function Skeleton({
 	return (
 		<div
 			className={cn(
-				'relative overflow-hidden bg-secondary-200 dark:bg-secondary-800',
+				'relative overflow-hidden bg-slate-300',
 				'rounded-sm',
 				variant === 'circle' && 'rounded-full',
 				variant === 'rounded' && 'rounded-md',

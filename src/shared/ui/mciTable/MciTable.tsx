@@ -1,179 +1,199 @@
-import { ArrowUpDown, Box, ChevronDown, ChevronUp } from 'lucide-react'
-import { useMemo, useState } from 'react'
-import { cn } from '../../lib/utils'
-import Skeleton from '../skeleton/Skeleton.tsx'
+import {ArrowDown, ArrowUp, ArrowUpDown, Box} from 'lucide-react'
+import {useMemo, useState, useEffect, type ReactNode} from 'react'
+import {cn} from '../../lib/utils'
+import Skeleton from '../skeleton/Skeleton'
 
-type MciTableColumn<T> = {
-	key: keyof T
-	title: string
-	sortable?: boolean
-	align?: 'left' | 'center' | 'right'
-	width?: string | number
-	render?: (value: T[keyof T], row: T) => React.ReactNode
+type Align = 'left' | 'center' | 'right'
+
+export type MciTableColumn<T> = {
+    key: keyof T
+    title: string
+    sortable?: boolean
+    align?: Align
+    width?: string | number
+    render?: (value: T[keyof T], row: T) => ReactNode
 }
 
-interface MciTableProps<T extends Record<string, unknown>> {
-	columns: MciTableColumn<T>[]
-	data: T[]
-	loading?: boolean
-	variant?: 'clean' | 'elevated' | 'bordered'
-	skeletonRows?: number
-	actions?: React.ReactNode
-	noDataText?: string
+export interface MciTableProps<T extends Record<string, unknown>> {
+    columns: MciTableColumn<T>[]
+    data: T[]
+    loading?: boolean
+    skeletonRows?: number
+    actions?: ReactNode
+    noDataText?: string
+
+    sort?: { key: keyof T; direction: 'asc' | 'desc' } | null
+    onSortChange?: (sort: { key: keyof T; direction: 'asc' | 'desc' } | null) => void
 }
 
 export default function MciTable<T extends Record<string, unknown>>({
-	columns,
-	data,
-	loading = false,
-	variant = 'clean',
-	skeletonRows = 5,
-	actions,
-	noDataText,
-}: MciTableProps<T>) {
-	const [sortConfig, setSortConfig] = useState<{
-		key: keyof T
-		direction: 'asc' | 'desc' | null
-	} | null>(null)
+                                                                        columns,
+                                                                        data,
+                                                                        loading = false,
+                                                                        skeletonRows = 5,
+                                                                        actions,
+                                                                        noDataText = 'Maʼlumot topilmadi',
+                                                                        sort: externalSort,
+                                                                        onSortChange,
+                                                                    }: MciTableProps<T>) {
+    const [localSort, setLocalSort] = useState<{ key: keyof T; direction: 'asc' | 'desc' } | null>(null)
 
-	const sortedData = useMemo(() => {
-		if (!sortConfig || !sortConfig.direction) return data
-		return [...data].sort((a, b) => {
-			const aVal = a[sortConfig.key]
-			const bVal = b[sortConfig.key]
-			if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1
-			if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1
-			return 0
-		})
-	}, [data, sortConfig])
+    const activeSort = externalSort ?? localSort
+33
+    const sortedData = useMemo(() => {
+        if (externalSort || !activeSort?.direction) return data
 
-	const handleSort = (col: MciTableColumn<T>) => {
-		if (!col.sortable) return
-		setSortConfig(prev => {
-			if (!prev || prev.key !== col.key) {
-				return { key: col.key, direction: 'asc' }
-			}
-			if (prev.direction === 'asc') return { key: col.key, direction: 'desc' }
-			if (prev.direction === 'desc') return { key: col.key, direction: null }
-			return null
-		})
-	}
+        return [...data].sort((a, b) => {
+            const aVal = a[activeSort.key]
+            const bVal = b[activeSort.key]
 
-	const getSortIcon = (col: MciTableColumn<T>) => {
-		if (!col?.sortable) return null
-		if (!sortConfig || sortConfig.key !== col?.key || !sortConfig.direction) {
-			return <ArrowUpDown size={15} className='opacity-40' />
-		}
-		return sortConfig.direction === 'asc' ? (
-			<ChevronUp size={15} />
-		) : (
-			<ChevronDown size={15} />
-		)
-	}
+            if (aVal == null) return 1
+            if (bVal == null) return -1
 
-	const variantStyle = cn(
-		'w-full border-separate border-spacing-0 transition-all duration-300',
-		variant === 'clean' && 'bg-white',
-		variant === 'elevated' && 'bg-white shadow-lg',
-		variant === 'bordered' && 'border border-secondary-200 rounded-lg'
-	)
+            if (aVal < bVal) return activeSort.direction === 'asc' ? -1 : 1
+            if (aVal > bVal) return activeSort.direction === 'asc' ? 1 : -1
+            return 0
+        })
+    }, [data, activeSort, externalSort])
 
-	const headerCell = (col: MciTableColumn<T>) =>
-		cn(
-			'bg-secondary-50 text-secondary-800 text-sm font-semibold py-3 px-4 select-none',
-			'border-b border-secondary-200 transition-colors',
-			col.align === 'center' && 'text-center',
-			col.align === 'right' && 'text-right',
-			col.sortable && 'cursor-pointer hover:bg-secondary-100/70'
-		)
+    const handleSort = (col: MciTableColumn<T>) => {
+        if (!col.sortable) return
 
-	return (
-		<div className='w-full space-y-3'>
-			{actions && (
-				<div className='flex justify-between items-center mb-2'>{actions}</div>
-			)}
+        let nextSort: { key: keyof T; direction: 'asc' | 'desc' } | null
 
-			<div className='w-full overflow-x-auto rounded-lg'>
-				<table className={variantStyle}>
-					<thead>
-						<tr>
-							{columns?.map((col, idx) => (
-								<th
-									key={String(col?.key)}
-									onClick={() => handleSort(col)}
-									className={cn(
-										headerCell(col),
-										idx === 0 && 'rounded-tl-lg',
-										idx === columns?.length - 1 && 'rounded-tr-lg'
-									)}
-									style={{ width: col.width }}
-								>
-									<div className='flex items-center justify-between gap-2'>
-										<span className='truncate'>{col.title}</span>
-										{getSortIcon(col)}
-									</div>
-								</th>
-							))}
-						</tr>
-					</thead>
+        if (activeSort?.key !== col.key) {
+            nextSort = {key: col.key, direction: 'asc'}
+        } else if (activeSort.direction === 'asc') {
+            nextSort = {key: col.key, direction: 'desc'}
+        } else {
+            nextSort = null
+        }
 
-					<tbody>
-						{loading
-							? Array.from({ length: skeletonRows })?.map((_, idx) => (
-									<tr key={idx}>
-										{columns?.map((col, i) => (
-											<td
-												key={i}
-												className='px-4 py-3'
-												style={{ width: col.width }}
-											>
-												<Skeleton height={18} variant='rounded' />
-											</td>
-										))}
-									</tr>
-							  ))
-							: sortedData?.map((row, idx) => (
-									<tr
-										key={idx}
-										className={cn(
-											'border-b border-secondary-100 transition-all duration-200'
-										)}
-									>
-										{columns?.map((col, i) => (
-											<td
-												key={i}
-												style={{ width: col.width }}
-												className={cn(
-													'px-4 py-3 text-sm text-gray-800',
-													col?.align === 'center' && 'text-center',
-													col?.align === 'right' && 'text-right'
-												)}
-											>
-												{col?.render
-													? col?.render(row[col?.key], row)
-													: String(row[col?.key])}
-											</td>
-										))}
-									</tr>
-							  ))}
-					</tbody>
-				</table>
-			</div>
+        if (externalSort !== undefined) {
+            onSortChange?.(nextSort)
+        } else {
+            setLocalSort(nextSort)
+        }
+    }
 
-			{!loading && sortedData?.length === 0 && (
-				<div className='flex flex-col items-center justify-center py-10 text-gray-500 dark:text-gray-400 animate-[fadeIn_0.4s_ease-in-out]'>
-					<div className='relative'>
-						<Box
-							size={64}
-							className='mb-3 text-secondary-400 dark:text-secondary-500 opacity-80 animate-[float_2.5s_ease-in-out_infinite]'
-						/>
-						<div className='absolute inset-0 blur-2xl bg-secondary-200/20 dark:bg-secondary-700/20 rounded-full scale-75 animate-[pulse_3s_ease-in-out_infinite]' />
-					</div>
-					<p className='text-sm font-medium animate-[fadeUp_0.6s_ease-out]'>
-						{noDataText}
-					</p>
-				</div>
-			)}
-		</div>
-	)
+    useEffect(() => {
+        if (externalSort !== undefined) {
+            setLocalSort(null)
+        }
+    }, [externalSort])
+
+    const getSortIcon = (col: MciTableColumn<T>) => {
+        if (!col.sortable) return null
+
+        if (!activeSort || activeSort.key !== col.key) {
+            return <ArrowUpDown size={15} className="text-slate-900"/>
+        }
+
+        return activeSort.direction === 'asc' ? (
+            <ArrowUp size={15} className="text-slate-900"/>
+        ) : (
+            <ArrowDown size={15} className="text-slate-900"/>
+        )
+    }
+
+    const headerCellClass = (col: MciTableColumn<T>) =>
+        cn(
+            'text-sm font-semibold py-5 px-4 text-slate-900 leading-5 transition-all',
+            col.align === 'center' && 'text-center',
+            col.align === 'right' && 'text-right',
+            col.sortable && 'cursor-pointer hover:bg-slate-100',
+            'select-none'
+        )
+
+    const cellClass = (align?: Align) =>
+        cn(
+            'px-4 py-6 text-sm text-slate-700 font-normal leading-5',
+            align === 'center' && 'text-center',
+            align === 'right' && 'text-right'
+        )
+
+    const displayData = loading ? [] : (externalSort ? data : sortedData)
+
+    return (
+        <div className="w-full space-y-4">
+            {actions && (
+                <div className="flex items-center justify-between mb-3">{actions}</div>
+            )}
+
+            <div className="w-full overflow-x-auto rounded-xl border border-slate-300">
+                <table className="w-full border-collapse">
+                    <thead className="bg-slate-50 border-b border-slate-300">
+                    <tr>
+                        {columns.map((col, idx) => (
+                            <th
+                                key={String(col.key)}
+                                onClick={() => handleSort(col)}
+                                className={cn(
+                                    headerCellClass(col),
+                                    idx === 0 && 'rounded-tl-xl',
+                                    idx === columns.length - 1 && 'rounded-tr-xl'
+                                )}
+                                style={{width: col.width}}
+                            >
+                                <div className="flex items-center justify-between gap-2">
+                                    <span className="truncate">{col.title}</span>
+                                    {getSortIcon(col)}
+                                </div>
+                            </th>
+                        ))}
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {loading ? (
+                        Array.from({length: skeletonRows}).map((_, idx) => (
+                            <tr key={idx}>
+                                {columns.map((col, i) => (
+                                    <td key={i} className="px-4 py-5" style={{width: col.width}}>
+                                        <Skeleton height={20} variant="rounded"/>
+                                    </td>
+                                ))}
+                            </tr>
+                        ))
+                    ) : displayData.length === 0 ? (
+                        <tr>
+                            <td colSpan={columns.length} className="py-16">
+                                <div className="flex flex-col items-center justify-center text-slate-900">
+                                    <div className="relative mb-4">
+                                        <Box
+                                            size={64}
+                                            className="text-slate-400 opacity-70 animate-float"
+                                        />
+                                        <div
+                                            className="absolute inset-0 blur-3xl bg-slate-300/20 rounded-full animate-pulse"/>
+                                    </div>
+                                    <p className="text-sm font-medium">{noDataText}</p>
+                                </div>
+                            </td>
+                        </tr>
+                    ) : (
+                        displayData.map((row, idx) => (
+                            <tr
+                                key={idx}
+                                className={cn(
+                                    'border-b border-slate-200 last:border-none transition-colors',
+                                )}
+                            >
+                                {columns.map((col) => (
+                                    <td
+                                        key={String(col.key)}
+                                        className={cellClass(col.align)}
+                                        style={{width: col.width}}
+                                    >
+                                        {col.render ? col.render(row[col.key], row) : String(row[col.key] ?? '-')}
+                                    </td>
+                                ))}
+                            </tr>
+                        ))
+                    )}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    )
 }

@@ -1,129 +1,106 @@
-import { Loader } from 'lucide-react'
+import {Loader} from 'lucide-react'
 import React from 'react'
-import { cn } from '../../lib/utils.ts'
+import {cn} from '../../lib/utils'
 
 type ButtonProps = {
-	children?: React.ReactNode
-	text?: string
-	icon?: React.ReactNode
-	iconPosition?: 'left' | 'right'
-	size?: 'sm' | 'md' | 'lg'
-	variant?: 'primary' | 'secondary' | 'accent' | 'danger' | 'outline'
-	loading?: boolean
-	disabled?: boolean
-	onClick?: () => void
-	className?: string
-	type?: 'button' | 'submit' | 'reset'
+    children?: React.ReactNode
+    text?: string
+    icon?: React.ReactNode
+    iconPosition?: 'left' | 'right'
+    size?: 'sm' | 'md' | 'lg'
+    variant?: 'main' | 'second' | 'error'
+    state?: 'default' | 'outline' | 'ghost' | 'disabled' | 'link'
+    loading?: boolean
+    disabled?: boolean
+    onClick?: () => void
+    className?: string
+    type?: 'button' | 'submit' | 'reset'
 }
 
 export default function Button({
-	text,
-	children,
-	icon,
-	iconPosition = 'left',
-	size = 'md',
-	variant = 'accent',
-	loading = false,
-	disabled = false,
-	onClick,
-	className,
-	type = 'button',
-}: ButtonProps) {
-	const sizes = {
-		sm: 'h-[38px] px-3 text-sm gap-2',
-		md: 'h-[48px] px-4 text-base gap-2.5',
-		lg: 'h-[56px] px-5 text-lg gap-3',
-	}
+                                   text,
+                                   children,
+                                   icon,
+                                   iconPosition = 'left',
+                                   size = 'lg',
+                                   variant = 'main',
+                                   state = 'default',
+                                   loading = false,
+                                   disabled = false,
+                                   onClick,
+                                   className,
+                                   type = 'button',
+                               }: ButtonProps) {
+    const content = children ?? text
 
-	const variants = {
-		primary: `
-			bg-secondary-500
-			hover:bg-secondary-600
-			active:bg-secondary-700
-			hover:shadow-lg
-			hover:shadow-secondary-500/30
-			active:scale-[0.98]
-			text-white
-		`,
-		secondary: `
-			bg-secondary-50
-			hover:bg-secondary-100
-			active:bg-secondary-200
-			hover:shadow-md
-			hover:shadow-secondary-500/10
-			active:scale-[0.98]
-			text-secondary-700
-			border border-secondary-200
-			hover:border-secondary-300
-		`,
-		accent: `
-			bg-accent-500
-			hover:bg-accent-600
-			active:bg-accent-700
-			hover:shadow-lg
-			hover:shadow-accent-500/30
-			active:scale-[0.98]
-			text-white
-		`,
-		danger: `
-      bg-error-500
-      hover:bg-error-600
-      active:bg-error-700
-      hover:shadow-lg
-      hover:shadow-error-500/30
-      active:scale-[0.98]
-      text-white
-    `,
-		outline: `
-    bg-transparent hover:bg-secondary-50 active:bg-secondary-100
-    text-secondary-700 border border-secondary-300 hover:border-secondary-400
-    active:scale-[0.98] hover:shadow-md hover:shadow-secondary-500/10
-		`,
-	}
+    const sizes = {
+        sm: 'h-8 px-2.5 text-sm gap-1.5',
+        md: 'h-9 px-3 text-sm gap-1.5',
+        lg: 'h-12 px-3 text-base gap-2',
+    }
 
-	const content = children || text
+    const styles = {
+        main: {
+            default:
+                'bg-yellow-400 text-white hover:bg-yellow-500',
+            outline:
+                'bg-transparent border border-yellow-400 text-yellow-400 hover:bg-yellow-50 hover:text-yellow-500 hover:border-yellow-500',
+            ghost:
+                'bg-yellow-50 text-yellow-400 hover:bg-yellow-100',
+            link:
+                'bg-transparent text-yellow-400 p-0 h-auto hover:text-yellow-500',
+            disabled: 'opacity-60 cursor-not-allowed bg-yellow-50 text-yellow-400',
+        },
+        second: {
+            default:
+                'bg-slate-900 text-white hover:bg-[#3F4555]',
+            outline:
+                'bg-transparent border border-slate-400 text-slate-900 hover:border-slate-700',
+            ghost:
+                'bg-[#E9EEF4] text-slate-900',
+            link:
+                'bg-transparent text-slate-900 p-0 h-auto hover:text-[#3F4555]',
+            disabled:
+                'opacity-60 cursor-not-allowed bg-slate-200 text-slate-900',
+        },
+        error: {
+            default:
+                'bg-red-500 text-white hover:bg-red-400',
+            outline:
+                'bg-transparent border border-red-500 text-red-500 hover:bg-red-50',
+            ghost:
+                'bg-red-50 text-red-500 hover:bg-red-100',
+            link:
+                'bg-transparent text-red-500 p-0 h-auto hover:text-red-400',
+            disabled: 'opacity-60 cursor-not-allowed bg-red-50 text-red-500',
+        },
+    }
 
-	return (
-		<button
-			type={type}
-			onClick={onClick}
-			disabled={disabled || loading}
-			className={cn(
-				'inline-flex items-center justify-center rounded-[7px] font-medium',
-				'transition-all duration-300 ease-in-out',
-				'transform hover:-translate-y-0.5',
-				'disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none',
-				'focus:outline-none focus:ring-2 focus:ring-offset-2',
-				variant === 'primary' && 'focus:ring-secondary-500',
-				variant === 'secondary' && 'focus:ring-secondary-400',
-				variant === 'accent' && 'focus:ring-accent-500',
-				variant === 'outline' && 'focus:ring-secondary-400',
-				variants[variant],
-				sizes[size],
-				className
-			)}
-		>
-			{/* ICON LEFT */}
-			{icon && iconPosition === 'left' && (
-				<span className='flex items-center justify-center transition-transform duration-300 ease-in-out group-hover:scale-110'>
-					{loading ? <Loader className='animate-spin' size={20} /> : icon}
-				</span>
-			)}
+    const applied = styles[variant][state]
 
-			{/* TEXT / CHILDREN */}
-			{content && (
-				<span className='transition-all duration-300'>{content}</span>
-			)}
+    return (
+        <button
+            type={type}
+            onClick={onClick}
+            disabled={disabled || loading || state === 'disabled'}
+            className={cn(
+                'inline-flex items-center justify-center rounded-xl font-medium transition-all duration-200 cursor-pointer',
+                sizes[size],
+                applied,
+                className
+            )}
+        >
+            {icon && iconPosition === 'left' && !loading && (
+                <span className='flex items-center'>{icon}</span>
+            )}
 
-			{/* ICON RIGHT */}
-			{icon && iconPosition === 'right' && (
-				<span className='flex items-center justify-center transition-transform duration-300 ease-in-out group-hover:scale-110'>
-					{loading ? <Loader className='animate-spin' size={20} /> : icon}
-				</span>
-			)}
+            {content && <span>{content}</span>}
 
-			{/* AGAR TEXT VA ICON YO'Q BO'LSA */}
-			{loading && <Loader className='animate-spin' size={20} />}
-		</button>
-	)
+            {icon && iconPosition === 'right' && !loading && (
+                <span className='flex items-center'>{icon}</span>
+            )}
+
+            {loading && <Loader size={18} className='animate-spin'/>}
+        </button>
+    )
 }
