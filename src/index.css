@@ -15,9 +15,10 @@ select {
 }
 
 @theme {
-    /* Main color */
+    --color-black: #1D1F23;
+
     --color-yellow-50: #FEFCE8;
-    --color-yellow-100: #FEF9C2;
+    --color-yellow-100: #FEF9C3;
     --color-yellow-200: #FFF085;
     --color-yellow-300: #FFDF20;
     --color-yellow-400: #FCC800;
@@ -29,6 +30,7 @@ select {
     --color-yellow-950: #432004;
 
     /* Slate */
+    --color-slate-base: #62748E;
     --color-slate-50: #F8FAFC;
     --color-slate-100: #F1F5F9;
     --color-slate-200: #E2E8F0;
@@ -94,34 +96,40 @@ select {
     --color-blue-950: #162456;
 
     /*Typography*/
-    --text-xs: 12px;
-    --text-xs--line-height: 16px;
+    --text-h1: 48px;
+    --text-h1-line-height: 56px;
 
-    --text-sm: 14px;
-    --text-sm--line-height: 20px;
+    --text-h2: 40px;
+    --text-h2-line-height: 48px;
+
+    --text-h3: 32px;
+    --text-h3-line-height: 40px;
+
+    --text-h4: 24px;
+    --text-h4-line-height: 32px;
+
+    --text-h5: 20px;
+    --text-h5-line-height: 28px;
+
+    --text-h6: 16px;
+    --text-h6-line-height: 24px;
+
+    --text-large: 18px;
+    --text-large-line-height: 28px;
 
     --text-base: 16px;
-    --text-base--line-height: 24px;
+    --text-base-line-height: 24px;
 
-    --text-lg: 18px;
-    --text-lg--line-height: 28px;
+    --text-small: 14px;
+    --text-small-line-height: 20px;
 
-    --text-xl: 20px;
-    --text-xl--line-height: 28px;
+    --text-extra-small: 12px;
+    --text-extra-small-line-height: 16px;
 
-    --text-2xl: 24px;
-    --text-2xl--line-height: 32px;
+    /* Shadows */
+    --shadow-md: 0 4px 8px 0 rgba(0, 0, 0, 0.08);
 
-    --text-3xl: 30px;
-    --text-3xl--line-height: 36px;
-
-    --text-4xl: 36px;
-    --text-4xl--line-height: 40px;
-
-    --text-5xl: 48px;
-    --text-5xl--line-height: 48px;
-
-    /* Animatsiyalar */
+    /* Animations */
     --animate-fade-in: fadeIn 0.5s ease-in-out;
     --animate-fade-out: fadeOut 0.5s ease-in-out;
     --animate-slide-up: slideUp 0.5s ease-out;
@@ -134,7 +142,7 @@ select {
     --animate-spin: spin 0.3s linear infinite;
 }
 
-/* Animatsiya keyframes */
+/* Animations keyframes */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -268,6 +276,25 @@ select {
     }
 }
 
+@layer utilities {
+    /*shadow*/
+    .shadow-red {
+        box-shadow: 0 0 0 2px rgba(231, 0, 11, 0.25);
+    }
+
+    .focus\:shadow-red:focus {
+        box-shadow: 0 0 0 2px rgba(231, 0, 11, 0.25);
+    }
+
+    .focus\:shadow-blue:focus {
+        box-shadow: 0 0 0 2px rgba(21, 93, 252, 0.25);
+    }
+
+    .focus\:shadow-slate:focus {
+        box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.25);
+    }
+}
+
 .shimmer-mask {
     background: linear-gradient(
             90deg,
@@ -279,7 +306,7 @@ select {
     will-change: transform;
 }
 
-/* Modal Fade In / Out */
+/* MciModal Fade In / Out */
 .modal-fade-in {
     animation: fadeIn 0.3s ease-in-out forwards;
 }
@@ -288,7 +315,7 @@ select {
     animation: fadeOut 0.3s ease-in-out forwards;
 }
 
-/* Modal Scale */
+/* MciModal Scale */
 .modal-scale-in {
     animation: scaleUp 0.3s ease-out forwards;
 }

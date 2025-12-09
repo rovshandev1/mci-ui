@@ -1,15 +1,5 @@
-import {
-    AlertCircle,
-    CheckCircle2,
-    File,
-    FileText,
-    Image,
-    Loader2,
-    Music,
-    Upload,
-    Video,
-    X,
-} from 'lucide-react'
+import {Star2, Gallery, VideoFramePlayHorizontal, MusicNote, FileText, File, Upload} from '@solar-icons/react'
+import CloseIcon from "../../../assets/icons/close.svg?react"
 import React, {useCallback, useRef, useState} from 'react'
 import {uploadLanguages, type UploadLocale} from '../../lib/uploadLanguage'
 import {cn} from '../../lib/utils'
@@ -32,7 +22,6 @@ interface MciUploadProps {
     label?: string
     required?: boolean
     error?: string
-    success?: string
     className?: string
     onFilesChange?: (files: File[]) => void
     onUpload?: (files: FileInfo[]) => Promise<void>
@@ -51,7 +40,6 @@ const MciUpload: React.FC<MciUploadProps> = ({
                                                  label,
                                                  required = false,
                                                  error,
-                                                 success,
                                                  className,
                                                  onFilesChange,
                                                  onUpload,
@@ -71,22 +59,22 @@ const MciUpload: React.FC<MciUploadProps> = ({
         const type = file.type.split('/')[0]
         switch (type) {
             case 'image':
-                return <Image className='w-5 h-5 text-blue-500'/>
+                return <Gallery className="h-5 w-5 text-blue-500"/>
             case 'video':
-                return <Video className='w-5 h-5 text-purple-500'/>
+                return <VideoFramePlayHorizontal className="h-5 w-5 text-purple-500"/>
             case 'audio':
-                return <Music className='w-5 h-5 text-green-500'/>
+                return <MusicNote className="h-5 w-5 text-green-500"/>
             default:
                 if (file.type.includes('pdf')) {
-                    return <FileText className='w-5 h-5 text-red-500'/>
+                    return <FileText className="h-5 w-5 text-red-500"/>
                 }
                 if (file.type.includes('word') || file.type.includes('document')) {
-                    return <FileText className='w-5 h-5 text-blue-600'/>
+                    return <FileText className="h-5 w-5 text-blue-600"/>
                 }
                 if (file.type.includes('excel') || file.type.includes('spreadsheet')) {
-                    return <FileText className='w-5 h-5 text-green-600'/>
+                    return <FileText className="h-5 w-5 text-green-600"/>
                 }
-                return <File className='w-5 h-5 text-gray-500'/>
+                return <File className="h-5 w-5 text-gray-500"/>
         }
     }
 
@@ -105,24 +93,21 @@ const MciUpload: React.FC<MciUploadProps> = ({
 
     const validateFileType = (file: File) => {
         if (accept === '*/*') return true
-        const acceptedTypes = accept.split(',').map(type => type.trim())
-        return acceptedTypes.some(type => {
+        const acceptedTypes = accept.split(',').map((type) => type.trim())
+        return acceptedTypes.some((type) => {
             if (type.endsWith('/*')) {
                 const category = type.replace('/*', '')
                 return file.type.startsWith(category)
             }
-            return (
-                file.type === type ||
-                file.name.toLowerCase().endsWith(type.replace('*.', '.'))
-            )
+            return file.type === type || file.name.toLowerCase().endsWith(type.replace('*.', '.'))
         })
     }
 
     const createPreview = (file: File): Promise<string> => {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             if (file.type.startsWith('image/')) {
                 const reader = new FileReader()
-                reader.onload = e => resolve(e.target?.result as string)
+                reader.onload = (e) => resolve(e.target?.result as string)
                 reader.readAsDataURL(file)
             } else {
                 resolve('')
@@ -172,31 +157,28 @@ const MciUpload: React.FC<MciUploadProps> = ({
             if (validFiles.length > 0) {
                 const updatedFiles = multiple ? [...files, ...validFiles] : validFiles
                 setFiles(updatedFiles)
-                onFilesChange?.(updatedFiles.map(f => f.file))
+                onFilesChange?.(updatedFiles.map((f) => f.file))
 
                 if (onUpload) {
                     setIsUploading(true)
                     try {
                         const filesWithProgress = updatedFiles.map((file, index) => ({
                             ...file,
-                            progress: Math.min(
-                                100,
-                                ((index + 1) / updatedFiles.length) * 100
-                            ),
+                            progress: Math.min(100, ((index + 1) / updatedFiles.length) * 100),
                         }))
                         setFiles(filesWithProgress)
 
                         await onUpload(filesWithProgress)
-                        setFiles(prev =>
-                            prev.map(f => ({
+                        setFiles((prev) =>
+                            prev.map((f) => ({
                                 ...f,
                                 status: 'success',
                                 progress: 100,
                             }))
                         )
                     } catch (err) {
-                        setFiles(prev =>
-                            prev.map(f => ({
+                        setFiles((prev) =>
+                            prev.map((f) => ({
                                 ...f,
                                 status: 'error',
                                 error: err instanceof Error ? err.message : t.uploadFailed,
@@ -222,7 +204,6 @@ const MciUpload: React.FC<MciUploadProps> = ({
         ]
     )
 
-    // Drag & Drop handlers
     const handleDragOver = useCallback(
         (e: React.DragEvent) => {
             e.preventDefault()
@@ -268,9 +249,9 @@ const MciUpload: React.FC<MciUploadProps> = ({
 
     const handleRemoveFile = useCallback(
         (id: string) => {
-            setFiles(prev => {
-                const updatedFiles = prev.filter(f => f.id !== id)
-                onFilesChange?.(updatedFiles.map(f => f.file))
+            setFiles((prev) => {
+                const updatedFiles = prev.filter((f) => f.id !== id)
+                onFilesChange?.(updatedFiles.map((f) => f.file))
                 return updatedFiles
             })
         },
@@ -290,21 +271,21 @@ const MciUpload: React.FC<MciUploadProps> = ({
         <div className={cn('w-full', className)}>
             {/* Label */}
             {label && (
-                <label className='block text-xs font-medium text-slate-700 mb-1'>
+                <label
+                    className={cn(`mb-2 block text-base font-medium text-slate-700`, error ? 'text-red-600' : 'text-slate-700')}>
                     {label}
-                    {required && <span className='text-red-500 ml-1'>*</span>}
+                    {required && <span className="text-extra-small text-red-600 ml-1">*</span>}
                 </label>
             )}
 
             {/* Upload Area */}
             <div
                 className={cn(
-                    'border-2 border-dashed rounded-lg p-6 text-center transition-all duration-300 cursor-pointer',
-                    'hover:border-yellow-400 hover:bg-yellow-50',
-                    isDragging && 'border-yellow-400 bg-yellow-100 border-solid',
-                    disabled && 'opacity-50 cursor-not-allowed bg-yellow-50',
-                    error && 'border-red-300 bg-red-50',
-                    success && 'border-green-300 bg-green-50'
+                    'cursor-pointer border border-dashed rounded-2xl p-6 text-center transition-all duration-300',
+                    'border-slate-200 hover:border-slate-400 focus:shadow-blue focus:border-blue-600',
+                    isDragging && 'border-solid border-slate-600 bg-slate-100',
+                    'disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400',
+                    error && 'border-red-600 focus:border-red-600 shadow-red',
                 )}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
@@ -313,34 +294,32 @@ const MciUpload: React.FC<MciUploadProps> = ({
             >
                 <input
                     ref={fileInputRef}
-                    type='file'
+                    type="file"
                     multiple={multiple}
                     accept={accept}
                     onChange={handleFileInput}
                     disabled={disabled}
-                    className='hidden'
+                    className="hidden"
                 />
 
-                <div className='flex flex-col items-center justify-center space-y-3'>
+                <div className="flex flex-col items-center justify-center space-y-3">
                     <div
                         className={cn(
-                            'p-3 rounded-full transition-colors',
+                            'rounded-full p-3 transition-colors',
                             error
-                                ? 'bg-red-100 text-red-500'
-                                : success
-                                    ? 'bg-green-100 text-green-500'
-                                    : 'bg-yellow-100 text-yellow-400'
+                                ? 'bg-red-100 text-red-600'
+                                : 'bg-slate-100 text-slate-400'
                         )}
                     >
-                        <Upload className='w-6 h-6'/>
+                        <Upload className="h-6 w-6"/>
                     </div>
 
-                    <div className='space-y-1'>
-                        <p className='text-sm font-medium text-slate-900'>
+                    <div className="space-y-1">
+                        <p className="text-small font-medium text-slate-700">
                             {t.dragAndDrop} {t.or.toLowerCase()} {t.clickToUpload}
                         </p>
 
-                        <p className='text-sm font-normal text-slate-700'>
+                        <p className="text-small font-normal text-slate-700">
                             {t.fileRequirements(multiple, maxFiles, maxSize, accept)}
                         </p>
                     </div>
@@ -349,18 +328,18 @@ const MciUpload: React.FC<MciUploadProps> = ({
 
             {/* File List */}
             {files.length > 0 && (
-                <div className='mt-4 space-y-3'>
+                <div className="mt-4 space-y-3">
                     {/* Header */}
-                    <div className='flex items-center justify-between'>
-						<span className='text-sm font-medium text-slate-700'>
-							{t.selectedFiles} ({files.length})
-						</span>
+                    <div className="flex items-center justify-between">
+                  <span className="text-small font-medium text-slate-700">
+                     {t.selectedFiles} ({files.length})
+                  </span>
                         {files.length > 1 && (
                             <button
-                                type='button'
+                                type="button"
                                 onClick={handleClearAll}
                                 disabled={disabled || isUploading}
-                                className='text-sm text-red-500 hover:text-red-600 disabled:opacity-50 transition-colors'
+                                className="text-small text-red-600 disabled:opacity-50"
                             >
                                 {t.clearAll}
                             </button>
@@ -368,59 +347,56 @@ const MciUpload: React.FC<MciUploadProps> = ({
                     </div>
 
                     {/* Files */}
-                    <div className='space-y-2'>
-                        {files.map(fileInfo => (
+                    <div className="space-y-2">
+                        {files.map((fileInfo) => (
                             <div
                                 key={fileInfo.id}
                                 className={cn(
-                                    'flex items-center justify-between p-3 rounded-lg border transition-all',
-                                    fileInfo.status === 'error'
-                                        ? 'border-red-200 bg-red-50'
-                                        : fileInfo.status === 'success'
-                                            ? 'border-green-200 bg-green-50'
-                                            : 'border-yellow-200 bg-white'
+                                    'flex items-center justify-between rounded-lg border border-slate-200 p-3 transition-all',
+                                    fileInfo.status === 'error' && 'border-red-600'
                                 )}
                             >
-                                <div className='flex items-center space-x-3 flex-1 min-w-0'>
+                                <div className="flex min-w-0 flex-1 items-center space-x-3">
                                     {/* File Icon/Preview */}
                                     {showPreview && fileInfo.preview ? (
                                         <img
                                             src={fileInfo.preview}
                                             alt={fileInfo.file.name}
-                                            className='w-10 h-10 rounded object-cover'
+                                            className="h-10 w-10 rounded object-cover"
                                         />
                                     ) : showFileTypeIcon ? (
-                                        <div className='flex-shrink-0'>
-                                            {getFileIcon(fileInfo.file)}
-                                        </div>
+                                        <div className="flex-shrink-0">{getFileIcon(fileInfo.file)}</div>
                                     ) : null}
 
                                     {/* File Info */}
-                                    <div className='flex-1 min-w-0'>
-                                        <p className='text-sm font-medium text-slate-900 truncate'>
+                                    <div className="min-w-0 flex-1">
+                                        <p className="truncate text-small font-medium text-slate-700">
                                             {fileInfo.file.name}
                                         </p>
-                                        <div className='flex items-center space-x-2 text-xs text-slate-500'>
+
+                                        <div className="flex items-center space-x-2 text-small text-slate-400">
                                             <span>{formatFileSize(fileInfo.file.size)}</span>
                                             {fileInfo.status === 'uploading' && (
-                                                <span className='flex items-center'>
-													<Loader2 className='w-3 h-3 mr-1 animate-spin'/>
+                                                <span className="flex items-center">
+                                                    <Star2 className="h-5 w-5 mr-1 animate-spin"/>
                                                     {t.uploading}
-												</span>
+                                                </span>
                                             )}
+
                                             {fileInfo.status === 'success' && (
-                                                <span className='flex items-center text-green-600'>
-													<CheckCircle2 className='w-3 h-3 mr-1'/>
+                                                <span
+                                                    className="flex items-center text-small font-normal text-green-600">
                                                     {t.success}
-												</span>
+                                                </span>
                                             )}
+
                                         </div>
 
                                         {/* Progress Bar */}
                                         {fileInfo.status === 'uploading' && (
-                                            <div className='w-full bg-yellow-200 rounded-full h-1.5 mt-1'>
+                                            <div className="mt-1 h-1.5 w-full rounded-full bg-slate-200">
                                                 <div
-                                                    className='bg-yellow-400 h-1.5 rounded-full transition-all duration-300'
+                                                    className="h-1.5 rounded-full bg-slate-400 transition-all duration-300"
                                                     style={{width: `${fileInfo.progress}%`}}
                                                 />
                                             </div>
@@ -428,26 +404,25 @@ const MciUpload: React.FC<MciUploadProps> = ({
 
                                         {/* Error Message */}
                                         {fileInfo.status === 'error' && fileInfo.error && (
-                                            <p className='text-xs text-red-600 mt-1 flex items-center'>
-                                                <AlertCircle className='w-3 h-3 mr-1'/>
+                                            <p className="mt-2 flex items-center text-small font-normal text-red-600">
                                                 {fileInfo.error}
                                             </p>
                                         )}
                                     </div>
                                 </div>
 
-                                {/* Remove Button */}
-                                <div className='flex items-center space-x-2 flex-shrink-0'>
+                                {/* Remove MciButton */}
+                                <div className="flex flex-shrink-0 items-center space-x-2">
                                     <button
-                                        type='button'
-                                        onClick={e => {
+                                        type="button"
+                                        onClick={(e) => {
                                             e.stopPropagation()
                                             handleRemoveFile(fileInfo.id)
                                         }}
                                         disabled={disabled || isUploading}
-                                        className='p-1 text-yellow-400 hover:text-red-500 transition-colors disabled:opacity-50'
+                                        className="text-slate-base transition-colors active:rotate-180 hover:cursor-pointer disabled:opacity-50"
                                     >
-                                        <X className='w-4 h-4'/>
+                                        <CloseIcon className="h-6 w-6"/>
                                     </button>
                                 </div>
                             </div>
@@ -458,17 +433,8 @@ const MciUpload: React.FC<MciUploadProps> = ({
 
             {/* Error Message */}
             {error && (
-                <p className='mt-2 text-sm text-red-600 flex items-center'>
-                    <AlertCircle className='w-4 h-4 mr-1'/>
+                <p className="mt-2 flex items-center text-small font-normal text-red-600">
                     {error}
-                </p>
-            )}
-
-            {/* Success Message */}
-            {success && !error && (
-                <p className='mt-2 text-sm text-green-600 flex items-center'>
-                    <CheckCircle2 className='w-4 h-4 mr-1'/>
-                    {success}
                 </p>
             )}
         </div>
