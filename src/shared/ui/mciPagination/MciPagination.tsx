@@ -56,8 +56,8 @@ export default function MciPagination({
     const pages = createPageRange()
 
     const sizeClasses = {
-        medium: 'h-9 w-9 text-small',
-        large: 'h-10 w-10 text-base',
+        medium: 'h-9 text-small',
+        large: 'h-10 text-base',
     }[size]
 
     const theme = {
@@ -108,13 +108,13 @@ export default function MciPagination({
                 </div>
             )}
 
-            <nav aria-label="Пагинация" className="flex items-center gap-1">
+            <nav aria-label="Пагинация" className="flex items-center gap-1 shrink-0 whitespace-nowrap">
                 <button
                     onClick={() => onPageChange(safeCurrentPage - 1)}
                     disabled={safeCurrentPage === 1}
                     aria-label="Предыдущая страница"
                     className={cn(
-                        'flex items-center justify-center rounded-lg border transition-all bg-slate-100',
+                        'flex items-center justify-center rounded-lg border transition-all bg-slate-100 min-w-10',
                         sizeClasses,
                         safeCurrentPage === 1
                             ? cn('cursor-not-allowed opacity-50', theme.disabled)
@@ -130,7 +130,7 @@ export default function MciPagination({
                             return (
                                 <span
                                     key={idx}
-                                    className={cn('flex items-center justify-center text-black font-medium', sizeClasses)}
+                                    className={cn('flex items-center justify-center text-black font-medium min-w-10', sizeClasses)}
                                     aria-hidden="true"
                                 >
                   <MenuDots weight='Bold' size={20}/>
@@ -147,7 +147,7 @@ export default function MciPagination({
                                 aria-label={`Страница ${page}${isActive ? ', текущая' : ''}`}
                                 aria-current={isActive ? 'page' : undefined}
                                 className={cn(
-                                    'flex items-center justify-center rounded-lg border font-medium transition-all hover:cursor-pointer',
+                                    'flex items-center justify-center rounded-lg border font-medium transition-all hover:cursor-pointer min-w-10 px-2',
                                     sizeClasses,
                                     isActive ? theme.active : theme.inactive
                                 )}
@@ -163,7 +163,7 @@ export default function MciPagination({
                     disabled={safeCurrentPage === totalPages}
                     aria-label="Следующая страница"
                     className={cn(
-                        'flex items-center justify-center rounded-lg border transition-all bg-slate-100',
+                        'flex items-center justify-center rounded-lg border transition-all bg-slate-100 min-w-10',
                         sizeClasses,
                         safeCurrentPage === totalPages
                             ? cn('cursor-not-allowed opacity-50', theme.disabled)

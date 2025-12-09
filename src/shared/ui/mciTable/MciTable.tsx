@@ -95,7 +95,7 @@ export default function MciTable<T extends Record<string, unknown>>({
         <div className="w-full overflow-x-auto">
             <div className="inline-block min-w-full align-middle">
                 <div className='overflow-hidden rounded-xl border border-slate-200 bg-slate-100'>
-                    <table className="w-full table-fixed">
+                    <table className="min-w-full">
                         <thead>
                         <tr>
                             {columns.map((col, idx) => (
@@ -108,7 +108,7 @@ export default function MciTable<T extends Record<string, unknown>>({
                                         col.align === 'right' && 'text-right',
                                         col.sortable && 'cursor-pointer hover:bg-slate-200',
                                     )}
-                                    style={{width: col.width}}
+                                    style={{width: col.width || 'auto'}}
                                 >
                                     <div className="flex items-center gap-2">
                                         <span className="truncate">{col.title}</span>
@@ -153,22 +153,23 @@ export default function MciTable<T extends Record<string, unknown>>({
                             displayData.map((row, idx) => (
                                 <tr
                                     key={idx}
-                                    className='group transition-colors'
+                                    className='group transition-colors hover:bg-slate-50'
                                 >
                                     {columns.map((col) => (
                                         <td
                                             key={String(col.key)}
                                             className={cn(
                                                 'px-3 py-4 text-small font-normal text-black',
-                                                'group-hover:bg-slate-50',
                                                 col.align === 'center' && 'text-center',
                                                 col.align === 'right' && 'text-right',
                                             )}
-                                            style={{width: col.width}}
+                                            style={{width: col.width || 'auto'}}
                                         >
-                                            {col.render
-                                                ? col.render(row[col.key], row)
-                                                : String(row[col.key] ?? '-')}
+                                            <div className='line-clamp-2' title={col.render ? undefined : String(row[col.key] ?? '')}>
+                                                {col.render
+                                                    ? col.render(row[col.key], row)
+                                                    : String(row[col.key] ?? '-')}
+                                            </div>
                                         </td>
                                     ))}
                                 </tr>
