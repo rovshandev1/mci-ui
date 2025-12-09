@@ -15,6 +15,6 @@ export {default as MciPagination} from './shared/ui/mciPagination/MciPagination.
 export {default as MciSkeleton} from './shared/ui/mciSkeleton/MciSkeleton.tsx'
 export {TabPanel, default as MciTabs} from './shared/ui/mciTabs/MciTabs.tsx'
 export {default as MciTag} from './shared/ui/mciTag/MciTag.tsx'
-export {default as mciTextarea} from './shared/ui/mciTextarea/MciTextarea.tsx'
+export {default as MciTextarea} from './shared/ui/mciTextarea/MciTextarea.tsx'
 export {default as MciToast} from './shared/ui/mciToast/MciToast.tsx'
 export {default as MciTooltip} from './shared/ui/mciTooltip/MciTooltip.tsx'
