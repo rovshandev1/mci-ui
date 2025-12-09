@@ -73,10 +73,8 @@ export default function MciDrawer({
     }
 
     const transformClasses = {
-        left: isOpen ? 'translate-x-0' : '-translate-x-full',
-        right: isOpen ? 'translate-x-0' : 'translate-x-full',
-        top: isOpen ? 'translate-y-0' : '-translate-y-full',
-        bottom: isOpen ? 'translate-y-0' : 'translate-y-full',
+        right: isOpen ? 'translate-x-0' : 'translate-x-[calc(100%+24px)]',
+        left: isOpen ? 'translate-x-0' : '-translate-x-[calc(100%+24px)]',
     }
 
     return (
