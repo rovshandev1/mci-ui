@@ -12,6 +12,7 @@ interface PaginationProps {
     showPerPage?: boolean
     variant?: 'yellow' | 'blue'
     size?: 'medium' | 'large'
+    paginationClassName?: string
 }
 
 export default function MciPagination({
@@ -25,6 +26,7 @@ export default function MciPagination({
                                           showPerPage = true,
                                           variant = 'yellow',
                                           size = 'large',
+                                          paginationClassName
                                       }: PaginationProps) {
     const safeTotalItems = Number.isFinite(totalItems) && totalItems > 0 ? totalItems : 0
     const safePerPage = Number.isFinite(perPage) && perPage > 0 ? perPage : 10
@@ -76,7 +78,10 @@ export default function MciPagination({
     }[variant ?? 'yellow']
 
     return (
-        <div className="flex items-center justify-between gap-4 w-full">
+        <div className={cn(
+            'flex items-center justify-between gap-4 w-full',
+            paginationClassName
+        )}>
             {showPerPage && onPerPageChange && (
                 <div className="flex items-center gap-2">
                     <span
