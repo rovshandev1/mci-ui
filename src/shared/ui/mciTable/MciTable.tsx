@@ -155,9 +155,9 @@ export default function MciTable<T extends Record<string, unknown>>({
                                     key={idx}
                                     className='group transition-colors hover:bg-slate-50'
                                 >
-                                    {columns.map((col) => (
+                                    {columns?.map((col, colIndex) => (
                                         <td
-                                            key={String(col.key)}
+                                            key={colIndex}
                                             className={cn(
                                                 'px-3 py-4 text-small font-normal text-black',
                                                 col.align === 'center' && 'text-center',
