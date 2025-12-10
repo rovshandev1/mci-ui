@@ -14,7 +14,7 @@ export default function MciToggle({
                                       checked = false,
                                       onChange,
                                       disabled = false,
-                                      variant = 'blue',
+                                      variant = 'yellow',
                                       label,
                                       supportText,
                                       className,
