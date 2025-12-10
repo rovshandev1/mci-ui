@@ -95,7 +95,7 @@ export default function MciTable<T extends Record<string, unknown>>({
         <div className="w-full overflow-x-auto">
             <div className="inline-block min-w-full align-middle">
                 <div className='overflow-hidden rounded-xl border border-slate-200 bg-slate-100'>
-                    <table className="min-w-full">
+                    <table className="w-full table-fixed">
                         <thead>
                         <tr>
                             {columns.map((col, idx) => (
@@ -103,7 +103,7 @@ export default function MciTable<T extends Record<string, unknown>>({
                                     key={idx}
                                     onClick={() => handleSort(col)}
                                     className={cn(
-                                        'px-4 py-3.5 text-left text-small font-medium text-slate-700 transition-colors',
+                                        'px-3 py-4 text-left text-small font-medium text-slate-700 transition-colors',
                                         col.align === 'center' && 'text-center',
                                         col.align === 'right' && 'text-right',
                                         col.sortable && 'cursor-pointer hover:bg-slate-200',
