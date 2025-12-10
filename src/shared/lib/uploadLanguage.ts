@@ -1,5 +1,4 @@
 export interface UploadLanguage {
-   // Upload area
    dragAndDrop: string
    clickToUpload: string
    or: string
@@ -10,22 +9,18 @@ export interface UploadLanguage {
       accept: string
    ) => string
 
-   // File list
    selectedFiles: string
    clearAll: string
 
-   // File status
    uploading: string
    success: string
    error: string
 
-   // Validation errors
    maxFilesError: (maxFiles: number) => string
    fileSizeError: (fileName: string, maxSize: number) => string
    fileTypeError: (fileName: string) => string
    uploadFailed: string
 
-   // File types
    file: string
    image: string
    video: string

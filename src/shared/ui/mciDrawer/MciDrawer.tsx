@@ -92,7 +92,7 @@ export default function MciDrawer({
                 ref={drawerRef}
                 tabIndex={-1}
                 className={cn(
-                    'fixed z-50 w-full rounded-2xl bg-white transition-transform duration-300 ease-in-out outline-none',
+                    'fixed flex flex-col z-50 w-full rounded-2xl bg-white transition-transform duration-300 ease-in-out outline-none',
                     positionClasses[position],
                     transformClasses[position],
                     drawerClassName
@@ -104,7 +104,7 @@ export default function MciDrawer({
                 {(title || showCloseButton || description) && (
                     <div
                         className={cn(
-                            'flex items-start justify-between border-b border-slate-200 p-6 mb-2'
+                            'flex items-start justify-between border-b border-slate-200 p-6  flex-shrink-0',
                         )}
                     >
                         {title && (
@@ -134,15 +134,13 @@ export default function MciDrawer({
                 )}
 
                 {children && (
-                    <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200">
+                    <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200 p-6">
                         {children}
                     </div>
                 )}
 
-                <div className="h-full overflow-y-auto">{children}</div>
-
                 {footer && (
-                    <div className="flex items-center justify-end gap-3 border-t border-slate-200 p-6">
+                    <div className="flex items-center justify-end border-t border-slate-200 p-6">
                         {footer}
                     </div>
                 )}

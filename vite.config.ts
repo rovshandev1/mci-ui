@@ -31,8 +31,14 @@ export default defineConfig({
                     'react/jsx-runtime': 'jsxRuntime',
                     '@solar-icons/react': 'SolarIcons'
                 },
+
+                assetFileNames: (assetInfo) => {
+                    if (assetInfo.name === 'style.css') return 'index.css';
+                    return assetInfo.name!;
+                },
             },
         },
+
         cssCodeSplit: true,
         sourcemap: false,
         minify: 'esbuild',
