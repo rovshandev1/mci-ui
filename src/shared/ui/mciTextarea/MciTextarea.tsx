@@ -57,7 +57,7 @@ const MciTextarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
                     value={value}
                     onChange={(e) => onChange?.(e.target.value)}
                     disabled={disabled}
-                    placeholder={label ? undefined : placeholder}
+                    placeholder={placeholder}
                     className={cn(
                         'w-full resize-none rounded-xl border bg-white text-base font-normal transition-all duration-300 ease-in-out outline-none',
                         'p-3 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400',
@@ -65,7 +65,6 @@ const MciTextarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
                     )}
                 />
 
-                {/* ERROR MESSAGE */}
                 {error && (
                     <p className="mt-2 animate-[slideDown_0.3s_ease-out] text-small font-normal text-red-600">
                         {error}

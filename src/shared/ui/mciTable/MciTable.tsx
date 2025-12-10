@@ -91,6 +91,12 @@ export default function MciTable<T extends Record<string, unknown>>({
 
     const displayData = loading ? [] : externalSort ? data : sortedData
 
+    const getTooltipText = (value: unknown): string | undefined => {
+        if (value === null || value === undefined) return undefined;
+        if (typeof value === 'string' || typeof value === 'number') return String(value);
+        return undefined;
+    };
+
     return (
         <div className="w-full overflow-x-auto">
             <div className="inline-block min-w-full align-middle">
@@ -98,7 +104,7 @@ export default function MciTable<T extends Record<string, unknown>>({
                     <table className="w-full table-fixed">
                         <thead>
                         <tr>
-                            {columns.map((col, idx) => (
+                            {columns?.map((col, idx) => (
                                 <th
                                     key={idx}
                                     onClick={() => handleSort(col)}
@@ -127,14 +133,14 @@ export default function MciTable<T extends Record<string, unknown>>({
                         {loading ? (
                             Array.from({length: skeletonRows}).map((_, idx) => (
                                 <tr key={idx}>
-                                    {columns.map((col, i) => (
+                                    {columns?.map((col, i) => (
                                         <td key={i} className="px-4 py-3" style={{width: col.width}}>
                                             <MciSkeleton height={30} variant="rounded"/>
                                         </td>
                                     ))}
                                 </tr>
                             ))
-                        ) : displayData.length === 0 ? (
+                        ) : displayData?.length === 0 ? (
                             <tr>
                                 <td colSpan={columns.length} className="py-20">
                                     <div className="flex flex-col items-center justify-center">
@@ -150,28 +156,40 @@ export default function MciTable<T extends Record<string, unknown>>({
                                 </td>
                             </tr>
                         ) : (
-                            displayData.map((row, idx) => (
+                            displayData?.map((row, idx) => (
                                 <tr
                                     key={idx}
                                     className='group transition-colors hover:bg-slate-50'
                                 >
-                                    {columns?.map((col, colIndex) => (
-                                        <td
-                                            key={colIndex}
-                                            className={cn(
-                                                'px-3 py-4 text-small font-normal text-black',
-                                                col.align === 'center' && 'text-center',
-                                                col.align === 'right' && 'text-right',
-                                            )}
-                                            style={{width: col.width || 'auto'}}
-                                        >
-                                            <div className='line-clamp-2' title={col.render ? undefined : String(row[col.key] ?? '')}>
-                                                {col.render
-                                                    ? col.render(row[col.key], row)
-                                                    : String(row[col.key] ?? '-')}
-                                            </div>
-                                        </td>
-                                    ))}
+                                    {columns?.map((col, colIndex) => {
+                                        const cellValue = row[col.key];
+                                        const tooltipText = getTooltipText(cellValue);
+
+                                        return (
+                                            <td
+                                                key={colIndex}
+                                                className={cn(
+                                                    'px-3 py-4 text-small font-normal text-black align-top',
+                                                    col.align === 'center' && 'text-center',
+                                                    col.align === 'right' && 'text-right',
+                                                )}
+                                                style={{width: col.width || 'auto'}}
+                                            >
+                                                <div
+                                                    className={cn(
+                                                        'line-clamp-2',
+                                                        'whitespace-normal',
+                                                        'break-all'
+                                                    )}
+                                                    title={!col.render ? tooltipText : undefined}
+                                                >
+                                                    {col.render
+                                                        ? col.render(cellValue, row)
+                                                        : String(cellValue ?? '-')}
+                                                </div>
+                                            </td>
+                                        )
+                                    })}
                                 </tr>
                             ))
                         )}
