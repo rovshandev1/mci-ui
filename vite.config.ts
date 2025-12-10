@@ -23,13 +23,15 @@ export default defineConfig({
             fileName: (format) => `index.${format}.js`,
         },
         rollupOptions: {
-            external: ['react', 'react-dom', 'react/jsx-runtime', '@solar-icons/react'],
+            external: ['react', 'react-dom', 'react/jsx-runtime', '@solar-icons/react', 'clsx', 'tailwind-merge'],
             output: {
                 globals: {
                     react: 'React',
                     'react-dom': 'ReactDOM',
                     'react/jsx-runtime': 'jsxRuntime',
-                    '@solar-icons/react': 'SolarIcons'
+                    '@solar-icons/react': 'SolarIcons',
+                    'clsx': 'clsx',
+                    'tailwind-merge': 'tailwindMerge'
                 },
 
                 assetFileNames: (assetInfo) => {

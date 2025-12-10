@@ -27,8 +27,6 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "clsx": "^2.1.1",
-    "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.17",
@@ -52,12 +50,16 @@
     "vite": "^7.2.7",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
-    "@solar-icons/react": "^1.0.1"
+    "@solar-icons/react": "^1.0.1",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.4.0"
   },
   "peerDependencies": {
     "react": ">=19",
     "react-dom": ">=19",
-    "@solar-icons/react": "^1.0.1"
+    "@solar-icons/react": "^1.0.1",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.4.0"
   },
   "description": "Minimal UI component library built with React and Tailwind CSS.",
   "keywords": [
