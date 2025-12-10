@@ -34,9 +34,9 @@ export default function MciButton({
     const content = children ?? text
 
     const sizes = {
-        sm: 'h-9 px-2 text-sm gap-1.4 rounded-lg',
-        md: 'h-10 px-2 text-base gap-2 rounded-lg',
-        base: 'h-12 px-3 text-base gap-2 rounded-xl',
+        sm: 'h-9 px-2 text-sm gap-1.4 rounded-lg leading-9',
+        md: 'h-10 px-2 text-base gap-2 rounded-lg leading-10',
+        base: 'h-12 px-4 text-base gap-2 rounded-xl leading-12',
     }
 
     const colorVariants = {
