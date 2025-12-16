@@ -20,6 +20,7 @@ type InputProps = {
     className?: string
     name?: string
     readOnly?: boolean
+    maxLength?: number
 }
 
 const MciInput = forwardRef<HTMLInputElement, InputProps>(
@@ -41,6 +42,7 @@ const MciInput = forwardRef<HTMLInputElement, InputProps>(
             onBlur,
             className,
             name,
+            maxLength = 250,
         },
         ref
     ) => {
@@ -174,7 +176,7 @@ const MciInput = forwardRef<HTMLInputElement, InputProps>(
                             sizes[size].padding,
                             stateStyles
                         )}
-                        maxLength={250}
+                        maxLength={maxLength}
                     />
 
                     {hasLeftIcon && (
