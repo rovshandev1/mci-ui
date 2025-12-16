@@ -12,7 +12,6 @@ export default defineConfig({
         tailwindcss(),
         dts({
             insertTypesEntry: true,
-            rollupTypes: true,
             outDir: 'dist/types',
         }),
     ],
@@ -23,7 +22,11 @@ export default defineConfig({
             fileName: (format) => `index.${format}.js`,
         },
         rollupOptions: {
-            external: ['react', 'react-dom', 'react/jsx-runtime', '@solar-icons/react', 'clsx', 'tailwind-merge'],
+            external: ['react', 'react-dom', 'react/jsx-runtime', '@solar-icons/react', 'clsx', 'tailwind-merge',
+                'react-dom/client',
+                'react-dom/server',
+                'react-dom/cjs/react-dom.development.js',
+                'react-dom/cjs/react-dom.production.min.js',],
             output: {
                 globals: {
                     react: 'React',
