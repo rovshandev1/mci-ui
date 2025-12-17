@@ -1,5 +1,6 @@
 import {Eye, EyeClosed} from '@solar-icons/react'
 import React, {forwardRef, useMemo, useState} from 'react'
+import CloseIcon from "../../../assets/icons/close.svg?react"
 import {cn} from '../../lib/utils'
 
 type InputProps = {
@@ -21,6 +22,8 @@ type InputProps = {
     name?: string
     readOnly?: boolean
     maxLength?: number
+    onClear?: () => void
+    showClearButton?: boolean
 }
 
 const MciInput = forwardRef<HTMLInputElement, InputProps>(
@@ -43,6 +46,8 @@ const MciInput = forwardRef<HTMLInputElement, InputProps>(
             className,
             name,
             maxLength = 250,
+            onClear,
+            showClearButton = false,
         },
         ref
     ) => {
@@ -53,8 +58,12 @@ const MciInput = forwardRef<HTMLInputElement, InputProps>(
         const currentValue = value ?? internalValue
         const isPassword = type === 'password'
 
+        const showClear = showClearButton && !!currentValue && !disabled
+
         const hasLeftIcon = icon && iconPosition === 'left'
         const hasRightIcon = (icon && iconPosition === 'right') || rightIcon || isPassword
+
+        const shouldRenderRightIconsWrapper = hasRightIcon || showClear;
 
         const handleFocus = () => {
             setIsFocused(true)
@@ -72,6 +81,11 @@ const MciInput = forwardRef<HTMLInputElement, InputProps>(
         }
 
         const togglePassword = () => setShowPassword((prev) => !prev)
+
+        const handleClearClick = () => {
+            if (value === undefined) setInternalValue('')
+            onClear?.()
+        }
 
         const sizes = useMemo(
             () => ({
@@ -198,88 +212,107 @@ const MciInput = forwardRef<HTMLInputElement, InputProps>(
                         </div>
                     )}
 
-                    <div
-                        className={cn(
-                            'absolute top-1/2 flex -translate-y-1/2 items-center justify-center gap-2',
-                            'transition-all duration-300',
-                            sizes[size].rightIcon
-                        )}
-                    >
-                        {rightIcon && !isPassword && (
-                            <div
-                                className={cn('flex items-center justify-center', sizes[size].iconWrapper)}
-                            >
-                        <span
+                    {shouldRenderRightIconsWrapper && (
+                        <div
                             className={cn(
-                                'flex items-center justify-center',
-                                sizes[size].icon,
-                                iconColor
+                                'absolute top-1/2 flex -translate-y-1/2 items-center justify-center gap-2',
+                                'transition-all duration-300',
+                                sizes[size].rightIcon
                             )}
                         >
-                           {rightIcon}
-                        </span>
-                            </div>
-                        )}
-
-                        {isPassword && (
-                            <>
-                                {rightIcon && (
-                                    <div
-                                        className={cn(
-                                            'flex items-center justify-center',
-                                            sizes[size].iconWrapper
-                                        )}
-                                    >
-                              <span
-                                  className={cn(
-                                      'flex items-center justify-center',
-                                      sizes[size].icon,
-                                      iconColor
-                                  )}
-                              >
-                                 {rightIcon}
-                              </span>
-                                    </div>
-                                )}
-
+                            {showClear && (
                                 <button
                                     type="button"
-                                    onClick={togglePassword}
+                                    onClick={handleClearClick}
                                     className={cn(
                                         'flex items-center justify-center',
                                         sizes[size].iconWrapper,
-                                        iconColor
+                                        'text-slate-base hover:text-black'
                                     )}
+                                    style={{cursor: 'pointer'}}
                                 >
-                           <span
-                               className={cn('flex items-center justify-center cursor-pointer', sizes[size].icon)}
-                           >
-                              {showPassword ? (
-                                  <EyeClosed weight='Linear' className={cn('h-full w-full')}/>
-                              ) : (
-                                  <Eye weight='Linear' className={cn('h-full w-full')}/>
-                              )}
-                           </span>
+                                    <span className={cn('flex items-center justify-center', sizes[size].icon)}>
+                                        <CloseIcon className={cn('h-full w-full')}/>
+                                    </span>
                                 </button>
-                            </>
-                        )}
-
-                        {icon && iconPosition === 'right' && !isPassword && (
-                            <div
-                                className={cn('flex items-center justify-center', sizes[size].iconWrapper)}
-                            >
-                        <span
-                            className={cn(
-                                'flex items-center justify-center',
-                                sizes[size].icon,
-                                iconColor
                             )}
-                        >
-                           {icon}
-                        </span>
-                            </div>
-                        )}
-                    </div>
+
+                            {rightIcon && !isPassword && (
+                                <div
+                                    className={cn('flex items-center justify-center', sizes[size].iconWrapper)}
+                                >
+                                    <span
+                                        className={cn(
+                                            'flex items-center justify-center',
+                                            sizes[size].icon,
+                                            iconColor
+                                        )}
+                                    >
+                                        {rightIcon}
+                                    </span>
+                                </div>
+                            )}
+
+                            {isPassword && (
+                                <>
+                                    {rightIcon && (
+                                        <div
+                                            className={cn(
+                                                'flex items-center justify-center',
+                                                sizes[size].iconWrapper
+                                            )}
+                                        >
+                                            <span
+                                                className={cn(
+                                                    'flex items-center justify-center',
+                                                    sizes[size].icon,
+                                                    iconColor
+                                                )}
+                                            >
+                                                {rightIcon}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    <button
+                                        type="button"
+                                        onClick={togglePassword}
+                                        className={cn(
+                                            'flex items-center justify-center',
+                                            sizes[size].iconWrapper,
+                                            iconColor
+                                        )}
+                                    >
+                                        <span
+                                            className={cn('flex items-center justify-center cursor-pointer', sizes[size].icon)}
+                                        >
+                                            {showPassword ? (
+                                                <EyeClosed weight='Linear' className={cn('h-full w-full')}/>
+                                            ) : (
+                                                <Eye weight='Linear' className={cn('h-full w-full')}/>
+                                            )}
+                                        </span>
+                                    </button>
+                                </>
+                            )}
+
+                            {icon && iconPosition === 'right' && !isPassword && (
+                                <div
+                                    className={cn('flex items-center justify-center', sizes[size].iconWrapper)}
+                                >
+                                    <span
+                                        className={cn(
+                                            'flex items-center justify-center',
+                                            sizes[size].icon,
+                                            iconColor
+                                        )}
+                                    >
+                                        {icon}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 {error && (
