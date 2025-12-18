@@ -1,6 +1,5 @@
 import {Calendar, DoubleAltArrowLeft, DoubleAltArrowRight, AltArrowLeft, AltArrowRight} from '@solar-icons/react'
-import CloseIcon from "../../../assets/icons/close.svg?react"
-import React, {
+import {
     forwardRef,
     useCallback,
     useEffect,
@@ -32,6 +31,8 @@ export interface MciPickerProps {
     allowManualInput?: boolean
     locale?: Locale
     startView?: 'day' | 'month' | 'year'
+    iconPosition?: 'left' | 'right'
+    align?: 'left' | 'right' | 'center' | 'auto'
 }
 
 const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
@@ -53,6 +54,8 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
             allowManualInput = true,
             locale = 'uz',
             startView = 'day',
+            iconPosition = 'left',
+            align = 'auto'
         },
         ref
     ) => {
@@ -65,11 +68,22 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
         const [view, setView] = useState<'day' | 'month' | 'year'>(startView)
         const [yearPage, setYearPage] = useState(0)
         const [displayValue, setDisplayValue] = useState('')
+        const [dropdownAlign, setDropdownAlign] = useState(align)
 
         const containerRef = useRef<HTMLDivElement>(null)
-
         const currentValue = value !== undefined ? value : internalValue
         const t = locales[locale]
+
+        useEffect(() => {
+            if (isOpen && align === 'auto' && containerRef.current) {
+                const rect = containerRef.current.getBoundingClientRect()
+                const spaceRight = window.innerWidth - rect.right
+                const spaceLeft = rect.left
+
+                if (spaceRight < 300 && spaceLeft > 300) setDropdownAlign('right')
+                else setDropdownAlign('left')
+            }
+        }, [isOpen, align])
 
         const normalize = useCallback((date: Date) => {
             return new Date(date.getFullYear(), date.getMonth(), date.getDate())
@@ -84,7 +98,7 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
             (date: Date) => {
                 const d = normalize(date)
                 if (minDate && d < normalize(minDate)) return true
-                else if (maxDate && d > normalize(maxDate)) return true
+                if (maxDate && d > normalize(maxDate)) return true
                 return false
             },
             [minDate, maxDate, normalize]
@@ -96,15 +110,14 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
                 const d = date.getDate().toString().padStart(2, '0')
                 const m = (date.getMonth() + 1).toString().padStart(2, '0')
                 const y = date.getFullYear()
+
                 return format.replace('DD', d).replace('MM', m).replace('YYYY', y.toString())
             },
             [format]
         )
 
         const displayText = useMemo(() => {
-            if (type === 'date') {
-                return formatDate(currentValue as Date)
-            }
+            if (type === 'date') return formatDate(currentValue as Date)
             const [start, end] = currentValue as RangeValue
             if (!start && !end) return ''
             if (start && end) return `${formatDate(start)} - ${formatDate(end)}`
@@ -119,9 +132,7 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
             setIsOpen(false)
             setView(startView)
             setYearPage(0)
-            if (type === 'range') {
-                setTempRange(currentValue as RangeValue)
-            }
+            if (type === 'range') setTempRange(currentValue as RangeValue)
         }, [type, currentValue, startView])
 
         const {handleClick: handleClickOutside} = useClickOutside(containerRef, close)
@@ -137,17 +148,12 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
             }
         }, [isOpen, handleClickOutside, handleEscape])
 
-        const handleClear = useCallback(
-            (e: React.MouseEvent) => {
-                e.stopPropagation()
-                const empty: DateValue | RangeValue = type === 'range' ? [null, null] : null
-                setInternalValue(empty)
-                setTempRange([null, null])
-                setDisplayValue('')
-                onChange?.(empty)
-            },
-            [type, onChange]
-        )
+        const handleInputClear = useCallback(() => {
+            const empty: DateValue | RangeValue = type === 'range' ? [null, null] : null
+            setInternalValue(empty)
+            setTempRange([null, null])
+            onChange?.(empty)
+        }, [type, onChange])
 
         const handleSelect = useCallback(
             (date: Date) => {
@@ -160,16 +166,10 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
                     close()
                 } else {
                     const [start, end] = tempRange
-
                     if ((!start && !end) || (start && end)) {
                         setTempRange([normalized, null])
                     } else if (start && !end) {
-                        let newRange: RangeValue
-                        if (normalized < start) {
-                            newRange = [normalized, start]
-                        } else {
-                            newRange = [start, normalized]
-                        }
+                        const newRange: RangeValue = normalized < start ? [normalized, start] : [start, normalized]
                         setTempRange(newRange)
                         setInternalValue(newRange)
                         onChange?.(newRange)
@@ -180,52 +180,52 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
             [type, tempRange, isDisabled, normalize, onChange, close]
         )
 
+        const handleSelectMonth = useCallback((monthIndex: number) => {
+            const newDate = new Date(currentMonth.getFullYear(), monthIndex, 1);
+            setCurrentMonth(newDate);
+
+            if (startView === 'month') {
+                setInternalValue(newDate);
+                onChange?.(newDate);
+                close();
+            } else {
+                setView('day');
+            }
+        }, [currentMonth, startView, onChange, close]);
+
+        const handleSelectYear = useCallback((year: number) => {
+            const newDate = new Date(year, currentMonth.getMonth(), 1);
+            setCurrentMonth(newDate);
+
+            if (startView === 'year') {
+                setInternalValue(newDate);
+                onChange?.(newDate);
+                close();
+            } else {
+                setView('month');
+            }
+        }, [currentMonth, startView, onChange, close]);
+
         const changeMonth = (offset: number) => {
-            setCurrentMonth((prev) => {
-                const next = new Date(prev)
-                next.setMonth(next.getMonth() + offset)
-                return next
-            })
+            setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + offset, 1))
         }
 
         const changeYear = (offset: number) => {
-            setCurrentMonth((prev) => {
-                const next = new Date(prev)
-                next.setFullYear(next.getFullYear() + offset)
-                return next
-            })
+            setCurrentMonth(prev => new Date(prev.getFullYear() + offset, prev.getMonth(), 1))
         }
 
-        const getDays = useCallback(
-            (monthDate: Date) => {
-                const year = monthDate.getFullYear()
-                const month = monthDate.getMonth()
-                const firstDayOfMonth = new Date(year, month, 1)
-                const lastDayOfMonth = new Date(year, month + 1, 0)
-
-                const days = []
-                const startDay = firstDayOfMonth.getDay()
-
-                for (let i = startDay; i > 0; i--) {
-                    const d = new Date(year, month, 1 - i)
-                    days.push({date: d, isCurrentMonth: false})
-                }
-
-                for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
-                    const d = new Date(year, month, i)
-                    days.push({date: d, isCurrentMonth: true})
-                }
-
-                const remaining = 42 - days.length
-                for (let i = 1; i <= remaining; i++) {
-                    const d = new Date(year, month + 1, i)
-                    days.push({date: d, isCurrentMonth: false})
-                }
-
-                return days
-            },
-            []
-        )
+        const getDays = useCallback((monthDate: Date) => {
+            const year = monthDate.getFullYear()
+            const month = monthDate.getMonth()
+            const firstDay = new Date(year, month, 1).getDay()
+            const daysInMonth = new Date(year, month + 1, 0).getDate()
+            const days = []
+            for (let i = firstDay; i > 0; i--) days.push({date: new Date(year, month, 1 - i), isCurrentMonth: false})
+            for (let i = 1; i <= daysInMonth; i++) days.push({date: new Date(year, month, i), isCurrentMonth: true})
+            const remaining = 42 - days.length
+            for (let i = 1; i <= remaining; i++) days.push({date: new Date(year, month + 1, i), isCurrentMonth: false})
+            return days
+        }, [])
 
         const isSelectedStart = (date: Date) => {
             const d = normalize(date)
@@ -245,125 +245,65 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
             if (type !== 'range') return false
             const d = normalize(date)
             const [s, e] = tempRange[0] ? tempRange : (currentValue as RangeValue)
-            if (!s || !e) return false
-            return d > normalize(s) && d < normalize(e)
+            return s && e && d > normalize(s) && d < normalize(e)
         }
-
-        const isToday = (date: Date) => isSameDay(date, new Date())
 
         const renderCalendarView = (baseDate: Date, showLeftArrow: boolean, showRightArrow: boolean) => {
             const days = getDays(baseDate)
-
             return (
-                <div className="w-[300px] p-2">
+                <div className="w-[300px] p-2 select-none">
                     <div className="flex items-center justify-between mb-4 py-1">
-                        <div className="flex items-center gap-3">
-                            {showLeftArrow ? (
+                        <div className="flex gap-2">
+                            {showLeftArrow && (
                                 <>
-                                    <button onClick={() => changeYear(-1)} className="hover:cursor-pointer">
-                                        <DoubleAltArrowLeft weight='Linear' size={20} className="text-slate-700"/>
-                                    </button>
+                                    <button onClick={() => changeYear(-1)}
+                                            className="hover:bg-slate-100 p-1 rounded transition-colors">
+                                        <DoubleAltArrowLeft size={18} className="text-slate-700"/></button>
 
-                                    <button onClick={() => changeMonth(-1)} className="hover:cursor-pointer">
-                                        <AltArrowLeft weight='Linear' size={20} className="text-slate-700"/>
-                                    </button>
+                                    <button onClick={() => changeMonth(-1)}
+                                            className="hover:bg-slate-100 p-1 rounded transition-colors"><AltArrowLeft
+                                        size={18} className="text-slate-700"/></button>
                                 </>
-                            ) : (
-                                <div className="w-[52px]"/>
                             )}
                         </div>
+                        <div className="flex gap-1 font-semibold text-slate-700 text-small">
+                            <span className="cursor-pointer hover:text-blue-600 transition-colors"
+                                  onClick={() => setView('month')}>{t.months[baseDate.getMonth()]}</span>
 
-                        <div className="flex items-center gap-1">
-                            <span
-                                className="font-medium text-small text-slate-700 cursor-pointer hover:text-blue-600 transition-colors"
-                                onClick={() => {
-                                    setView('month');
-                                    setCurrentMonth(baseDate);
-                                }}
-                            >
-                                {t.months[baseDate.getMonth()]}
-                            </span>
-                            <span
-                                className="font-medium text-small text-slate-700 cursor-pointer hover:text-blue-600 transition-colors"
-                                onClick={() => {
-                                    setView('year');
-                                    setCurrentMonth(baseDate);
-                                }}
-                            >
-                                {baseDate.getFullYear()}
-                            </span>
+                            <span className="cursor-pointer hover:text-blue-600 transition-colors"
+                                  onClick={() => setView('year')}>{baseDate.getFullYear()}</span>
                         </div>
-
-                        <div className="flex items-center gap-1">
-                            {showRightArrow ? (
+                        <div className="flex gap-2">
+                            {showRightArrow && (
                                 <>
-                                    <button onClick={() => changeMonth(1)} className="hover:cursor-pointer">
-                                        <AltArrowRight weight='Linear' size={20} className="text-slate-700"/>
-                                    </button>
+                                    <button onClick={() => changeMonth(1)}
+                                            className="hover:bg-slate-100 p-1 rounded transition-colors"><AltArrowRight
+                                        size={18} className="text-slate-700"/></button>
 
-                                    <button onClick={() => changeYear(1)} className="hover:cursor-pointer">
-                                        <DoubleAltArrowRight weight='Linear' size={20} className="text-slate-700"/>
-                                    </button>
+                                    <button onClick={() => changeYear(1)}
+                                            className="hover:bg-slate-100 p-1 rounded transition-colors">
+                                        <DoubleAltArrowRight size={18} className="text-slate-700"/></button>
                                 </>
-                            ) : (
-                                <div className="w-[52px]"/>
                             )}
                         </div>
                     </div>
-
-                    <div className="grid grid-cols-7 mb-1">
-                        {t.weekdaysShort.map((day) => (
-                            <div key={day}
-                                 className="h-4 flex items-center justify-center text-extra-small font-medium text-blue-600">
-                                {day}
-                            </div>
-                        ))}
+                    <div className="grid grid-cols-7 mb-1 text-center text-[11px] font-bold text-blue-600 uppercase">
+                        {t.weekdaysShort.map(day => <div key={day} className="py-1">{day}</div>)}
                     </div>
 
                     <div className="grid grid-cols-7 gap-y-1 relative">
                         {days.map((item, idx) => {
-                            const date = item.date
-                            const disabled = isDisabled(date)
-                            const isStart = isSelectedStart(date)
-                            const isEnd = isSelectedEnd(date)
-                            const isBetween = isInRange(date)
-                            const isCurrent = item.isCurrentMonth
-                            const today = isToday(date)
-
-                            let bgClass = ''
-                            if (isBetween) bgClass = 'bg-blue-50'
-                            if (isStart && (tempRange[1] || (currentValue as RangeValue)?.[1])) {
-                                bgClass = 'bg-gradient-to-r from-transparent via-blue-50 to-blue-50 from-50%'
-                            }
-                            if (isEnd && (tempRange[0] || (currentValue as RangeValue)?.[0])) {
-                                bgClass = 'bg-gradient-to-l from-transparent via-blue-50 to-blue-50 from-50%'
-                            }
-
+                            const date = item.date, disabled = isDisabled(date), isStart = isSelectedStart(date),
+                                isEnd = isSelectedEnd(date), isBetween = isInRange(date)
                             return (
-                                <div
-                                    key={idx}
-                                    className={cn(
-                                        "relative h-10 w-full flex items-center justify-center",
-                                        bgClass
-                                    )}
-                                >
+                                <div key={idx}
+                                     className={cn("h-10 flex items-center justify-center relative", isBetween && "bg-blue-50", isStart && type === 'range' && "bg-gradient-to-r from-transparent to-blue-50", isEnd && "bg-gradient-to-l from-transparent to-blue-50")}>
                                     <button
                                         onClick={() => handleSelect(date)}
                                         disabled={disabled}
-                                        className={cn(
-                                            "relative z-10 w-9 h-9 rounded-full flex items-center justify-center text-small font-medium transition-all hover:cursor-pointer",
-                                            !isCurrent ? "text-slate-base" : "text-slate-700",
-                                            disabled && "opacity-30 cursor-not-allowed",
-                                            !disabled && !isStart && !isEnd && isCurrent && "hover:bg-blue-50 hover:text-blue-600",
-                                            (isStart || isEnd) && "bg-blue-600 text-white hover:bg-blue-600",
-                                            today && !isStart && !isEnd && "text-blue-600 bg-blue-50"
-                                        )}
+                                        className={cn("w-9 h-9 cursor-pointer rounded-full flex items-center justify-center text-small font-medium transition-all z-10", !item.isCurrentMonth ? "text-slate-300" : "text-slate-700", disabled && "opacity-20 cursor-not-allowed", (isStart || isEnd) ? "bg-blue-600 text-white" : "hover:bg-blue-50", isSameDay(date, new Date()) && !isStart && !isEnd && "text-blue-600 border border-blue-600")}
                                     >
                                         {date.getDate()}
-                                        {today && !isStart && !isEnd && (
-                                            <span
-                                                className="absolute top-1.5 right-1.5 w-1 h-1 bg-blue-600 rounded-full"/>
-                                        )}
                                     </button>
                                 </div>
                             )
@@ -374,34 +314,22 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
         }
 
         const renderMonthPicker = () => (
-            <div className="w-[300px] p-2">
-                <div className="flex items-center justify-between mb-4 py-1">
-                    <button onClick={() => changeYear(-1)} className="hover:cursor-pointer">
-                        <AltArrowLeft weight='Linear' size={20} className="text-slate-700"/>
+            <div className="w-[300px] p-3">
+                <div className="flex justify-between items-center mb-4 px-2">
+                    <button onClick={() => changeYear(-1)} className="p-1 hover:bg-slate-100 rounded">
+                        <AltArrowLeft size={20}/>
                     </button>
-
-                    <span className="font-medium text-small text-slate-700">{currentMonth.getFullYear()}</span>
-
-                    <button onClick={() => changeYear(1)} className="hover:cursor-pointer">
-                        <AltArrowRight weight='Linear' size={20} className="text-slate-700"/>
+                    <span className="font-bold text-slate-800">{currentMonth.getFullYear()}</span>
+                    <button onClick={() => changeYear(1)} className="p-1 hover:bg-slate-100 rounded">
+                        <AltArrowRight size={20}/>
                     </button>
                 </div>
 
-                <div className="grid grid-cols-3 gap-1">
+                <div className="grid grid-cols-3 gap-2">
                     {t.monthsShort.map((m, i) => (
-                        <button
-                            key={m}
-                            onClick={() => {
-                                const newDate = new Date(currentMonth)
-                                newDate.setMonth(i)
-                                setCurrentMonth(newDate)
-                                setView('day')
-                            }}
-                            className={cn(
-                                "p-1 rounded-sm text-small font-medium hover:bg-blue-50 transition-colors hover:cursor-pointer",
-                                currentMonth.getMonth() === i && "bg-blue-600 text-white hover:bg-blue-600"
-                            )}
-                        >
+                        <button key={m}
+                                onClick={() => handleSelectMonth(i)}
+                                className={cn("hover:cursor-pointer py-3 rounded-lg text-small font-semibold transition-colors", currentMonth.getMonth() === i ? "bg-blue-600 text-white" : "hover:bg-blue-50 text-slate-600")}>
                             {m}
                         </button>
                     ))}
@@ -410,43 +338,22 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
         )
 
         const renderYearPicker = () => {
-            const centerYear = currentMonth.getFullYear()
-            const startYear = (Math.floor(centerYear / 12) * 12) + (yearPage * 12)
-            const years = Array.from({length: 12}, (_, i) => startYear + i)
-
+            const start = Math.floor(currentMonth.getFullYear() / 12) * 12 + (yearPage * 12)
+            const years = Array.from({length: 12}, (_, i) => start + i)
             return (
-                <div className="w-[300px] p-2">
-                    <div className="flex items-center justify-between mb-4 py-1">
-                        <button onClick={() => setYearPage((p) => p - 1)}
-                                className="hover:cursor-pointer">
-                            <AltArrowLeft weight='Linear' size={20} className="text-slate-700"/>
-                        </button>
-
-                        <span className="font-medium text-small text-slate-700">
-                            {years[0]} - {years[11]}
-                        </span>
-
-                        <button onClick={() => setYearPage((p) => p + 1)}
-                                className="hover:cursor-pointer">
-                            <AltArrowRight weight='Linear' size={20} className="text-slate-700"/>
-                        </button>
+                <div className="w-[300px] p-3">
+                    <div className="flex justify-between items-center mb-4 px-2">
+                        <button onClick={() => setYearPage(p => p - 1)} className="p-1 hover:bg-slate-100 rounded">
+                            <AltArrowLeft size={20}/></button>
+                        <span className="font-bold text-slate-800">{years[0]} - {years[11]}</span>
+                        <button onClick={() => setYearPage(p => p + 1)} className="p-1 hover:bg-slate-100 rounded">
+                            <AltArrowRight size={20}/></button>
                     </div>
-
-                    <div className="grid grid-cols-3 gap-1">
-                        {years.map((y) => (
-                            <button
-                                key={y}
-                                onClick={() => {
-                                    const newDate = new Date(currentMonth)
-                                    newDate.setFullYear(y)
-                                    setCurrentMonth(newDate)
-                                    setView('month')
-                                }}
-                                className={cn(
-                                    "p-1 rounded-sm text-small font-medium hover:bg-blue-50 transition-colors hover:cursor-pointer",
-                                    currentMonth.getFullYear() === y && "bg-blue-600 text-white hover:bg-blue-600"
-                                )}
-                            >
+                    <div className="grid grid-cols-3 gap-2">
+                        {years.map(y => (
+                            <button key={y}
+                                    onClick={() => handleSelectYear(y)}
+                                    className={cn("hover:cursor-pointer py-3 rounded-lg text-small font-semibold transition-colors", currentMonth.getFullYear() === y ? "bg-blue-600 text-white" : "hover:bg-blue-50 text-slate-600")}>
                                 {y}
                             </button>
                         ))}
@@ -455,54 +362,53 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
             )
         }
 
-        const nextMonthDate = new Date(currentMonth)
-        nextMonthDate.setMonth(currentMonth.getMonth() + 1)
+        const calendarIcon = <Calendar weight='Linear' size={20} className="text-slate-400"/>
 
         return (
-            <div ref={containerRef} className={cn('relative w-full', className)}>
+            <div ref={containerRef} className={cn('relative w-full group', className)}>
                 <div ref={ref}>
                     <MciInput
                         label={label}
                         placeholder={Array.isArray(placeholder) ? placeholder[0] : placeholder}
                         value={displayValue}
-                        onChange={() => {
-                        }}
-                        icon={<Calendar weight='Linear' size={20} className="text-slate-500"/>}
+                        icon={iconPosition === 'left' ? calendarIcon : undefined}
+                        rightIcon={iconPosition === 'right' ? calendarIcon : undefined}
                         disabled={disabled}
                         required={required}
                         error={error}
-                        onFocus={() => !disabled && setIsOpen(true)}
+                        onFocus={() => {
+                            if (!disabled) {
+                                setIsOpen(true)
+                                setView(startView)
+                            }
+                        }}
                         readOnly={!allowManualInput}
+                        showClearButton={showClear}
+                        onClear={handleInputClear}
                     />
                 </div>
 
-                {showClear && displayValue && !disabled && (
-                    <button
-                        type="button"
-                        onClick={handleClear}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 p-1 z-10 hover:cursor-pointer"
-                    >
-                        <CloseIcon className="w-5 h-5 text-slate-400"/>
-                    </button>
-                )}
-
                 {isOpen && (
                     <div
-                        className="absolute top-full left-0 mt-1 z-50 bg-white rounded-lg shadow-md border border-slate-200 flex flex-col md:flex-row overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                        className={cn(
+                            "absolute top-[calc(100%+4px)] z-[100] bg-white rounded-xl shadow-xl border border-slate-200",
+                            "flex flex-col md:flex-row overflow-hidden animate-in fade-in zoom-in-95 duration-200",
+                            dropdownAlign === 'right' && "right-0 origin-top-right",
+                            dropdownAlign === 'left' && "left-0 origin-top-left",
+                            dropdownAlign === 'center' && "left-1/2 -translate-x-1/2 origin-top"
+                        )}
+                        style={{width: 'max-content'}}
+                    >
                         {view === 'day' ? (
                             <>
                                 {renderCalendarView(currentMonth, true, type !== 'range')}
                                 {type === 'range' && (
-                                    <div className="hidden md:block border-l border-slate-200">
-                                        {renderCalendarView(nextMonthDate, false, true)}
+                                    <div className="hidden md:block border-l border-slate-100">
+                                        {renderCalendarView(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1), false, true)}
                                     </div>
                                 )}
                             </>
-                        ) : view === 'month' ? (
-                            renderMonthPicker()
-                        ) : (
-                            renderYearPicker()
-                        )}
+                        ) : view === 'month' ? renderMonthPicker() : renderYearPicker()}
                     </div>
                 )}
             </div>
@@ -511,5 +417,4 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
 )
 
 MciPicker.displayName = 'MciPicker'
-
 export default MciPicker
