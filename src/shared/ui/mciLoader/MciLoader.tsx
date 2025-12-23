@@ -5,14 +5,22 @@ interface MciLoaderProps {
     className?: string
     size?: number
     iconClassName?: string
+    isLoading?: boolean
 }
 
-export default function MciLoader({className, size = 150, iconClassName}: MciLoaderProps) {
+export default function MciLoader({
+                                      className,
+                                      size = 150,
+                                      iconClassName,
+                                      isLoading = false
+                                  }: MciLoaderProps) {
+    if (!isLoading) return null;
+
     return (
         <div
             className={cn(
                 "fixed inset-0 z-50 flex items-center justify-center",
-                "backdrop-blur-[2px]",
+                "bg-white/20 backdrop-blur-[2px]",
                 className
             )}
         >

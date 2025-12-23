@@ -24,6 +24,8 @@ type InputProps = {
     maxLength?: number
     onClear?: () => void
     showClearButton?: boolean
+    step?: string | number
+    autoComplete?: string
 }
 
 const MciInput = forwardRef<HTMLInputElement, InputProps>(
@@ -48,6 +50,8 @@ const MciInput = forwardRef<HTMLInputElement, InputProps>(
             maxLength = 250,
             onClear,
             showClearButton = false,
+            step,
+            autoComplete = 'off'
         },
         ref
     ) => {
@@ -180,12 +184,14 @@ const MciInput = forwardRef<HTMLInputElement, InputProps>(
                         onBlur={handleBlur}
                         disabled={disabled}
                         required={required}
-                        autoComplete="on"
+                        autoComplete={autoComplete}
                         placeholder={placeholder}
+                        step={step}
                         className={cn(
                             'w-full border bg-white font-normal transition-all duration-300 ease-in-out outline-none',
                             size === 'base' ? 'rounded-xl' : 'rounded-lg',
                             'disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400',
+                            '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
                             sizes[size].input,
                             sizes[size].padding,
                             stateStyles
