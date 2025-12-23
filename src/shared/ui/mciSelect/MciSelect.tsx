@@ -2,12 +2,13 @@ import { AltArrowDown } from '@solar-icons/react'
 import CloseIcon from "../../../assets/icons/close.svg?react"
 import React, {
     forwardRef,
-    useCallback, useEffect,
+    useCallback,
+    useEffect,
     useMemo,
     useRef,
     useState,
 } from 'react'
-import {cn, useClickOutside, useEscapeKey} from '../../lib/utils'
+import { cn, useClickOutside, useEscapeKey } from '../../lib/utils'
 
 type Option = {
     value: string | number
@@ -109,8 +110,16 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
         const hasValue = currentValue !== '' && currentValue !== undefined
         const currentSize = SIZES[size]
 
+        // --- Search Logic Update ---
         const filteredOptions = useMemo(() => {
-            if (!searchable || onSearch) return options
+            // If search is disabled, return all options
+            if (!searchable) return options
+
+            // If onSearch (backend search) is provided, return options as-is.
+            // We assume the parent updates 'options' based on the search term.
+            if (onSearch) return options
+
+            // Fallback: Local client-side filtering
             const lower = searchTerm.toLowerCase()
             return options.filter((opt) =>
                 opt.label.toLowerCase().includes(lower)
@@ -125,8 +134,8 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
             onBlur?.()
         }, [onBlur])
 
-        const {handleClick: handleClickOutside} = useClickOutside(containerRef, closeDropdown)
-        const {handleEscape} = useEscapeKey(closeDropdown)
+        const { handleClick: handleClickOutside } = useClickOutside(containerRef, closeDropdown)
+        const { handleEscape } = useEscapeKey(closeDropdown)
 
         useEffect(() => {
             if (!isOpen) return
@@ -148,6 +157,8 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
 
         const handleKeyDown = useCallback(
             (e: React.KeyboardEvent) => {
+                if (disabled) return
+
                 if (!isOpen && (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Enter')) {
                     e.preventDefault()
                     setIsOpen(true)
@@ -171,13 +182,13 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
                         break
                     case 'Enter':
                         e.preventDefault()
-                        if (highlightedIndex >= 0) {
+                        if (highlightedIndex >= 0 && filteredOptions[highlightedIndex]) {
                             handleSelect(filteredOptions[highlightedIndex].value)
                         }
                         break
                 }
             },
-            [isOpen, filteredOptions, highlightedIndex]
+            [isOpen, filteredOptions, highlightedIndex, disabled]
         )
 
         const handleToggle = useCallback(() => {
@@ -208,28 +219,37 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
         const handleClear = useCallback(
             (e: React.MouseEvent) => {
                 e.stopPropagation()
+                if (disabled) return
                 if (value === undefined) setInternalValue('')
                 onChange?.('')
                 setSearchTerm('')
                 setHighlightedIndex(-1)
             },
-            [value, onChange]
+            [value, onChange, disabled]
         )
 
         const handleSearchChange = useCallback(
             (term: string) => {
                 setSearchTerm(term)
-                onSearch?.(term)
+                onSearch?.(term) // Trigger backend search callback if exists
                 setHighlightedIndex(0)
             },
             [onSearch]
         )
 
+        // --- Styles Logic Update ---
         const stateStyles = useMemo(() => {
-            if (error)
-                return 'border-red-600 focus:border-red-600 shadow-red'
-            return 'border-slate-200 hover:border-slate-400 focus:shadow-blue focus:border-blue-600'
-        }, [error])
+            if (disabled) return 'border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed'
+            if (error) return 'border-red-600 focus:border-red-600 shadow-red bg-white'
+            return 'border-slate-200 hover:border-slate-400 focus:shadow-blue focus:border-blue-600 bg-white'
+        }, [error, disabled])
+
+        const iconColor = useMemo(() => {
+            if (disabled) return 'text-slate-400'
+            if (error) return 'text-red-600'
+            if (isOpen || isFocused) return 'text-black'
+            return 'text-slate-400'
+        }, [disabled, error, isOpen, isFocused])
 
         return (
             <div className={cn('w-full', className)} ref={ref}>
@@ -261,8 +281,8 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
                         tabIndex={disabled ? -1 : 0}
                         onClick={handleToggle}
                         className={cn(
-                            'flex w-full items-center rounded-xl border bg-white font-normal transition-all cursor-pointer',
-                            disabled && 'disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400',
+                            'flex w-full items-center border font-normal transition-all duration-300 ease-in-out',
+                            size === 'base' ? 'rounded-xl' : 'rounded-lg',
                             currentSize.container,
                             icon
                                 ? iconPosition === 'left'
@@ -270,16 +290,17 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
                                     : currentSize.iconPaddingRight
                                 : currentSize.padding,
                             stateStyles,
-                            isFocused && 'shadow-blue border-blue-600'
+                            !disabled && isFocused && 'shadow-blue border-blue-600'
                         )}
                     >
                         {icon && (
                             <div
                                 className={cn(
-                                    'absolute top-1/2 -translate-y-1/2 pointer-events-none text-slate-400',
+                                    'absolute top-1/2 -translate-y-1/2 pointer-events-none transition-colors duration-300',
                                     iconPosition === 'left'
                                         ? currentSize.iconWrapper
-                                        : currentSize.rightIconWrapper
+                                        : currentSize.rightIconWrapper,
+                                    iconColor
                                 )}
                             >
                                 {icon}
@@ -299,8 +320,8 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
                         ) : (
                             <span
                                 className={cn(
-                                    'block truncate',
-                                    !hasValue && 'text-slate-400'
+                                    'block truncate select-none',
+                                    !hasValue && !disabled && 'text-slate-400'
                                 )}
                             >
                                 {selectedOption?.label || placeholder}
@@ -317,26 +338,22 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
                                 )}
                                 aria-label="Очистить"
                             >
-                                <CloseIcon className={currentSize.iconSize}/>
+                                <CloseIcon className={currentSize.iconSize} />
                             </button>
                         )}
 
                         <div
                             className={cn(
-                                'absolute top-1/2 right-3 -translate-y-1/2 pointer-events-none transition-transform',
+                                'absolute top-1/2 right-3 -translate-y-1/2 pointer-events-none transition-all duration-300',
                                 isOpen && 'rotate-180',
-                                error
-                                    ? 'text-red-600'
-                                    : isOpen || isFocused
-                                        ? 'text-black'
-                                        : 'text-slate-400'
+                                iconColor
                             )}
                         >
-                            <AltArrowDown className={currentSize.iconSize}/>
+                            <AltArrowDown className={currentSize.iconSize} />
                         </div>
                     </div>
 
-                    {isOpen && (
+                    {isOpen && !disabled && (
                         <div
                             id={`${name}-listbox`}
                             role="listbox"
@@ -346,7 +363,7 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
                             )}
                         >
                             {filteredOptions.length === 0 ? (
-                                <div className="px-3 py-2 text-center  text-base font-normal">
+                                <div className="px-3 py-2 text-center text-base font-normal text-slate-500">
                                     Ничего не найдено
                                 </div>
                             ) : (
