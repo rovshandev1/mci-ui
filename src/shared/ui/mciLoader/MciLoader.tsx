@@ -6,21 +6,23 @@ interface MciLoaderProps {
     size?: number
     iconClassName?: string
     isLoading?: boolean
+    isFullPage?: boolean
 }
 
 export default function MciLoader({
                                       className,
                                       size = 150,
                                       iconClassName,
-                                      isLoading = false
+                                      isLoading = false,
+                                      isFullPage = true
                                   }: MciLoaderProps) {
     if (!isLoading) return null;
 
     return (
         <div
             className={cn(
-                "fixed inset-0 z-50 flex items-center justify-center",
-                "bg-white/20 backdrop-blur-[2px]",
+                "z-[99px] flex flex-col items-center justify-center transition-all duration-300",
+                isFullPage ? "fixed inset-0 backdrop-blur-[2px]" : "absolute inset-0 w-full h-full rounded-[inherit]",
                 className
             )}
         >
@@ -28,10 +30,11 @@ export default function MciLoader({
                 width={size}
                 height={size}
                 className={cn(
-                    "animate-spin duration-1000 ease-linear",
-                    "text-yellow-500",
+                    "animate-spin",
+                    !iconClassName && "text-yellow-500",
                     iconClassName
                 )}
+                style={{fill: 'currentColor', stroke: 'currentColor'}}
             />
         </div>
     )
