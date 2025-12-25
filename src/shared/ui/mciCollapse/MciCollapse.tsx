@@ -3,7 +3,7 @@ import React, {useEffect, useRef, useState} from 'react'
 import {cn} from '../../lib/utils.ts'
 
 type CollapseProps = {
-    title: string
+    title: React.ReactNode | string
     children: React.ReactNode
     defaultOpen?: boolean
     icon?: React.ReactNode
@@ -31,7 +31,6 @@ export default function MciCollapse({
 
     return (
         <div className={cn('overflow-hidden rounded-xl border border-slate-200', className)}>
-            {/* Header */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(
@@ -40,20 +39,21 @@ export default function MciCollapse({
                 )}
             >
                 <div className="flex items-center gap-2">
-                    {icon && <span className="flex-shrink-0">{icon}</span>}
+                    {icon && <span className="shrink-0">{icon}</span>}
 
-                    <span className={cn('text-base font-medium text-black')}>{title}</span>
+                    <div className={cn('text-base font-medium text-black')}>
+                        {title}
+                    </div>
                 </div>
 
                 <AltArrowDown weight='Linear' size={20}
-                    className={cn(
-                        'flex-shrink-0 transition-transform duration-300 text-slate-400',
-                        isOpen && 'rotate-180'
-                    )}
+                              className={cn(
+                                  'shrink-0 transition-transform duration-300 text-slate-400',
+                                  isOpen && 'rotate-180'
+                              )}
                 />
             </button>
 
-            {/* Content */}
             <div
                 className={cn(
                     'overflow-hidden transition-all duration-300 ease-out',
