@@ -14,6 +14,9 @@ type TabsProps = {
     defaultTab?: string
     position?: 'top' | 'bottom' | 'left' | 'right'
     className?: string
+    tabListClassName?: string
+    contentClassName?: string
+    extra?: React.ReactNode
     onChange?: (tabId: string | number) => void
 }
 
@@ -22,34 +25,47 @@ export default function MciTabs({
                                     defaultTab,
                                     position = 'top',
                                     className,
+                                    tabListClassName,
+                                    contentClassName,
+                                    extra,
                                     onChange,
                                 }: TabsProps) {
     const [activeTab, setActiveTab] = useState(defaultTab || tabs[0]?.id)
-    const [indicatorStyle, setIndicatorStyle] = useState({})
+    const [indicatorStyle, setIndicatorStyle] = useState<React.CSSProperties>({})
     const tabsRef = useRef<(HTMLButtonElement | null)[]>([])
 
     const updateIndicator = () => {
-        const activeIndex = tabs.findIndex((tab) => tab?.id === activeTab)
-        const activeTabElement = tabsRef.current[activeIndex]
+        requestAnimationFrame(() => {
+            const activeIndex = tabs.findIndex((tab) => tab?.id === activeTab)
+            const activeTabElement = tabsRef.current[activeIndex]
 
-        if (activeTabElement) {
-            const {offsetLeft, offsetTop, offsetWidth, offsetHeight} = activeTabElement
-
-            setIndicatorStyle({
-                left: `${offsetLeft}px`,
-                top: `${offsetTop}px`,
-                width: `${offsetWidth}px`,
-                height: `${offsetHeight}px`,
-                transition: 'all 0.4s cubic-bezier(0.25, 1, 0.5, 1)',
-            })
-        }
+            if (activeTabElement) {
+                const {offsetLeft, offsetTop, offsetWidth, offsetHeight} = activeTabElement
+                setIndicatorStyle({
+                    left: `${offsetLeft}px`,
+                    top: `${offsetTop}px`,
+                    width: `${offsetWidth}px`,
+                    height: `${offsetHeight}px`,
+                    transition: 'all 0.4s cubic-bezier(0.25, 1, 0.5, 1)',
+                })
+            }
+        })
     }
 
     useEffect(() => {
         updateIndicator()
         window.addEventListener('resize', updateIndicator)
+        if ('fonts' in document) {
+            document.fonts.ready.then(updateIndicator)
+        }
         return () => window.removeEventListener('resize', updateIndicator)
     }, [activeTab, position, tabs])
+
+    useEffect(() => {
+        tabsRef.current = tabsRef.current.slice(0, tabs.length);
+    }, [tabs]);
+
+    const isVertical = position === 'left' || position === 'right'
 
     const containerClasses = {
         top: 'flex-col',
@@ -66,94 +82,81 @@ export default function MciTabs({
     }
 
     const contentClasses = {
-        top: 'mt-6',
-        bottom: 'mb-6',
-        left: 'ml-6',
-        right: 'mr-6',
+        top: 'mt-4',
+        bottom: 'mb-4',
+        left: 'ml-4',
+        right: 'mr-4',
     }
-
-    const isVertical = position === 'left' || position === 'right'
 
     return (
         <div className={cn('flex w-full', containerClasses[position], className)}>
-            <div
-                className={cn(
-                    'relative flex rounded-xl bg-slate-100 p-1',
-                    tabsContainerClasses[position],
-                    isVertical ? 'min-w-48' : 'w-full'
-                )}
-            >
+            <div className={cn(
+                "flex gap-4",
+                isVertical ? "flex-col items-start" : "flex-row items-center justify-between"
+            )}>
                 <div
                     className={cn(
-                        'absolute bg-white rounded-lg',
-                        isVertical ? 'w-full' : 'h-full'
+                        'relative flex rounded-xl bg-slate-100 p-1',
+                        tabsContainerClasses[position],
+                        isVertical ? 'min-w-48' : '',
+                        tabListClassName
                     )}
-                    style={indicatorStyle}
-                />
+                >
+                    <div
+                        className={cn(
+                            'absolute bg-white rounded-lg',
+                            isVertical ? 'w-full' : 'h-full'
+                        )}
+                        style={indicatorStyle}
+                    />
 
-                {tabs?.map((tab, index) => {
-                    const isActive = activeTab === tab.id
+                    {tabs?.map((tab, index) => {
+                        const isActive = activeTab === tab.id
 
-                    return (
-                        <button
-                            key={tab?.id}
-                            ref={(el) => {
-                                tabsRef.current[index] = el
-                            }}
-                            onClick={() => {
-                                if (!tab?.disabled) {
-                                    setActiveTab(tab?.id)
-                                    onChange?.(tab?.id)
-                                }
-                            }}
-                            disabled={tab?.disabled}
-                            className={cn(
-                                'relative flex cursor-pointer text-black text-base font-normal items-center justify-center gap-2 px-5 py-2 z-10 whitespace-nowrap transition-colors duration-300',
-                                isActive
-                                    ? '' : 'text-slate-500 hover:text-slate-700',
-                                tab?.disabled && 'opacity-50 cursor-not-allowed',
-                                isVertical ? 'w-full justify-start' : 'flex-1'
-                            )}
-                        >
-                            {tab?.icon && (
-                                <span
-                                    className={cn(
-                                        'flex-shrink-0 transition-transform duration-200',
-                                        isActive && 'scale-110'
-                                    )}
-                                >
-                           {tab?.icon}
-                        </span>
-                            )}
-                            <span className="relative z-10">{tab?.label}</span>
-                        </button>
-                    )
-                })}
+                        return (
+                            <button
+                                key={tab?.id}
+                                ref={(el) => {
+                                    tabsRef.current[index] = el
+                                }}
+                                onClick={() => {
+                                    if (!tab?.disabled) {
+                                        setActiveTab(tab?.id)
+                                        onChange?.(tab?.id)
+                                    }
+                                }}
+                                disabled={tab?.disabled}
+                                className={cn(
+                                    'relative flex cursor-pointer text-base font-normal text-black items-center justify-center p-2 z-10 whitespace-nowrap transition-colors duration-300',
+                                    tab?.disabled && 'opacity-50 cursor-not-allowed',
+                                    isVertical ? 'w-full justify-start' : 'flex-1'
+                                )}
+                            >
+                                {tab?.icon && (
+                                    <span
+                                        className={cn('shrink-0 transition-transform duration-200', isActive && 'scale-110')}>
+                                        {tab?.icon}
+                                    </span>
+                                )}
+
+                                <span className="relative z-10" title={tab?.label}>{tab?.label}</span>
+                            </button>
+                        )
+                    })}
+                </div>
+
+                {extra && (
+                    <div className={cn("shrink-0", isVertical && "w-full")}>
+                        {extra}
+                    </div>
+                )}
             </div>
 
-            <div className={cn('flex-1 overflow-hidden', contentClasses[position])}>
-                <div key={activeTab} className="animate-fade-in" style={{animationDuration: '0.4s'}}>
+            <div className={cn('flex-1 w-full overflow-hidden', contentClasses[position], contentClassName)}>
+                <div key={activeTab} className="animate-fade-in w-full" style={{animationDuration: '0.4s'}}>
                     {tabs?.find((tab) => tab?.id === activeTab)?.content}
                 </div>
             </div>
-        </div>
-    )
-}
-
-type TabPanelProps = {
-    children: React.ReactNode
-    className?: string
-}
-
-export function TabPanel({children, className}: TabPanelProps) {
-    return (
-        <div
-            className={cn(
-                'rounded-xl border border-slate-200 bg-white p-6',
-                className
-            )}
-        >
-            {children}
         </div>
     )
 }
