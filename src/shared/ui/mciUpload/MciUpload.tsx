@@ -145,12 +145,16 @@ const MciUpload: React.FC<MciUploadProps> = ({
                 }
 
                 const preview = await createPreview(file)
+
+                const initialStatus = onUpload ? 'uploading' : 'success'
+                const initialProgress = onUpload ? 0 : 100
+
                 validFiles.push({
                     id: Math.random().toString(36).substr(2, 9),
                     file,
                     preview,
-                    progress: 0,
-                    status: 'uploading',
+                    progress: initialProgress,
+                    status: initialStatus,
                 })
             }
 
@@ -269,7 +273,6 @@ const MciUpload: React.FC<MciUploadProps> = ({
 
     return (
         <div className={cn('w-full', className)}>
-            {/* Label */}
             {label && (
                 <label
                     className={cn(`mb-2 block text-base font-medium text-slate-700`, error ? 'text-red-600' : 'text-slate-700')}>
@@ -278,7 +281,6 @@ const MciUpload: React.FC<MciUploadProps> = ({
                 </label>
             )}
 
-            {/* Upload Area */}
             <div
                 className={cn(
                     'cursor-pointer border border-dashed rounded-2xl p-6 text-center transition-all duration-300',
@@ -326,10 +328,8 @@ const MciUpload: React.FC<MciUploadProps> = ({
                 </div>
             </div>
 
-            {/* File List */}
             {files.length > 0 && (
                 <div className="mt-4 space-y-3">
-                    {/* Header */}
                     <div className="flex items-center justify-between">
                   <span className="text-small font-medium text-slate-700">
                      {t.selectedFiles} ({files.length})
@@ -346,7 +346,6 @@ const MciUpload: React.FC<MciUploadProps> = ({
                         )}
                     </div>
 
-                    {/* Files */}
                     <div className="space-y-2">
                         {files.map((fileInfo) => (
                             <div
@@ -357,7 +356,6 @@ const MciUpload: React.FC<MciUploadProps> = ({
                                 )}
                             >
                                 <div className="flex min-w-0 flex-1 items-center space-x-3">
-                                    {/* File Icon/Preview */}
                                     {showPreview && fileInfo.preview ? (
                                         <img
                                             src={fileInfo.preview}
@@ -365,10 +363,9 @@ const MciUpload: React.FC<MciUploadProps> = ({
                                             className="h-10 w-10 rounded object-cover"
                                         />
                                     ) : showFileTypeIcon ? (
-                                        <div className="flex-shrink-0">{getFileIcon(fileInfo.file)}</div>
+                                        <div className="shrink-0">{getFileIcon(fileInfo.file)}</div>
                                     ) : null}
 
-                                    {/* File Info */}
                                     <div className="min-w-0 flex-1">
                                         <p className="truncate text-small font-medium text-slate-700">
                                             {fileInfo.file.name}
@@ -376,6 +373,7 @@ const MciUpload: React.FC<MciUploadProps> = ({
 
                                         <div className="flex items-center space-x-2 text-small text-slate-400">
                                             <span>{formatFileSize(fileInfo.file.size)}</span>
+
                                             {fileInfo.status === 'uploading' && (
                                                 <span className="flex items-center">
                                                     <Star2 className="h-5 w-5 mr-1 animate-spin"/>
@@ -392,7 +390,6 @@ const MciUpload: React.FC<MciUploadProps> = ({
 
                                         </div>
 
-                                        {/* Progress Bar */}
                                         {fileInfo.status === 'uploading' && (
                                             <div className="mt-1 h-1.5 w-full rounded-full bg-slate-200">
                                                 <div
@@ -402,7 +399,6 @@ const MciUpload: React.FC<MciUploadProps> = ({
                                             </div>
                                         )}
 
-                                        {/* Error Message */}
                                         {fileInfo.status === 'error' && fileInfo.error && (
                                             <p className="mt-2 flex items-center text-small font-normal text-red-600">
                                                 {fileInfo.error}
@@ -411,8 +407,7 @@ const MciUpload: React.FC<MciUploadProps> = ({
                                     </div>
                                 </div>
 
-                                {/* Remove MciButton */}
-                                <div className="flex flex-shrink-0 items-center space-x-2">
+                                <div className="flex shrink-0 items-center space-x-2">
                                     <button
                                         type="button"
                                         onClick={(e) => {
@@ -431,7 +426,6 @@ const MciUpload: React.FC<MciUploadProps> = ({
                 </div>
             )}
 
-            {/* Error Message */}
             {error && (
                 <p className="mt-2 flex items-center text-small font-normal text-red-600">
                     {error}
