@@ -152,11 +152,11 @@ function ToastItem({
                     <div className="flex-1 min-w-0">
                         <h4 className="text-base font-medium mb-1">{title}</h4>
 
-                        {description && <p className="text-small text-[#82828C]">{description}</p>}
+                        {description && <p className="text-sm text-[#82828C]">{description}</p>}
 
                         {action && (
                             <div className="mt-3">
-                                <div className={cn('underline font-medium text-small', styles.action[type])}>
+                                <div className={cn('underline font-medium text-sm', styles.action[type])}>
                                     {action}
                                 </div>
                             </div>

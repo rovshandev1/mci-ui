@@ -49,7 +49,7 @@ export default function MciBreadcrumb({
                                     }
                                 }}
                                 className={cn(
-                                    'flex items-center gap-x-2 transition-all text-small font-normal text-slate-500',
+                                    'flex items-center gap-x-2 transition-all text-sm font-normal text-slate-500',
                                     hoverColor
                                 )}
                             >

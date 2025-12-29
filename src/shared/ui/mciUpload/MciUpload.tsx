@@ -317,11 +317,11 @@ const MciUpload: React.FC<MciUploadProps> = ({
                     </div>
 
                     <div className="space-y-1">
-                        <p className="text-small font-medium text-slate-700">
+                        <p className="text-sm font-medium text-slate-700">
                             {t.dragAndDrop} {t.or.toLowerCase()} {t.clickToUpload}
                         </p>
 
-                        <p className="text-small font-normal text-slate-700">
+                        <p className="text-sm font-normal text-slate-700">
                             {t.fileRequirements(multiple, maxFiles, maxSize, accept)}
                         </p>
                     </div>
@@ -331,7 +331,7 @@ const MciUpload: React.FC<MciUploadProps> = ({
             {files.length > 0 && (
                 <div className="mt-4 space-y-3">
                     <div className="flex items-center justify-between">
-                  <span className="text-small font-medium text-slate-700">
+                  <span className="text-sm font-medium text-slate-700">
                      {t.selectedFiles} ({files.length})
                   </span>
                         {files.length > 1 && (
@@ -339,7 +339,7 @@ const MciUpload: React.FC<MciUploadProps> = ({
                                 type="button"
                                 onClick={handleClearAll}
                                 disabled={disabled || isUploading}
-                                className="text-small text-red-600 disabled:opacity-50"
+                                className="text-sm text-red-600 disabled:opacity-50"
                             >
                                 {t.clearAll}
                             </button>
@@ -367,11 +367,11 @@ const MciUpload: React.FC<MciUploadProps> = ({
                                     ) : null}
 
                                     <div className="min-w-0 flex-1">
-                                        <p className="truncate text-small font-medium text-slate-700">
+                                        <p className="truncate text-sm font-medium text-slate-700">
                                             {fileInfo.file.name}
                                         </p>
 
-                                        <div className="flex items-center space-x-2 text-small text-slate-400">
+                                        <div className="flex items-center space-x-2 text-sm text-slate-400">
                                             <span>{formatFileSize(fileInfo.file.size)}</span>
 
                                             {fileInfo.status === 'uploading' && (
@@ -383,7 +383,7 @@ const MciUpload: React.FC<MciUploadProps> = ({
 
                                             {fileInfo.status === 'success' && (
                                                 <span
-                                                    className="flex items-center text-small font-normal text-green-600">
+                                                    className="flex items-center text-sm font-normal text-green-600">
                                                     {t.success}
                                                 </span>
                                             )}
@@ -400,7 +400,7 @@ const MciUpload: React.FC<MciUploadProps> = ({
                                         )}
 
                                         {fileInfo.status === 'error' && fileInfo.error && (
-                                            <p className="mt-2 flex items-center text-small font-normal text-red-600">
+                                            <p className="mt-2 flex items-center text-sm font-normal text-red-600">
                                                 {fileInfo.error}
                                             </p>
                                         )}
@@ -427,7 +427,7 @@ const MciUpload: React.FC<MciUploadProps> = ({
             )}
 
             {error && (
-                <p className="mt-2 flex items-center text-small font-normal text-red-600">
+                <p className="mt-2 flex items-center text-sm font-normal text-red-600">
                     {error}
                 </p>
             )}

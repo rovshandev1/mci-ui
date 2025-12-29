@@ -94,7 +94,7 @@ const MciInput = forwardRef<HTMLInputElement, InputProps>(
         const sizes = useMemo(
             () => ({
                 sm: {
-                    input: 'h-9 text-small',
+                    input: 'h-9 text-sm',
                     padding:
                         hasLeftIcon && hasRightIcon
                             ? 'pl-7 pr-7'
@@ -106,11 +106,11 @@ const MciInput = forwardRef<HTMLInputElement, InputProps>(
                     icon: 'w-4 h-4',
                     leftIcon: 'left-2',
                     rightIcon: 'right-2',
-                    labelFont: 'text-small',
+                    labelFont: 'text-sm',
                     iconWrapper: 'h-4',
                 },
                 md: {
-                    input: 'h-10 text-small',
+                    input: 'h-10 text-sm',
                     padding:
                         hasLeftIcon && hasRightIcon
                             ? 'pl-8 pr-8'
@@ -322,7 +322,7 @@ const MciInput = forwardRef<HTMLInputElement, InputProps>(
                 </div>
 
                 {error && (
-                    <p className="mt-2 animate-[slideDown_0.3s_ease-out] text-small font-normal text-red-600">
+                    <p className="mt-2 animate-[slideDown_0.3s_ease-out] text-sm font-normal text-red-600">
                         {error}
                     </p>
                 )}

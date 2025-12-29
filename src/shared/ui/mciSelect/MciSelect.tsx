@@ -38,26 +38,26 @@ type SelectProps = {
 
 const SIZES = {
     sm: {
-        container: 'h-9 text-small',
+        container: 'h-9 text-sm',
         padding: 'px-2',
         iconPaddingLeft: 'pl-7',
         iconPaddingRight: 'pr-7',
         iconSize: 'w-4 h-4',
         iconWrapper: 'left-2',
         rightIconWrapper: 'right-2',
-        label: 'text-small',
-        dropdown: 'text-small',
+        label: 'text-sm',
+        dropdown: 'text-sm',
     },
     md: {
-        container: 'h-10 text-small',
+        container: 'h-10 text-sm',
         padding: 'px-4',
         iconPaddingLeft: 'pl-8',
         iconPaddingRight: 'pr-8',
         iconSize: 'w-5 h-5',
         iconWrapper: 'left-3',
         rightIconWrapper: 'right-3',
-        label: 'text-small',
-        dropdown: 'text-small',
+        label: 'text-sm',
+        dropdown: 'text-sm',
     },
     base: {
         container: 'h-12 text-base',
@@ -389,7 +389,7 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
                 </div>
 
                 {error && (
-                    <p className="mt-2 animate-[slideDown_0.3s_ease-out] text-small font-normal text-red-600">{error}</p>
+                    <p className="mt-2 animate-[slideDown_0.3s_ease-out] text-sm font-normal text-red-600">{error}</p>
                 )}
             </div>
         )

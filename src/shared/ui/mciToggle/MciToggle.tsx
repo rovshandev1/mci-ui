@@ -82,7 +82,7 @@ export default function MciToggle({
                     )}
 
                     {supportText && (
-                        <span className="text-small font-normal text-slate-500">
+                        <span className="text-sm font-normal text-slate-500">
               {supportText}
             </span>
                     )}

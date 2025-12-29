@@ -58,7 +58,7 @@ export default function MciPagination({
     const pages = createPageRange()
 
     const sizeClasses = {
-        medium: 'h-9 text-small',
+        medium: 'h-9 text-sm',
         large: 'h-10 text-base',
     }[size]
 

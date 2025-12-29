@@ -1,8 +1,8 @@
-import {ConfoundedSquare} from '@solar-icons/react'
-import {SortVertical, SortFromBottomToTop, SortFromTopToBottom} from '@solar-icons/react'
-import {useMemo, useState, useEffect, type ReactNode} from 'react'
-import {cn} from '../../lib/utils'
-import MciSkeleton from '../mciSkeleton/MciSkeleton.tsx'
+import { ConfoundedSquare } from '@solar-icons/react'
+import { SortVertical, SortFromBottomToTop, SortFromTopToBottom } from '@solar-icons/react'
+import { useMemo, useState, useEffect, type ReactNode } from 'react'
+import { cn } from '../../lib/utils'
+import { MciSkeleton } from "../../../index.ts";
 
 type Align = 'left' | 'center' | 'right'
 
@@ -23,6 +23,9 @@ export interface MciTableProps<T extends Record<string, unknown>> {
     noDataText?: string
     sort?: { key: keyof T; direction: 'asc' | 'desc' } | null
     onSortChange?: (sort: { key: keyof T; direction: 'asc' | 'desc' } | null) => void
+    className?: string
+    headerClassName?: string
+    bodyClassName?: string
 }
 
 export default function MciTable<T extends Record<string, unknown>>({
@@ -33,6 +36,9 @@ export default function MciTable<T extends Record<string, unknown>>({
                                                                         noDataText = '',
                                                                         sort: externalSort,
                                                                         onSortChange,
+                                                                        className,
+                                                                        headerClassName,
+                                                                        bodyClassName,
                                                                     }: MciTableProps<T>) {
     const [localSort, setLocalSort] = useState<{ key: keyof T; direction: 'asc' | 'desc' } | null>(null);
 
@@ -59,9 +65,9 @@ export default function MciTable<T extends Record<string, unknown>>({
         let nextSort: { key: keyof T; direction: 'asc' | 'desc' } | null = null;
 
         if (activeSort?.key !== col.key) {
-            nextSort = {key: col.key, direction: 'asc'};
+            nextSort = { key: col.key, direction: 'asc' };
         } else if (activeSort.direction === 'asc') {
-            nextSort = {key: col.key, direction: 'desc'};
+            nextSort = { key: col.key, direction: 'desc' };
         }
 
         if (externalSort !== undefined) {
@@ -79,13 +85,13 @@ export default function MciTable<T extends Record<string, unknown>>({
         if (!col.sortable) return null
 
         if (!activeSort || activeSort.key !== col.key) {
-            return <SortVertical weight='Linear' size={20} className="text-slate-base"/>
+            return <SortVertical weight='Linear' size={20} className="text-slate-base" />
         }
 
         return activeSort.direction === 'asc' ? (
-            <SortFromTopToBottom weight='Linear' size={20} className="text-slate-base"/>
+            <SortFromTopToBottom weight='Linear' size={20} className="text-slate-base" />
         ) : (
-            <SortFromBottomToTop weight='Linear' size={20} className="text-slate-base"/>
+            <SortFromBottomToTop weight='Linear' size={20} className="text-slate-base" />
         )
     }
 
@@ -98,7 +104,21 @@ export default function MciTable<T extends Record<string, unknown>>({
     };
 
     return (
-        <div className="w-full overflow-x-auto">
+        <div
+            className={cn(
+                "w-full overflow-x-auto",
+                "pb-0.5",
+                "[&::-webkit-scrollbar]:h-1",
+                "[&::-webkit-scrollbar-track]:bg-transparent",
+                "[&::-webkit-scrollbar-thumb]:bg-slate-200",
+                "[&::-webkit-scrollbar-thumb]:rounded-full",
+                "[&::-webkit-scrollbar-thumb]:border",
+                "[&::-webkit-scrollbar-thumb]:border-transparent",
+                "[&::-webkit-scrollbar-thumb]:bg-clip-padding-box",
+                "hover:[&::-webkit-scrollbar-thumb]:bg-slate-300",
+                className
+            )}
+        >
             <div className="inline-block min-w-full align-middle">
                 <div className='overflow-hidden rounded-xl border border-slate-200 bg-slate-100'>
                     <table className="w-full table-fixed">
@@ -109,15 +129,18 @@ export default function MciTable<T extends Record<string, unknown>>({
                                     key={idx}
                                     onClick={() => handleSort(col)}
                                     className={cn(
-                                        'px-3 py-4 text-left text-small font-medium text-slate-700 transition-colors',
+                                        'px-4 py-3 text-left text-sm font-medium text-slate-700 transition-colors',
                                         col.align === 'center' && 'text-center',
                                         col.align === 'right' && 'text-right',
                                         col.sortable && 'cursor-pointer hover:bg-slate-200',
+                                        headerClassName
                                     )}
-                                    style={{width: col.width || 'auto'}}
+                                    style={{ width: col.width || 'auto' }}
                                 >
                                     <div className="flex items-center gap-2">
-                                        <span className="truncate">{col.title}</span>
+                                        <span className="truncate flex-1 min-w-0" title={col.title}>
+                                            {col.title}
+                                        </span>
                                         {getSortIcon(col)}
                                     </div>
                                 </th>
@@ -131,11 +154,11 @@ export default function MciTable<T extends Record<string, unknown>>({
                     <table className='w-full table-fixed'>
                         <tbody className='divide-y divide-slate-200'>
                         {loading ? (
-                            Array.from({length: skeletonRows}).map((_, idx) => (
+                            Array.from({ length: skeletonRows }).map((_, idx) => (
                                 <tr key={idx}>
                                     {columns?.map((col, i) => (
-                                        <td key={i} className="px-4 py-3" style={{width: col.width}}>
-                                            <MciSkeleton height={30} variant="rounded"/>
+                                        <td key={i} className="px-4 py-3" style={{ width: col.width }}>
+                                            <MciSkeleton height={30} variant="rounded" />
                                         </td>
                                     ))}
                                 </tr>
@@ -151,7 +174,7 @@ export default function MciTable<T extends Record<string, unknown>>({
                                                 className="animate-float text-slate-400"
                                             />
                                         </div>
-                                        <p className="text-small font-medium text-slate-400">{noDataText}</p>
+                                        <p className="text-sm font-medium text-slate-400">{noDataText}</p>
                                     </div>
                                 </td>
                             </tr>
@@ -169,17 +192,18 @@ export default function MciTable<T extends Record<string, unknown>>({
                                             <td
                                                 key={colIndex}
                                                 className={cn(
-                                                    'px-3 py-4 text-small font-normal text-black align-top',
+                                                    'px-4 py-3 text-sm font-normal text-black align-top',
                                                     col.align === 'center' && 'text-center',
                                                     col.align === 'right' && 'text-right',
+                                                    bodyClassName
                                                 )}
-                                                style={{width: col.width || 'auto'}}
+                                                style={{ width: col.width || 'auto' }}
                                             >
                                                 <div
                                                     className={cn(
                                                         'line-clamp-2',
-                                                        'whitespace-normal',
-                                                        'break-all'
+                                                        'break-words',
+                                                        'whitespace-normal'
                                                     )}
                                                     title={!col.render ? tooltipText : undefined}
                                                 >

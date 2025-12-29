@@ -304,7 +304,7 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
                                 </>
                             )}
                         </div>
-                        <div className="flex gap-1 font-semibold text-slate-700 text-small">
+                        <div className="flex gap-1 font-semibold text-slate-700 text-sm">
                             <span className="cursor-pointer hover:text-blue-600 transition-colors"
                                   onClick={() => setView('month')}>{t.months[baseDate.getMonth()]}</span>
 
@@ -340,7 +340,7 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
                                         type="button"
                                         onClick={() => handleSelect(date)}
                                         disabled={disabled}
-                                        className={cn("w-9 h-9 cursor-pointer rounded-full flex items-center justify-center text-small font-medium transition-all z-10", !item.isCurrentMonth ? "text-slate-300" : "text-slate-700", disabled && "opacity-20 cursor-not-allowed", (isStart || isEnd) ? "bg-blue-600 text-white" : "hover:bg-blue-50", isSameDay(date, new Date()) && !isStart && !isEnd && "text-blue-600 border border-blue-600")}
+                                        className={cn("w-9 h-9 cursor-pointer rounded-full flex items-center justify-center text-sm font-medium transition-all z-10", !item.isCurrentMonth ? "text-slate-300" : "text-slate-700", disabled && "opacity-20 cursor-not-allowed", (isStart || isEnd) ? "bg-blue-600 text-white" : "hover:bg-blue-50", isSameDay(date, new Date()) && !isStart && !isEnd && "text-blue-600 border border-blue-600")}
                                     >
                                         {date.getDate()}
                                     </button>
@@ -369,7 +369,7 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
                         <button key={m}
                                 type="button"
                                 onClick={() => handleSelectMonth(i)}
-                                className={cn("hover:cursor-pointer py-3 rounded-lg text-small font-semibold transition-colors", currentMonth.getMonth() === i ? "bg-blue-600 text-white" : "hover:bg-blue-50 text-slate-600")}>
+                                className={cn("hover:cursor-pointer py-3 rounded-lg text-sm font-semibold transition-colors", currentMonth.getMonth() === i ? "bg-blue-600 text-white" : "hover:bg-blue-50 text-slate-600")}>
                             {m}
                         </button>
                     ))}
@@ -396,7 +396,7 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
                             <button key={y}
                                     type="button"
                                     onClick={() => handleSelectYear(y)}
-                                    className={cn("hover:cursor-pointer py-3 rounded-lg text-small font-semibold transition-colors", currentMonth.getFullYear() === y ? "bg-blue-600 text-white" : "hover:bg-blue-50 text-slate-600")}>
+                                    className={cn("hover:cursor-pointer py-3 rounded-lg text-sm font-semibold transition-colors", currentMonth.getFullYear() === y ? "bg-blue-600 text-white" : "hover:bg-blue-50 text-slate-600")}>
                                 {y}
                             </button>
                         ))}

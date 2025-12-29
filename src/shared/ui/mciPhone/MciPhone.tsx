@@ -80,15 +80,15 @@ const MciPhone = forwardRef<HTMLInputElement, PhoneInputProps>(
 
         const sizes = useMemo(() => ({
             sm: {
-                input: 'h-9 text-small',
+                input: 'h-9 text-sm',
                 padding: showIcon ? 'pl-8 pr-2' : 'px-2',
                 iconSize: 'w-4 h-4',
                 iconLeft: 'left-2',
-                labelFont: 'text-small',
+                labelFont: 'text-sm',
                 iconWrapper: 'h-4',
             },
             md: {
-                input: 'h-10 text-small',
+                input: 'h-10 text-sm',
                 padding: showIcon ? 'pl-10 pr-4' : 'px-4',
                 iconSize: 'w-4 h-4',
                 iconLeft: 'left-3',
@@ -165,7 +165,7 @@ const MciPhone = forwardRef<HTMLInputElement, PhoneInputProps>(
                 </div>
 
                 {error && (
-                    <p className="mt-2 animate-slide-up text-small font-normal text-red-600">
+                    <p className="mt-2 animate-slide-up text-sm font-normal text-red-600">
                         {error}
                     </p>
                 )}

@@ -66,7 +66,7 @@ const MciTextarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
                 />
 
                 {error && (
-                    <p className="mt-2 animate-[slideDown_0.3s_ease-out] text-small font-normal text-red-600">
+                    <p className="mt-2 animate-[slideDown_0.3s_ease-out] text-sm font-normal text-red-600">
                         {error}
                     </p>
                 )}
