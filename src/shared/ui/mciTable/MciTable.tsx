@@ -2,7 +2,7 @@ import {ConfoundedSquare} from '@solar-icons/react'
 import {SortVertical, SortFromBottomToTop, SortFromTopToBottom} from '@solar-icons/react'
 import {useMemo, useState, useEffect, type ReactNode} from 'react'
 import {cn} from '../../lib/utils'
-import {MciCheck, MciSkeleton} from "../../../index.ts";
+import {MciSkeleton, MciCheck} from "../../../index.ts";
 
 type Align = 'left' | 'center' | 'right'
 
@@ -17,7 +17,7 @@ export type MciTableColumn<T> = {
 
 export interface MciTableProps<T extends Record<string, unknown>> {
     columns: MciTableColumn<T>[]
-    data: T[]
+    data?: T[]
     loading?: boolean
     skeletonRows?: number
     noDataText?: string
@@ -26,18 +26,17 @@ export interface MciTableProps<T extends Record<string, unknown>> {
     className?: string
     headerClassName?: string
     bodyClassName?: string
-
     rowKey?: keyof T
     rowSelection?: {
         selectedRowKeys: (string | number)[]
-        onChange: (selectedRowKeys: (string | number)[], selectedRows: T[]) => void
+        onChange: (selectedRowKeys: (string | number)[]) => void
         getCheckboxProps?: (record: T) => { disabled?: boolean }
     }
 }
 
 export default function MciTable<T extends Record<string, unknown>>({
                                                                         columns,
-                                                                        data,
+                                                                        data = [],
                                                                         loading = false,
                                                                         skeletonRows = 5,
                                                                         noDataText = '',
@@ -53,10 +52,12 @@ export default function MciTable<T extends Record<string, unknown>>({
 
     const activeSort = externalSort ?? localSort
 
-    const sortedData = useMemo(() => {
-        if (!activeSort || externalSort) return data;
+    const safeData = useMemo(() => Array.isArray(data) ? data : [], [data]);
 
-        return [...data].sort((a, b) => {
+    const sortedData = useMemo(() => {
+        if (!activeSort || externalSort) return safeData;
+
+        return [...safeData].sort((a, b) => {
             const aVal = a[activeSort.key];
             const bVal = b[activeSort.key];
 
@@ -66,7 +67,7 @@ export default function MciTable<T extends Record<string, unknown>>({
             if (aVal > bVal) return activeSort.direction === 'asc' ? 1 : -1;
             return 0;
         });
-    }, [data, activeSort, externalSort]);
+    }, [safeData, activeSort, externalSort]);
 
     const handleSort = (col: MciTableColumn<T>) => {
         if (!col.sortable) return
@@ -90,7 +91,7 @@ export default function MciTable<T extends Record<string, unknown>>({
         if (externalSort !== undefined) setLocalSort(null);
     }, [externalSort])
 
-    const displayData = loading ? [] : externalSort ? data : sortedData
+    const displayData = loading ? [] : (externalSort ? safeData : sortedData);
 
     const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!rowSelection) return;
@@ -101,9 +102,9 @@ export default function MciTable<T extends Record<string, unknown>>({
         if (checked) {
             const selectableRows = displayData.filter(row => !getCheckboxProps?.(row)?.disabled);
             const newSelectedKeys = selectableRows.map(row => row[rowKey] as string | number);
-            onChange(newSelectedKeys, selectableRows);
+            onChange(newSelectedKeys);
         } else {
-            onChange([], []);
+            onChange([]);
         }
     };
 
@@ -114,21 +115,19 @@ export default function MciTable<T extends Record<string, unknown>>({
         const key = row[rowKey] as string | number;
 
         let newKeys: (string | number)[];
-        let newRows: T[];
 
         if (checked) {
             newKeys = [...selectedRowKeys, key];
-            newRows = [...displayData.filter(r => newKeys.includes(r[rowKey] as string | number))];
         } else {
             newKeys = selectedRowKeys.filter(k => k !== key);
-            newRows = [...displayData.filter(r => newKeys.includes(r[rowKey] as string | number))];
         }
 
-        onChange(newKeys, newRows);
+        onChange(newKeys);
     };
 
     const isAllSelected = useMemo(() => {
         if (!rowSelection || displayData.length === 0) return false;
+
         const selectableRows = displayData.filter(row => !rowSelection.getCheckboxProps?.(row)?.disabled);
         if (selectableRows.length === 0) return false;
 
@@ -227,7 +226,6 @@ export default function MciTable<T extends Record<string, unknown>>({
                                             <MciSkeleton height={20} width={20} variant="rounded"/>
                                         </td>
                                     )}
-
                                     {columns?.map((col, i) => (
                                         <td key={i} className="px-4 py-3" style={{width: col.width}}>
                                             <MciSkeleton height={30} variant="rounded"/>
@@ -235,7 +233,7 @@ export default function MciTable<T extends Record<string, unknown>>({
                                     ))}
                                 </tr>
                             ))
-                        ) : displayData?.length === 0 ? (
+                        ) : displayData.length === 0 ? (
                             <tr>
                                 <td colSpan={columns.length + (rowSelection ? 1 : 0)} className="py-20">
                                     <div className="flex flex-col items-center justify-center">
@@ -251,7 +249,7 @@ export default function MciTable<T extends Record<string, unknown>>({
                                 </td>
                             </tr>
                         ) : (
-                            displayData?.map((row, idx) => {
+                            displayData.map((row, idx) => {
                                 const key = row[rowKey] as string | number;
                                 const isSelected = rowSelection?.selectedRowKeys.includes(key);
                                 const isDisabled = rowSelection?.getCheckboxProps?.(row)?.disabled;
@@ -260,7 +258,7 @@ export default function MciTable<T extends Record<string, unknown>>({
                                     <tr
                                         key={idx}
                                         className={cn(
-                                            'group transition-colors hover:bg-slate-50'
+                                            'group transition-colors hover:bg-slate-50',
                                         )}
                                     >
                                         {rowSelection && (
@@ -271,7 +269,6 @@ export default function MciTable<T extends Record<string, unknown>>({
                                                         disabled={isDisabled}
                                                         variant="yellow"
                                                         onChange={(e) => handleSelectRow(row, e.target.checked)}
-
                                                     />
                                                 </div>
                                             </td>
@@ -292,17 +289,9 @@ export default function MciTable<T extends Record<string, unknown>>({
                                                     )}
                                                     style={{width: col.width || 'auto'}}
                                                 >
-                                                    <div
-                                                        className={cn(
-                                                            'line-clamp-2',
-                                                            'break-words',
-                                                            'whitespace-normal'
-                                                        )}
-                                                        title={!col.render ? tooltipText : undefined}
-                                                    >
-                                                        {col.render
-                                                            ? col.render(cellValue, row)
-                                                            : String(cellValue ?? '-')}
+                                                    <div className="line-clamp-2 break-words whitespace-normal"
+                                                         title={!col.render ? tooltipText : undefined}>
+                                                        {col.render ? col.render(cellValue, row) : String(cellValue ?? '-')}
                                                     </div>
                                                 </td>
                                             )
