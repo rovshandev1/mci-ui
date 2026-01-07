@@ -1,4 +1,10 @@
-import {Calendar, DoubleAltArrowLeft, DoubleAltArrowRight, AltArrowLeft, AltArrowRight} from '@solar-icons/react'
+import {
+    Calendar,
+    DoubleAltArrowLeft,
+    DoubleAltArrowRight,
+    AltArrowLeft,
+    AltArrowRight
+} from '@solar-icons/react'
 import {
     forwardRef,
     useCallback,
@@ -7,9 +13,9 @@ import {
     useRef,
     useState,
 } from 'react'
-import {cn, useClickOutside, useEscapeKey} from '../../lib/utils'
-import MciInput from '../mciInput/MciInput'
-import {Locale, locales} from '../../lib/locales'
+import { cn, useClickOutside, useEscapeKey } from '../../lib/utils'
+import { Locale, locales } from '../../lib/locales'
+import {MciInput} from "../../../index.ts";
 
 type DateValue = Date | string | null
 type RangeValue = [DateValue, DateValue]
@@ -88,42 +94,37 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
 
         const t = locales[locale]
 
-        useEffect(() => {
-            if (isOpen) {
-                if (type === 'range') {
-                    setTempRange(currentValue as RangeValue)
-                }
-
-                if (type === 'date') {
-                    const date = currentValue as Date | null
-                    if (date) setCurrentMonth(date)
-                } else {
-                    const [start, end] = currentValue as [Date | null, Date | null]
-                    if (start) setCurrentMonth(start)
-                    else if (end) setCurrentMonth(end)
-                }
-            }
-        }, [isOpen])
-
-        useEffect(() => {
-            if (isOpen && align === 'auto' && containerRef.current) {
-                const rect = containerRef.current.getBoundingClientRect()
-                const spaceRight = window.innerWidth - rect.right
-                const spaceLeft = rect.left
-
-                if (spaceRight < 300 && spaceLeft > 300) setDropdownAlign('right')
-                else setDropdownAlign('left')
-            }
-        }, [isOpen, align])
-
         const normalize = useCallback((date: Date) => {
             return new Date(date.getFullYear(), date.getMonth(), date.getDate())
         }, [])
 
-        const isSameDay = useCallback(
-            (a: Date, b: Date) => normalize(a).getTime() === normalize(b).getTime(),
-            [normalize]
+        const formatDate = useCallback(
+            (date: Date | null): string => {
+                if (!date) return ''
+                const d = date.getDate().toString().padStart(2, '0')
+                const m = (date.getMonth() + 1).toString().padStart(2, '0')
+                const y = date.getFullYear()
+                return format.replace('DD', d).replace('MM', m).replace('YYYY', y.toString())
+            },
+            [format]
         )
+
+        const parseDateFromStr = useCallback((str: string): Date | null => {
+            if (!str || str.length !== 10) return null
+            const digits = str.replace(/\D/g, '')
+            if (digits.length !== 8) return null
+
+            const d = parseInt(digits.slice(0, 2), 10)
+            const m = parseInt(digits.slice(2, 4), 10)
+            const y = parseInt(digits.slice(4, 8), 10)
+
+            if (y < 1000 || m < 1 || m > 12 || d < 1 || d > 31) return null
+
+            const date = new Date(y, m - 1, d)
+            if (date.getFullYear() !== y || date.getMonth() !== m - 1 || date.getDate() !== d) return null
+
+            return date
+        }, [])
 
         const isDisabled = useCallback(
             (date: Date) => {
@@ -135,18 +136,6 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
             [minDate, maxDate, normalize]
         )
 
-        const formatDate = useCallback(
-            (date: Date | null): string => {
-                if (!date) return ''
-                const d = date.getDate().toString().padStart(2, '0')
-                const m = (date.getMonth() + 1).toString().padStart(2, '0')
-                const y = date.getFullYear()
-
-                return format.replace('DD', d).replace('MM', m).replace('YYYY', y.toString())
-            },
-            [format]
-        )
-
         const displayText = useMemo(() => {
             if (type === 'date') return formatDate(currentValue as Date | null)
             const [start, end] = currentValue as [Date | null, Date | null]
@@ -156,17 +145,55 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
         }, [type, currentValue, formatDate])
 
         useEffect(() => {
-            setDisplayValue(displayText)
-        }, [displayText])
+            if (!isOpen) {
+                setDisplayValue(displayText)
+            } else if (displayValue === '' && displayText !== '') {
+                setDisplayValue(displayText)
+            }
+        }, [displayText, isOpen])
+
+        useEffect(() => {
+            if (isOpen) {
+                if (type === 'range') {
+                    const rangeVal = currentValue as [Date | null, Date | null]
+                    setTempRange(rangeVal)
+                    if (rangeVal[0]) setCurrentMonth(rangeVal[0])
+                    else if (rangeVal[1]) setCurrentMonth(rangeVal[1])
+                    else setCurrentMonth(new Date())
+                } else {
+                    const date = currentValue as Date | null
+                    if (date) setCurrentMonth(date)
+                    else setCurrentMonth(new Date())
+                }
+            }
+        }, [isOpen])
+
+        useEffect(() => {
+            if (isOpen && align === 'auto' && containerRef.current) {
+                const rect = containerRef.current.getBoundingClientRect()
+                const spaceRight = window.innerWidth - rect.right
+                const spaceLeft = rect.left
+                if (spaceRight < 300 && spaceLeft > 300) setDropdownAlign('right')
+                else setDropdownAlign('left')
+            }
+        }, [isOpen, align])
 
         const close = useCallback(() => {
             setIsOpen(false)
             setView(startView)
             setYearPage(0)
-        }, [startView])
+            setDisplayValue(displayText)
+        }, [startView, displayText])
 
-        const {handleClick: handleClickOutside} = useClickOutside(containerRef, close)
-        const {handleEscape} = useEscapeKey(close)
+        const toggleOpen = useCallback((e: React.MouseEvent) => {
+            if (disabled) return
+            e.preventDefault()
+            e.stopPropagation()
+            setIsOpen(prev => !prev)
+        }, [disabled])
+
+        const { handleClick: handleClickOutside } = useClickOutside(containerRef, close)
+        const { handleEscape } = useEscapeKey(close)
 
         useEffect(() => {
             if (!isOpen) return
@@ -178,11 +205,51 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
             }
         }, [isOpen, handleClickOutside, handleEscape])
 
+        const handleInputFocus = () => {
+            if (disabled || isOpen) return;
+            if (type === 'range' || !allowManualInput) {
+                setIsOpen(true);
+                setView(startView);
+            }
+        };
+
+        const handleManualInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            if (type !== 'date') return
+            let raw = e.target.value
+            let numbers = raw.replace(/\D/g, '')
+
+            if (numbers.length > 8) numbers = numbers.slice(0, 8)
+
+            let formatted = ''
+            if (numbers.length > 4) {
+                formatted = `${numbers.slice(0, 2)}.${numbers.slice(2, 4)}.${numbers.slice(4)}`
+            } else if (numbers.length > 2) {
+                formatted = `${numbers.slice(0, 2)}.${numbers.slice(2)}`
+            } else {
+                formatted = numbers
+            }
+
+            setDisplayValue(formatted)
+
+            if (formatted.length === 10) {
+                const date = parseDateFromStr(formatted)
+                if (date && !isDisabled(date)) {
+                    setInternalValue(date)
+                    onChange?.(date)
+                    setCurrentMonth(date)
+                }
+            } else if (formatted === '') {
+                setInternalValue(null)
+                onChange?.(null)
+            }
+        }
+
         const handleInputClear = useCallback(() => {
             const empty: DateValue | RangeValue = type === 'range' ? [null, null] : null
             setInternalValue(empty)
             setTempRange([null, null])
             onChange?.(empty)
+            setDisplayValue('')
         }, [type, onChange])
 
         const handleSelect = useCallback(
@@ -193,49 +260,56 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
                 if (type === 'date') {
                     setInternalValue(normalized)
                     onChange?.(normalized)
+                    setDisplayValue(formatDate(normalized))
                     close()
                 } else {
                     const [start, end] = tempRange as [Date | null, Date | null]
 
                     if ((!start && !end) || (start && end)) {
                         setTempRange([normalized, null])
+                        setDisplayValue(`${formatDate(normalized)} - ...`)
                     } else if (start && !end) {
                         const newRange: RangeValue = normalized < start ? [normalized, start] : [start, normalized]
                         setTempRange(newRange)
                         setInternalValue(newRange)
                         onChange?.(newRange)
+
+                        const [s, e] = newRange as [Date, Date]
+                        setDisplayValue(`${formatDate(s)} - ${formatDate(e)}`)
                         close()
                     }
                 }
             },
-            [type, tempRange, isDisabled, normalize, onChange, close]
+            [type, tempRange, isDisabled, normalize, onChange, close, formatDate]
         )
 
         const handleSelectMonth = useCallback((monthIndex: number) => {
             const newDate = new Date(currentMonth.getFullYear(), monthIndex, 1);
             setCurrentMonth(newDate);
 
-            if (startView === 'month') {
+            if (startView === 'month' && type === 'date') {
                 setInternalValue(newDate);
                 onChange?.(newDate);
+                setDisplayValue(formatDate(newDate))
                 close();
             } else {
                 setView('day');
             }
-        }, [currentMonth, startView, onChange, close]);
+        }, [currentMonth, startView, onChange, close, type, formatDate]);
 
         const handleSelectYear = useCallback((year: number) => {
             const newDate = new Date(year, currentMonth.getMonth(), 1);
             setCurrentMonth(newDate);
 
-            if (startView === 'year') {
+            if (startView === 'year' && type === 'date') {
                 setInternalValue(newDate);
                 onChange?.(newDate);
+                setDisplayValue(formatDate(newDate))
                 close();
             } else {
                 setView('month');
             }
-        }, [currentMonth, startView, onChange, close]);
+        }, [currentMonth, startView, onChange, close, type, formatDate]);
 
         const changeMonth = (offset: number) => {
             setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + offset, 1))
@@ -251,38 +325,36 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
             const firstDay = new Date(year, month, 1).getDay()
             const daysInMonth = new Date(year, month + 1, 0).getDate()
             const days = []
-            for (let i = firstDay; i > 0; i--) days.push({date: new Date(year, month, 1 - i), isCurrentMonth: false})
-            for (let i = 1; i <= daysInMonth; i++) days.push({date: new Date(year, month, i), isCurrentMonth: true})
+
+            for (let i = firstDay; i > 0; i--) days.push({ date: new Date(year, month, 1 - i), isCurrentMonth: false })
+            for (let i = 1; i <= daysInMonth; i++) days.push({ date: new Date(year, month, i), isCurrentMonth: true })
             const remaining = 42 - days.length
-            for (let i = 1; i <= remaining; i++) days.push({date: new Date(year, month + 1, i), isCurrentMonth: false})
+            for (let i = 1; i <= remaining; i++) days.push({ date: new Date(year, month + 1, i), isCurrentMonth: false })
             return days
         }, [])
+
+        const isSameDay = useCallback((a: Date, b: Date) => normalize(a).getTime() === normalize(b).getTime(), [normalize])
 
         const isSelectedStart = (date: Date) => {
             const d = normalize(date)
             if (type === 'date') return currentValue && isSameDay(d, currentValue as Date)
-
             const [s] = tempRange[0] ? tempRange as [Date, DateValue] : (currentValue as [DateValue, DateValue])
-            const startNode = safeDate(s);
-            return startNode && isSameDay(d, startNode)
+            return safeDate(s) && isSameDay(d, safeDate(s)!)
         }
 
         const isSelectedEnd = (date: Date) => {
             if (type !== 'range') return false
             const d = normalize(date)
             const [, e] = tempRange[1] ? tempRange as [DateValue, Date] : (currentValue as [DateValue, DateValue])
-            const endNode = safeDate(e);
-            return endNode && isSameDay(d, endNode)
+            return safeDate(e) && isSameDay(d, safeDate(e)!)
         }
 
         const isInRange = (date: Date) => {
             if (type !== 'range') return false
             const d = normalize(date)
             const [s, e] = tempRange[0] ? tempRange as [DateValue, DateValue] : (currentValue as [DateValue, DateValue])
-
-            const startNode = safeDate(s);
-            const endNode = safeDate(e);
-
+            const startNode = safeDate(s), endNode = safeDate(e);
+            if (startNode && !endNode) return false;
             return startNode && endNode && d > normalize(startNode) && d < normalize(endNode)
         }
 
@@ -291,59 +363,34 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
             return (
                 <div className="w-[300px] p-2 select-none">
                     <div className="flex items-center justify-between mb-4 py-1">
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 w-16">
                             {showLeftArrow && (
                                 <>
-                                    <button onClick={() => changeYear(-1)} type="button"
-                                            className="hover:bg-slate-100 p-1 rounded transition-colors">
-                                        <DoubleAltArrowLeft size={18} className="text-slate-700"/></button>
-
-                                    <button onClick={() => changeMonth(-1)} type="button"
-                                            className="hover:bg-slate-100 p-1 rounded transition-colors"><AltArrowLeft
-                                        size={18} className="text-slate-700"/></button>
+                                    <button onClick={() => changeYear(-1)} type="button" className="hover:bg-slate-100 p-1 rounded transition-colors text-slate-500"><DoubleAltArrowLeft size={18} /></button>
+                                    <button onClick={() => changeMonth(-1)} type="button" className="hover:bg-slate-100 p-1 rounded transition-colors text-slate-500"><AltArrowLeft size={18} /></button>
                                 </>
                             )}
                         </div>
-                        <div className="flex gap-1 font-semibold text-slate-700 text-sm">
-                            <span className="cursor-pointer hover:text-blue-600 transition-colors"
-                                  onClick={() => setView('month')}>{t.months[baseDate.getMonth()]}</span>
-
-                            <span className="cursor-pointer hover:text-blue-600 transition-colors"
-                                  onClick={() => setView('year')}>{baseDate.getFullYear()}</span>
+                        <div className="flex gap-1 font-semibold text-slate-700 text-sm whitespace-nowrap">
+                            <span className="cursor-pointer hover:text-blue-600 transition-colors p-1 rounded hover:bg-slate-50" onClick={() => setView('month')}>{t.months[baseDate.getMonth()]}</span>
+                            <span className="cursor-pointer hover:text-blue-600 transition-colors p-1 rounded hover:bg-slate-50" onClick={() => setView('year')}>{baseDate.getFullYear()}</span>
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 w-16 justify-end">
                             {showRightArrow && (
                                 <>
-                                    <button onClick={() => changeMonth(1)} type="button"
-                                            className="hover:bg-slate-100 p-1 rounded transition-colors"><AltArrowRight
-                                        size={18} className="text-slate-700"/></button>
-
-                                    <button onClick={() => changeYear(1)} type="button"
-                                            className="hover:bg-slate-100 p-1 rounded transition-colors">
-                                        <DoubleAltArrowRight size={18} className="text-slate-700"/></button>
+                                    <button onClick={() => changeMonth(1)} type="button" className="hover:bg-slate-100 p-1 rounded transition-colors text-slate-500"><AltArrowRight size={18} /></button>
+                                    <button onClick={() => changeYear(1)} type="button" className="hover:bg-slate-100 p-1 rounded transition-colors text-slate-500"><DoubleAltArrowRight size={18} /></button>
                                 </>
                             )}
                         </div>
                     </div>
-                    <div className="grid grid-cols-7 mb-1 text-center text-[11px] font-bold text-blue-600 uppercase">
-                        {t.weekdaysShort.map(day => <div key={day} className="py-1">{day}</div>)}
-                    </div>
-
+                    <div className="grid grid-cols-7 mb-1 text-center text-[11px] font-bold text-blue-600 uppercase">{t.weekdaysShort.map(day => <div key={day} className="py-1">{day}</div>)}</div>
                     <div className="grid grid-cols-7 gap-y-1 relative">
                         {days.map((item, idx) => {
-                            const date = item.date, disabled = isDisabled(date), isStart = isSelectedStart(date),
-                                isEnd = isSelectedEnd(date), isBetween = isInRange(date)
+                            const date = item.date, disabled = isDisabled(date), isStart = isSelectedStart(date), isEnd = isSelectedEnd(date), isBetween = isInRange(date)
                             return (
-                                <div key={idx}
-                                     className={cn("h-10 flex items-center justify-center relative", isBetween && "bg-blue-50", isStart && type === 'range' && "bg-gradient-to-r from-transparent to-blue-50", isEnd && "bg-gradient-to-l from-transparent to-blue-50")}>
-                                    <button
-                                        type="button"
-                                        onClick={() => handleSelect(date)}
-                                        disabled={disabled}
-                                        className={cn("w-9 h-9 cursor-pointer rounded-full flex items-center justify-center text-sm font-medium transition-all z-10", !item.isCurrentMonth ? "text-slate-300" : "text-slate-700", disabled && "opacity-20 cursor-not-allowed", (isStart || isEnd) ? "bg-blue-600 text-white" : "hover:bg-blue-50", isSameDay(date, new Date()) && !isStart && !isEnd && "text-blue-600 border border-blue-600")}
-                                    >
-                                        {date.getDate()}
-                                    </button>
+                                <div key={idx} className={cn("h-10 flex items-center justify-center relative", isBetween && "bg-blue-50", (isStart && type === 'range' && isEnd) ? "bg-blue-50 rounded-full" : (isStart && type === 'range') ? "bg-gradient-to-r from-transparent to-blue-50 rounded-l-full" : "", (isEnd && type === 'range') ? "bg-gradient-to-l from-transparent to-blue-50 rounded-r-full" : "")}>
+                                    <button type="button" onClick={() => handleSelect(date)} disabled={disabled} className={cn("w-9 h-9 cursor-pointer rounded-full flex items-center justify-center text-sm font-medium transition-all z-10", !item.isCurrentMonth ? "text-slate-300" : "text-slate-700", disabled && "opacity-20 cursor-not-allowed", (isStart || isEnd) ? "bg-blue-600 text-white shadow-md shadow-blue-200 hover:bg-blue-700" : "hover:bg-blue-50", isSameDay(date, new Date()) && !isStart && !isEnd && "text-blue-600 border border-blue-600")}>{date.getDate()}</button>
                                 </div>
                             )
                         })}
@@ -355,57 +402,40 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
         const renderMonthPicker = () => (
             <div className="w-[300px] p-3">
                 <div className="flex justify-between items-center mb-4 px-2">
-                    <button type="button" onClick={() => changeYear(-1)} className="p-1 hover:bg-slate-100 rounded">
-                        <AltArrowLeft size={20}/>
-                    </button>
+                    <button type="button" onClick={() => changeYear(-1)} className="p-1 hover:bg-slate-100 rounded text-slate-500"><AltArrowLeft size={20} /></button>
                     <span className="font-bold text-slate-800">{currentMonth.getFullYear()}</span>
-                    <button type="button" onClick={() => changeYear(1)} className="p-1 hover:bg-slate-100 rounded">
-                        <AltArrowRight size={20}/>
-                    </button>
+                    <button type="button" onClick={() => changeYear(1)} className="p-1 hover:bg-slate-100 rounded text-slate-500"><AltArrowRight size={20} /></button>
                 </div>
-
-                <div className="grid grid-cols-3 gap-2">
-                    {t.monthsShort.map((m, i) => (
-                        <button key={m}
-                                type="button"
-                                onClick={() => handleSelectMonth(i)}
-                                className={cn("hover:cursor-pointer py-3 rounded-lg text-sm font-semibold transition-colors", currentMonth.getMonth() === i ? "bg-blue-600 text-white" : "hover:bg-blue-50 text-slate-600")}>
-                            {m}
-                        </button>
-                    ))}
-                </div>
+                <div className="grid grid-cols-3 gap-2">{t.monthsShort.map((m, i) => <button key={m} type="button" onClick={() => handleSelectMonth(i)} className={cn("hover:cursor-pointer py-3 rounded-lg text-sm font-semibold transition-colors", currentMonth.getMonth() === i ? "bg-blue-600 text-white" : "hover:bg-blue-50 text-slate-600")}>{m}</button>)}</div>
             </div>
         )
 
         const renderYearPicker = () => {
             const start = Math.floor(currentMonth.getFullYear() / 12) * 12 + (yearPage * 12)
-            const years = Array.from({length: 12}, (_, i) => start + i)
+            const years = Array.from({ length: 12 }, (_, i) => start + i)
             return (
                 <div className="w-[300px] p-3">
                     <div className="flex justify-between items-center mb-4 px-2">
-                        <button type="button" onClick={() => setYearPage(p => p - 1)}
-                                className="p-1 hover:bg-slate-100 rounded">
-                            <AltArrowLeft size={20}/></button>
+                        <button type="button" onClick={() => setYearPage(p => p - 1)} className="p-1 hover:bg-slate-100 rounded text-slate-500"><AltArrowLeft size={20} /></button>
                         <span className="font-bold text-slate-800">{years[0]} - {years[11]}</span>
-                        <button type="button" onClick={() => setYearPage(p => p + 1)}
-                                className="p-1 hover:bg-slate-100 rounded">
-                            <AltArrowRight size={20}/></button>
+                        <button type="button" onClick={() => setYearPage(p => p + 1)} className="p-1 hover:bg-slate-100 rounded text-slate-500"><AltArrowRight size={20} /></button>
                     </div>
-                    <div className="grid grid-cols-3 gap-2">
-                        {years.map(y => (
-                            <button key={y}
-                                    type="button"
-                                    onClick={() => handleSelectYear(y)}
-                                    className={cn("hover:cursor-pointer py-3 rounded-lg text-sm font-semibold transition-colors", currentMonth.getFullYear() === y ? "bg-blue-600 text-white" : "hover:bg-blue-50 text-slate-600")}>
-                                {y}
-                            </button>
-                        ))}
-                    </div>
+                    <div className="grid grid-cols-3 gap-2">{years.map(y => <button key={y} type="button" onClick={() => handleSelectYear(y)} className={cn("hover:cursor-pointer py-3 rounded-lg text-sm font-semibold transition-colors", currentMonth.getFullYear() === y ? "bg-blue-600 text-white" : "hover:bg-blue-50 text-slate-600")}>{y}</button>)}</div>
                 </div>
             )
         }
 
-        const calendarIcon = <Calendar weight='Linear' size={20} className="text-slate-400"/>
+        const calendarIcon = (
+            <div
+                onClick={toggleOpen}
+                className={cn(
+                    "cursor-pointer flex items-center justify-center p-1 rounded-md transition-colors",
+                    disabled ? "pointer-events-none opacity-50" : "hover:bg-slate-100 active:bg-slate-200"
+                )}
+            >
+                <Calendar weight='Linear' size={20} className="text-slate-400" />
+            </div>
+        )
 
         return (
             <div ref={containerRef} className={cn('relative w-full group', className)}>
@@ -414,18 +444,15 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
                         label={label}
                         placeholder={Array.isArray(placeholder) ? placeholder[0] : placeholder}
                         value={displayValue}
+                        onChange={handleManualInputChange}
                         icon={iconPosition === 'left' ? calendarIcon : undefined}
                         rightIcon={iconPosition === 'right' ? calendarIcon : undefined}
                         disabled={disabled}
                         required={required}
                         error={error}
-                        onFocus={() => {
-                            if (!disabled) {
-                                setIsOpen(true)
-                                setView(startView)
-                            }
-                        }}
-                        readOnly={!allowManualInput}
+                        maxLength={type === 'date' ? 10 : undefined}
+                        onFocus={handleInputFocus}
+                        readOnly={!allowManualInput || type === 'range'}
                         showClearButton={showClear}
                         onClear={handleInputClear}
                     />
@@ -440,7 +467,8 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
                             dropdownAlign === 'left' && "left-0 origin-top-left",
                             dropdownAlign === 'center' && "left-1/2 -translate-x-1/2 origin-top"
                         )}
-                        style={{width: 'max-content'}}
+                        style={{ width: 'max-content' }}
+                        onMouseDown={(e) => e.stopPropagation()}
                     >
                         {view === 'day' ? (
                             <>
