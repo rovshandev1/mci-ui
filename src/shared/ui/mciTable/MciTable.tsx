@@ -218,7 +218,7 @@ export default function MciTable<T extends Record<string, unknown>>({
                 </div>
 
                 {/* BODY TABLE */}
-                <div className="rounded-xl border border-t-0 border-slate-200 bg-white">
+                <div className="rounded-xl border border-t-0 border-slate-200 bg-white overflow-hidden">
                     <table className="w-full table-fixed">
                         {renderColGroup()}
                         <tbody className="divide-y divide-slate-200">
