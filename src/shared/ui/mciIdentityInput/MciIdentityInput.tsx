@@ -1,16 +1,16 @@
-import React, {forwardRef, useCallback, useState} from 'react'
+import React, { forwardRef, useCallback, useState } from 'react'
 import MciInput from '../mciInput/MciInput'
-import {ComponentProps} from 'react'
+import { ComponentProps } from 'react'
 
 type MciInputProps = ComponentProps<typeof MciInput>
 
 interface MciDocumentInputProps extends Omit<MciInputProps, 'onChange'> {
-    mode: 'passport' | 'pinfl'
+    mode: 'passport' | 'pinfl' | 'metirka'
     onChange?: (value: string, e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 const MciIdentityInput = forwardRef<HTMLInputElement, MciDocumentInputProps>(
-    ({mode, onChange, value, ...props}, ref) => {
+    ({ mode, onChange, value, ...props }, ref) => {
         const [localValue, setLocalValue] = useState('')
 
         const inputValue = value !== undefined ? value : localValue
@@ -42,23 +42,64 @@ const MciIdentityInput = forwardRef<HTMLInputElement, MciDocumentInputProps>(
             return rawValue.replace(/\D/g, '').slice(0, 14)
         }
 
-        const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-            const rawValue = e.target.value
-            let finalValue = ''
+        const formatMetirka = (rawValue: string) => {
+            return rawValue
+                .toUpperCase()
+                .replace(/[^A-Z0-9\-\s]/g, '')
+                .replace(/\s+/g, ' ')
+                .slice(0, 15)
+        }
 
-            if (mode === 'passport') {
-                finalValue = formatPassport(rawValue)
-            } else {
-                finalValue = formatPinfl(rawValue)
+        const handleChange = useCallback(
+            (e: React.ChangeEvent<HTMLInputElement>) => {
+                const rawValue = e.target.value
+                let finalValue = ''
+
+                if (mode === 'passport') {
+                    finalValue = formatPassport(rawValue)
+                } else if (mode === 'pinfl') {
+                    finalValue = formatPinfl(rawValue)
+                } else if (mode === 'metirka') {
+                    finalValue = formatMetirka(rawValue)
+                }
+
+                if (value === undefined) {
+                    setLocalValue(finalValue)
+                }
+
+                e.target.value = finalValue
+                onChange?.(finalValue, e)
+            },
+            [mode, onChange, value]
+        )
+
+        const getPlaceholder = () => {
+            if (props.placeholder) return props.placeholder
+            switch (mode) {
+                case 'passport':
+                    return 'AA 1234567'
+                case 'pinfl':
+                    return '12345678901234'
+                case 'metirka':
+                    return 'I-TN 1234567'
+                default:
+                    return ''
             }
+        }
 
-            if (value === undefined) {
-                setLocalValue(finalValue)
+        const getMaxLength = () => {
+            if (props.maxLength) return props.maxLength
+            switch (mode) {
+                case 'passport':
+                    return 10
+                case 'pinfl':
+                    return 14
+                case 'metirka':
+                    return 15
+                default:
+                    return 255
             }
-
-            e.target.value = finalValue
-            onChange?.(finalValue, e)
-        }, [mode, onChange, value])
+        }
 
         return (
             <MciInput
@@ -66,12 +107,8 @@ const MciIdentityInput = forwardRef<HTMLInputElement, MciDocumentInputProps>(
                 {...props}
                 value={inputValue}
                 onChange={handleChange}
-                maxLength={mode === 'passport' ? 10 : 14}
-                placeholder={
-                    props.placeholder
-                        ? props.placeholder
-                        : mode === 'passport' ? 'AA 1234567' : '12345678901234'
-                }
+                maxLength={getMaxLength()}
+                placeholder={getPlaceholder()}
             />
         )
     }
