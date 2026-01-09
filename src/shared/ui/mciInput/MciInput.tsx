@@ -80,7 +80,14 @@ const MciInput = forwardRef<HTMLInputElement, InputProps>(
         }
 
         const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-            if (value === undefined) setInternalValue(e.target.value)
+            let val = e.target.value
+
+            if (type === 'number' && maxLength && val.length > maxLength) {
+                val = val.slice(0, maxLength)
+                e.target.value = val
+            }
+
+            if (value === undefined) setInternalValue(val)
             onChange?.(e)
         }
 
