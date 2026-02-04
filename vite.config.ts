@@ -22,24 +22,31 @@ export default defineConfig({
             fileName: (format) => `index.${format}.js`,
         },
         rollupOptions: {
-            external: ['react', 'react-dom', 'react/jsx-runtime', '@solar-icons/react', 'clsx', 'tailwind-merge',
+            external: [
+                'react',
+                'react-dom',
+                'react/jsx-runtime',
+                '@solar-icons/react',
+                'clsx',
+                'tailwind-merge',
                 'react-dom/client',
                 'react-dom/server',
-                'react-dom/cjs/react-dom.development.js',
-                'react-dom/cjs/react-dom.production.min.js',],
+            ],
             output: {
                 globals: {
                     react: 'React',
                     'react-dom': 'ReactDOM',
-                    'react/jsx-runtime': 'jsxRuntime',
-                    '@solar-icons/react': 'SolarIcons',
-                    'clsx': 'clsx',
-                    'tailwind-merge': 'tailwindMerge'
-                },
+                    'react/jsx-runtime': 'React',
+                    'react-dom/client': 'ReactDOM',
+                    'react-dom/server': 'ReactDOM',
 
+                    '@solar-icons/react': 'SolarIcons',
+                    clsx: 'clsx',
+                    'tailwind-merge': 'tailwindMerge',
+                },
                 assetFileNames: (assetInfo) => {
-                    if (assetInfo.name === 'style.css') return 'index.css';
-                    return assetInfo.name!;
+                    if (assetInfo.name === 'style.css') return 'index.css'
+                    return assetInfo.name!
                 },
             },
         },
