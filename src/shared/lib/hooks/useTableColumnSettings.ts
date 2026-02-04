@@ -1,148 +1,169 @@
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import type {
-    ColumnKey,
-    MciTableColumn,
-    MciTableColumnSettingsOptions,
-    MciTableColumnSettingsState,
-} from '../../types/mci-table.types.ts'
+import type {ColumnKey, MciTableColumn} from '../../types/mci-table.types'
 
-type PersistedState = { order?: string[]; hidden?: string[] }
+type Persisted = {
+    order: string[]
+    hidden: string[]
+}
 
-const safeParse = (raw: string | null): PersistedState | null => {
+type Options<T extends Record<string, unknown>> = {
+    storageKey: string
+    columns: MciTableColumn<T>[]
+    defaultVisibleKeys?: ColumnKey<T>[]
+    defaultOrder?: ColumnKey<T>[]
+}
+
+const isStringArray = (v: unknown): v is string[] =>
+    Array.isArray(v) && v.every((x) => typeof x === 'string')
+
+const safeParse = (raw: string | null): Persisted | null => {
     if (!raw) return null
     try {
-        const v = JSON.parse(raw) as PersistedState
-        if (!v || typeof v !== 'object') return null
-        return v
+        const parsed = JSON.parse(raw) as unknown
+        if (typeof parsed !== 'object' || parsed === null) return null
+
+        const obj = parsed as Record<string, unknown>
+        if (!isStringArray(obj.order) || !isStringArray(obj.hidden)) return null
+
+        return {order: obj.order, hidden: obj.hidden}
     } catch {
         return null
     }
 }
 
-const uniq = <T, >(arr: T[]) => Array.from(new Set(arr))
-
-export default function useMciTableColumns<T extends Record<string, unknown>>(
-    columns: MciTableColumn<T>[],
-    opts?: MciTableColumnSettingsOptions<T>
-) {
-    const allKeys = useMemo(() => columns.map((c) => c.key), [columns])
-    const storageKey = opts?.storageKey
-
-    const initial = useMemo<MciTableColumnSettingsState<T>>(() => {
-        const defaultOrder = opts?.defaultOrder?.length ? opts.defaultOrder : allKeys
-
-        const defaultHidden = (() => {
-            if (!opts?.defaultVisibleKeys) return []
-            const visible = new Set<ColumnKey<T>>(opts.defaultVisibleKeys)
-            return allKeys.filter((k) => !visible.has(k))
-        })()
-
-        if (!storageKey) return {order: uniq(defaultOrder), hidden: uniq(defaultHidden)}
-
-        const persisted = safeParse(localStorage.getItem(storageKey))
-        const persistedOrder = (persisted?.order ?? []) as ColumnKey<T>[]
-        const persistedHidden = (persisted?.hidden ?? []) as ColumnKey<T>[]
-
-        return {
-            order: uniq(persistedOrder.length ? persistedOrder : defaultOrder),
-            hidden: uniq(persistedHidden.length ? persistedHidden : defaultHidden),
+const uniq = (arr: string[]) => {
+    const set = new Set<string>()
+    const out: string[] = []
+    for (const x of arr) {
+        if (!set.has(x)) {
+            set.add(x)
+            out.push(x)
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [allKeys.join('|'), storageKey])
+    }
+    return out
+}
 
-    const [state, setState] = useState<MciTableColumnSettingsState<T>>(initial)
+export default function useTableColumnSettings<T extends Record<string, unknown>>(opts: Options<T>) {
+    const {storageKey, columns, defaultVisibleKeys, defaultOrder} = opts
 
-    const persist = useCallback(
-        (next: MciTableColumnSettingsState<T>) => {
-            opts?.onChange?.(next)
-            if (!storageKey) return
-            const payload: PersistedState = {
-                order: next.order as string[],
-                hidden: next.hidden as string[],
-            }
-            localStorage.setItem(storageKey, JSON.stringify(payload))
-        },
-        [opts, storageKey]
-    )
+    const allKeys = useMemo(() => columns.map((c) => String(c.key)), [columns])
+    const allKeysSet = useMemo(() => new Set(allKeys), [allKeys])
+
+    const [state, setState] = useState<Persisted>(() => {
+        if (typeof window === 'undefined') {
+            const baseOrder = (defaultOrder?.map(String) ?? allKeys) as string[]
+            const baseHidden =
+                defaultVisibleKeys && defaultVisibleKeys.length
+                    ? allKeys.filter((k) => !new Set(defaultVisibleKeys.map(String)).has(k))
+                    : []
+            return {order: uniq(baseOrder), hidden: uniq(baseHidden)}
+        }
+
+        const persisted = safeParse(window.localStorage.getItem(storageKey))
+
+        const baseOrder = (defaultOrder?.map(String) ?? allKeys) as string[]
+        const baseOrderUniq = uniq(baseOrder)
+
+        const persistedOrder = uniq((persisted?.order ?? []).filter((k) => allKeysSet.has(k)))
+
+        const mergedOrder = uniq([
+            ...persistedOrder,
+            ...baseOrderUniq.filter((k) => !persistedOrder.includes(k)),
+            ...allKeys.filter((k) => !persistedOrder.includes(k) && !baseOrderUniq.includes(k)),
+        ])
+
+        const persistedHidden = uniq((persisted?.hidden ?? []).filter((k) => allKeysSet.has(k)))
+
+        const derivedHidden =
+            persistedHidden.length === 0 && defaultVisibleKeys && defaultVisibleKeys.length
+                ? allKeys.filter((k) => !new Set(defaultVisibleKeys.map(String)).has(k))
+                : persistedHidden
+
+        return {order: mergedOrder, hidden: uniq(derivedHidden)}
+    })
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return
+        try {
+            window.localStorage.setItem(storageKey, JSON.stringify(state))
+        } catch {
+            // ignore
+        }
+    }, [storageKey, state])
 
     useEffect(() => {
         setState((prev) => {
-            const keySet = new Set(allKeys)
+            const nextOrder = uniq([
+                ...prev.order.filter((k) => allKeysSet.has(k)),
+                ...allKeys.filter((k) => !prev.order.includes(k)),
+            ])
+            const nextHidden = uniq(prev.hidden.filter((k) => allKeysSet.has(k)))
 
-            const nextOrder = prev.order.filter((k) => keySet.has(k))
-            for (const k of allKeys) if (!nextOrder.includes(k)) nextOrder.push(k)
+            const sameOrder =
+                nextOrder.length === prev.order.length && nextOrder.every((v, i) => v === prev.order[i])
+            const sameHidden =
+                nextHidden.length === prev.hidden.length && nextHidden.every((v, i) => v === prev.hidden[i])
 
-            const nextHidden = prev.hidden.filter((k) => keySet.has(k))
-
-            const changed =
-                nextOrder.length !== prev.order.length ||
-                nextHidden.length !== prev.hidden.length ||
-                nextOrder.some((k, i) => k !== prev.order[i])
-
-            const next = changed ? {order: nextOrder, hidden: nextHidden} : prev
-            if (changed) persist(next)
-            return next
+            if (sameOrder && sameHidden) return prev
+            return {order: nextOrder, hidden: nextHidden}
         })
-    }, [allKeys, persist])
+    }, [allKeys, allKeysSet])
 
-    const toggleHidden = useCallback(
-        (key: ColumnKey<T>) => {
-            setState((prev) => {
-                const set = new Set(prev.hidden)
-                set.has(key) ? set.delete(key) : set.add(key)
-                const next = {...prev, hidden: Array.from(set)}
-                persist(next)
-                return next
-            })
-        },
-        [persist]
-    )
-
-    const move = useCallback(
-        (fromIndex: number, toIndex: number) => {
-            setState((prev) => {
-                if (fromIndex === toIndex) return prev
-                const nextOrder = [...prev.order]
-                const [item] = nextOrder.splice(fromIndex, 1)
-                nextOrder.splice(toIndex, 0, item)
-                const next = {...prev, order: nextOrder}
-                persist(next)
-                return next
-            })
-        },
-        [persist]
-    )
-
-    const reset = useCallback(() => {
-        const defaultOrder = opts?.defaultOrder?.length ? opts.defaultOrder : allKeys
-        const defaultHidden = (() => {
-            if (!opts?.defaultVisibleKeys) return []
-            const visible = new Set<ColumnKey<T>>(opts.defaultVisibleKeys)
-            return allKeys.filter((k) => !visible.has(k))
-        })()
-
-        const next = {order: uniq(defaultOrder), hidden: uniq(defaultHidden)}
-        setState(next)
-        persist(next)
-    }, [allKeys, opts?.defaultOrder, opts?.defaultVisibleKeys, persist])
+    const hiddenSet = useMemo(() => new Set(state.hidden), [state.hidden])
 
     const orderedColumns = useMemo(() => {
-        const byKey = new Map(columns.map((c) => [c.key, c]))
-        return state.order.map((k) => byKey.get(k)).filter(Boolean) as MciTableColumn<T>[]
-    }, [columns, state.order])
+        const idx = new Map<string, number>()
+        state.order.forEach((k, i) => idx.set(k, i))
 
-    const visibleColumns = useMemo(() => {
-        const hiddenSet = new Set(state.hidden)
-        return orderedColumns.filter((c) => !hiddenSet.has(c.key))
-    }, [orderedColumns, state.hidden])
+        const visible = columns.filter((c) => !hiddenSet.has(String(c.key)))
+
+        return [...visible].sort((a, b) => {
+            const ai = idx.get(String(a.key)) ?? Number.MAX_SAFE_INTEGER
+            const bi = idx.get(String(b.key)) ?? Number.MAX_SAFE_INTEGER
+            return ai - bi
+        })
+    }, [columns, hiddenSet, state.order])
+
+    const hiddenKeys = useMemo(
+        () => state.hidden.filter((k) => allKeysSet.has(k)) as ColumnKey<T>[],
+        [state.hidden, allKeysSet]
+    )
+
+    const toggleColumn = useCallback((key: ColumnKey<T>) => {
+        const k = String(key)
+        setState((prev) => {
+            const isHidden = prev.hidden.includes(k)
+            const nextHidden = isHidden ? prev.hidden.filter((x) => x !== k) : [...prev.hidden, k]
+            return {...prev, hidden: uniq(nextHidden)}
+        })
+    }, [])
+
+    const moveColumn = useCallback((from: number, to: number) => {
+        setState((prev) => {
+            const arr = prev.order.slice()
+            if (from < 0 || to < 0 || from >= arr.length || to >= arr.length) return prev
+            const [item] = arr.splice(from, 1)
+            arr.splice(to, 0, item)
+            return {...prev, order: arr}
+        })
+    }, [])
+
+    const reset = useCallback(() => {
+        setState(() => {
+            const baseOrder = uniq((defaultOrder?.map(String) ?? allKeys) as string[])
+            const baseHidden =
+                defaultVisibleKeys && defaultVisibleKeys.length
+                    ? uniq(allKeys.filter((k) => !new Set(defaultVisibleKeys.map(String)).has(k)))
+                    : []
+            return {order: baseOrder, hidden: baseHidden}
+        })
+    }, [defaultOrder, defaultVisibleKeys, allKeys])
 
     return {
-        state,
-        allKeys,
         orderedColumns,
-        visibleColumns,
-        toggleHidden,
-        move,
+        hiddenKeys,
+        toggleColumn,
+        moveColumn,
         reset,
     }
 }
