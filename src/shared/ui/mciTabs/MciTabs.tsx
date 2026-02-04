@@ -102,7 +102,7 @@ export default function MciTabs({
                         className={cn(
                             'relative flex rounded-xl bg-slate-100 p-1',
                             tabsContainerClasses[position],
-                            !isVertical && 'w-full overflow-x-auto overflow-y-hidden no-scrollbar',
+                            !isVertical && 'w-full overflow-x-auto overflow-y-hidden no-scrollbar scroll-smooth',
                             isVertical ? 'min-w-48' : '',
                             tabListClassName
                         )}
