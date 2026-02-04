@@ -1,5 +1,5 @@
-import React, {useEffect, useRef, useState} from 'react'
-import {cn} from '../../lib/utils.ts'
+import React, { useEffect, useRef, useState } from 'react'
+import { cn } from '../../lib/utils.ts'
 
 type Tab = {
     id: string
@@ -40,7 +40,7 @@ export default function MciTabs({
             const activeTabElement = tabsRef.current[activeIndex]
 
             if (activeTabElement) {
-                const {offsetLeft, offsetTop, offsetWidth, offsetHeight} = activeTabElement
+                const { offsetLeft, offsetTop, offsetWidth, offsetHeight } = activeTabElement
                 setIndicatorStyle({
                     left: `${offsetLeft}px`,
                     top: `${offsetTop}px`,
@@ -59,11 +59,12 @@ export default function MciTabs({
             document.fonts.ready.then(updateIndicator)
         }
         return () => window.removeEventListener('resize', updateIndicator)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeTab, position, tabs])
 
     useEffect(() => {
-        tabsRef.current = tabsRef.current.slice(0, tabs.length);
-    }, [tabs]);
+        tabsRef.current = tabsRef.current.slice(0, tabs.length)
+    }, [tabs])
 
     const isVertical = position === 'left' || position === 'right'
 
@@ -90,70 +91,73 @@ export default function MciTabs({
 
     return (
         <div className={cn('flex w-full', containerClasses[position], className)}>
-            <div className={cn(
-                "flex gap-4",
-                isVertical ? "flex-col items-start" : "flex-row items-center justify-between"
-            )}>
-                <div
-                    className={cn(
-                        'relative flex rounded-xl bg-slate-100 p-1',
-                        tabsContainerClasses[position],
-                        isVertical ? 'min-w-48' : '',
-                        tabListClassName
-                    )}
-                >
+            <div
+                className={cn(
+                    'flex w-full gap-4',
+                    isVertical ? 'flex-col items-start' : 'flex-row items-center'
+                )}
+            >
+                <div className={cn('flex-1 min-w-0', isVertical && 'w-full')}>
                     <div
                         className={cn(
-                            'absolute bg-white rounded-lg',
-                            isVertical ? 'w-full' : 'h-full'
+                            'relative flex rounded-xl bg-slate-100 p-1',
+                            tabsContainerClasses[position],
+                            isVertical ? 'min-w-48' : 'w-full overflow-x-auto',
+                            !isVertical && 'no-scrollbar',
+                            tabListClassName
                         )}
-                        style={indicatorStyle}
-                    />
+                    >
+                        <div
+                            className={cn('absolute rounded-lg bg-white', isVertical ? 'w-full' : 'h-full')}
+                            style={indicatorStyle}
+                        />
 
-                    {tabs?.map((tab, index) => {
-                        const isActive = activeTab === tab.id
+                        {tabs?.map((tab, index) => {
+                            const isActive = activeTab === tab.id
 
-                        return (
-                            <button
-                                key={tab?.id}
-                                ref={(el) => {
-                                    tabsRef.current[index] = el
-                                }}
-                                onClick={() => {
-                                    if (!tab?.disabled) {
-                                        setActiveTab(tab?.id)
-                                        onChange?.(tab?.id)
-                                    }
-                                }}
-                                disabled={tab?.disabled}
-                                className={cn(
-                                    'relative flex cursor-pointer text-base font-normal text-black items-center justify-center p-2 z-10 whitespace-nowrap transition-colors duration-300',
-                                    tab?.disabled && 'opacity-50 cursor-not-allowed',
-                                    isVertical ? 'w-full justify-start' : 'flex-1'
-                                )}
-                            >
-                                {tab?.icon && (
-                                    <span
-                                        className={cn('shrink-0 transition-transform duration-200', isActive && 'scale-110')}>
-                                        {tab?.icon}
-                                    </span>
-                                )}
-
-                                <span className="relative z-10" title={tab?.label}>{tab?.label}</span>
-                            </button>
-                        )
-                    })}
+                            return (
+                                <button
+                                    key={tab?.id}
+                                    ref={(el) => {
+                                        tabsRef.current[index] = el
+                                    }}
+                                    onClick={() => {
+                                        if (!tab?.disabled) {
+                                            setActiveTab(tab?.id)
+                                            onChange?.(tab?.id)
+                                        }
+                                    }}
+                                    disabled={tab?.disabled}
+                                    className={cn(
+                                        'relative z-10 flex cursor-pointer items-center justify-center whitespace-nowrap px-3 py-2 text-base font-normal text-black transition-colors duration-300',
+                                        tab?.disabled && 'cursor-not-allowed opacity-50',
+                                        isVertical ? 'w-full justify-start' : 'flex-none'
+                                    )}
+                                >
+                                    {tab?.icon && (
+                                        <span
+                                            className={cn(
+                                                'shrink-0 transition-transform duration-200',
+                                                isActive && 'scale-110'
+                                            )}
+                                        >
+                      {tab?.icon}
+                    </span>
+                                    )}
+                                    <span className="relative z-10" title={tab?.label}>
+                    {tab?.label}
+                  </span>
+                                </button>
+                            )
+                        })}
+                    </div>
                 </div>
 
-                {extra && (
-                    <div className={cn("shrink-0", isVertical && "w-full")}>
-                        {extra}
-                    </div>
-                )}
+                {extra && <div className={cn('shrink-0', isVertical && 'w-full')}>{extra}</div>}
             </div>
 
-            <div className={cn('flex-1 w-full overflow-hidden', contentClasses[position], contentClassName)}>
-                <div key={activeTab} className="animate-fade-in w-full" style={{animationDuration: '0.4s'}}>
+            <div className={cn('w-full flex-1 overflow-hidden', contentClasses[position], contentClassName)}>
+                <div key={activeTab} className="animate-fade-in w-full" style={{ animationDuration: '0.4s' }}>
                     {tabs?.find((tab) => tab?.id === activeTab)?.content}
                 </div>
             </div>
