@@ -1,7 +1,7 @@
 {
   "name": "@mci-ui/mci-ui",
   "private": false,
-  "version": "0.0.60",
+  "version": "0.0.61",
   "type": "module",
   "main": "./dist/index.umd.js",
   "module": "./dist/index.es.js",
@@ -19,7 +19,9 @@
     "./dist/index.css",
     "./style.css"
   ],
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "access": "public"
   },
@@ -66,7 +68,9 @@
     "tailwind-merge": "^3.4.0"
   },
   "description": "Minimal UI component library built with React and Tailwind CSS.",
-  "keywords": ["mci-ui"],
+  "keywords": [
+    "mci-ui"
+  ],
   "author": "rovshandev",
   "license": "ISC",
   "repository": {
