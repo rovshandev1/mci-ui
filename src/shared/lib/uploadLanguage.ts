@@ -1,120 +1,150 @@
 export interface UploadLanguage {
-   dragAndDrop: string
-   clickToUpload: string
-   or: string
-   fileRequirements: (
-      multiple: boolean,
-      maxFiles: number,
-      maxSize: number,
-      accept: string
-   ) => string
+    dragAndDrop: string
+    clickToUpload: string
+    or: string
 
-   selectedFiles: string
-   clearAll: string
+    dropHereTitle: string
 
-   uploading: string
-   success: string
-   error: string
+    fileRequirements: (
+        multiple: boolean,
+        maxFiles: number,
+        maxSize: number,
+        accept: string
+    ) => string
 
-   maxFilesError: (maxFiles: number) => string
-   fileSizeError: (fileName: string, maxSize: number) => string
-   fileTypeError: (fileName: string) => string
-   uploadFailed: string
+    selectedFiles: string
+    clearAll: string
 
-   file: string
-   image: string
-   video: string
-   audio: string
-   document: string
+    uploading: string
+    success: string
+    error: string
+
+    preview: string
+    download: string
+    remove: string
+
+    maxFilesError: (maxFiles: number) => string
+    fileSizeError: (fileName: string, maxSize: number) => string
+    fileTypeError: (fileName: string) => string
+    uploadFailed: string
+
+    file: string
+    image: string
+    video: string
+    audio: string
+    document: string
 }
+
 
 export const uploadLanguages: Record<string, UploadLanguage> = {
-   uz: {
-      dragAndDrop: 'Faylni bu yerga torting',
-      clickToUpload: 'yoki bosish orqali tanlang',
-      or: 'yoki',
-      fileRequirements: (multiple, maxFiles, maxSize, accept) =>
-         `${
-            multiple ? `Maksimum ${maxFiles} ta fayl` : '1 ta fayl'
-         } • Hajmi ${maxSize}MB dan kichik • ${
-            accept !== '*/*' ? `Format: ${accept}` : 'Barcha formatlar'
-         }`,
+    uz: {
+        dragAndDrop: 'Faylni bu yerga torting',
+        clickToUpload: 'yoki bosib tanlang',
+        or: 'yoki',
 
-      selectedFiles: 'Tanlangan fayllar',
-      clearAll: "Barchasini o'chirish",
+        dropHereTitle: 'Faylni shu yerga yuklang',
 
-      uploading: 'Yuklanmoqda...',
-      success: 'Muvaffaqiyatli yuklandi',
-      error: 'Xatolik',
+        fileRequirements: (multiple, maxFiles, maxSize, accept) =>
+            `${multiple ? `Maksimum ${maxFiles} ta fayl` : '1 ta fayl'} • ${maxSize}MB gacha • ${
+                accept !== '*/*' ? `Format: ${accept}` : 'Barcha formatlar'
+            }`,
 
-      maxFilesError: (maxFiles) => `Maksimum ${maxFiles} ta fayl yuklash mumkin`,
-      fileSizeError: (fileName, maxSize) =>
-         `"${fileName}" fayli hajmi ${maxSize}MB dan kichik bo'lishi kerak`,
-      fileTypeError: (fileName) => `"${fileName}" fayl turi qabul qilinmaydi`,
-      uploadFailed: 'Yuklash muvaffaqiyatsiz tugadi',
+        selectedFiles: 'Tanlangan fayllar',
+        clearAll: "Barchasini o‘chirish",
 
-      file: 'Fayl',
-      image: 'Rasm',
-      video: 'Video',
-      audio: 'Audio',
-      document: 'Hujjat',
-   },
-   ru: {
-      dragAndDrop: 'Перетащите файл сюда',
-      clickToUpload: 'или выберите нажатием',
-      or: 'или',
-      fileRequirements: (multiple, maxFiles, maxSize, accept) =>
-         `${multiple ? `Максимум ${maxFiles} файлов` : '1 файл'} • Размер до ${maxSize}MB • ${
-            accept !== '*/*' ? `Формат: ${accept}` : 'Все форматы'
-         }`,
+        uploading: 'Yuklanmoqda...',
+        success: 'Yuklandi',
+        error: 'Xatolik',
 
-      selectedFiles: 'Выбранные файлы',
-      clearAll: 'Очистить все',
+        preview: 'Ko‘rish',
+        download: 'Yuklab olish',
+        remove: "O‘chirish",
 
-      uploading: 'Загружается...',
-      success: 'Успешно загружено',
-      error: 'Ошибка',
+        maxFilesError: (maxFiles) => `Maksimum ${maxFiles} ta fayl yuklash mumkin`,
+        fileSizeError: (fileName, maxSize) =>
+            `"${fileName}" fayl hajmi ${maxSize}MB dan kichik bo‘lishi kerak`,
+        fileTypeError: (fileName) => `"${fileName}" fayl turi qabul qilinmaydi`,
+        uploadFailed: 'Yuklash muvaffaqiyatsiz tugadi',
 
-      maxFilesError: (maxFiles) => `Можно загрузить максимум ${maxFiles} файлов`,
-      fileSizeError: (fileName, maxSize) =>
-         `Размер файла "${fileName}" должен быть меньше ${maxSize}MB`,
-      fileTypeError: (fileName) => `Тип файла "${fileName}" не поддерживается`,
-      uploadFailed: 'Не удалось загрузить файл',
+        file: 'Fayl',
+        image: 'Rasm',
+        video: 'Video',
+        audio: 'Audio',
+        document: 'Hujjat',
+    },
 
-      file: 'Файл',
-      image: 'Изображение',
-      video: 'Видео',
-      audio: 'Аудио',
-      document: 'Документ',
-   },
-   en: {
-      dragAndDrop: 'Drag and drop file here',
-      clickToUpload: 'or click to select',
-      or: 'or',
-      fileRequirements: (multiple, maxFiles, maxSize, accept) =>
-         `${multiple ? `Maximum ${maxFiles} files` : '1 file'} • Size up to ${maxSize}MB • ${
-            accept !== '*/*' ? `Format: ${accept}` : 'All formats'
-         }`,
+    ru: {
+        dragAndDrop: 'Перетащите файл сюда',
+        clickToUpload: 'или выберите нажатием',
+        or: 'или',
 
-      selectedFiles: 'Selected files',
-      clearAll: 'Clear all',
+        dropHereTitle: 'Загрузите свой файл сюда',
 
-      uploading: 'Uploading...',
-      success: 'Successfully uploaded',
-      error: 'Error',
+        fileRequirements: (multiple, maxFiles, maxSize, accept) =>
+            `${multiple ? `Максимум ${maxFiles} файлов` : '1 файл'} • До ${maxSize}MB • ${
+                accept !== '*/*' ? `Формат: ${accept}` : 'Все форматы'
+            }`,
 
-      maxFilesError: (maxFiles) => `Maximum ${maxFiles} files can be uploaded`,
-      fileSizeError: (fileName, maxSize) =>
-         `File "${fileName}" size must be less than ${maxSize}MB`,
-      fileTypeError: (fileName) => `File type "${fileName}" is not supported`,
-      uploadFailed: 'Upload failed',
+        selectedFiles: 'Выбранные файлы',
+        clearAll: 'Очистить все',
 
-      file: 'File',
-      image: 'Image',
-      video: 'Video',
-      audio: 'Audio',
-      document: 'Document',
-   },
+        uploading: 'Загружается...',
+        success: 'Загружено',
+        error: 'Ошибка',
+
+        preview: 'Просмотр',
+        download: 'Скачать',
+        remove: 'Удалить',
+
+        maxFilesError: (maxFiles) => `Можно загрузить максимум ${maxFiles} файлов`,
+        fileSizeError: (fileName, maxSize) =>
+            `Размер файла "${fileName}" должен быть меньше ${maxSize}MB`,
+        fileTypeError: (fileName) => `Тип файла "${fileName}" не поддерживается`,
+        uploadFailed: 'Не удалось загрузить файл',
+
+        file: 'Файл',
+        image: 'Изображение',
+        video: 'Видео',
+        audio: 'Аудио',
+        document: 'Документ',
+    },
+
+    en: {
+        dragAndDrop: 'Drag and drop a file here',
+        clickToUpload: 'or click to select',
+        or: 'or',
+
+        dropHereTitle: 'Upload your file here',
+
+        fileRequirements: (multiple, maxFiles, maxSize, accept) =>
+            `${multiple ? `Up to ${maxFiles} files` : '1 file'} • Up to ${maxSize}MB • ${
+                accept !== '*/*' ? `Format: ${accept}` : 'All formats'
+            }`,
+
+        selectedFiles: 'Selected files',
+        clearAll: 'Clear all',
+
+        uploading: 'Uploading...',
+        success: 'Uploaded',
+        error: 'Error',
+
+        preview: 'Preview',
+        download: 'Download',
+        remove: 'Remove',
+
+        maxFilesError: (maxFiles) => `You can upload up to ${maxFiles} files`,
+        fileSizeError: (fileName, maxSize) =>
+            `File "${fileName}" must be smaller than ${maxSize}MB`,
+        fileTypeError: (fileName) => `File type "${fileName}" is not supported`,
+        uploadFailed: 'Upload failed',
+
+        file: 'File',
+        image: 'Image',
+        video: 'Video',
+        audio: 'Audio',
+        document: 'Document',
+    },
 }
+
 
 export type UploadLocale = keyof typeof uploadLanguages
