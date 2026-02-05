@@ -113,7 +113,7 @@ export default function MciTabs({
                             'relative flex rounded-xl bg-slate-100 p-1',
                             tabsContainerClasses[position],
                             !isVertical &&
-                            'w-full overflow-x-auto overflow-y-hidden no-scrollbar scroll-smooth',
+                            'w-full overflow-hidden',
                             isVertical ? 'min-w-48' : '',
                             tabListClassName
                         )}
@@ -128,37 +128,32 @@ export default function MciTabs({
 
                             return (
                                 <button
-                                    key={tab.id}
+                                    key={tab?.id}
                                     ref={(el) => {
                                         tabsRef.current[index] = el
                                     }}
                                     onClick={() => {
-                                        if (!tab.disabled) {
-                                            setActiveTab(tab.id)
-                                            onChange?.(tab.id)
+                                        if (!tab?.disabled) {
+                                            setActiveTab(tab?.id)
+                                            onChange?.(tab?.id)
                                         }
                                     }}
-                                    disabled={tab.disabled}
+                                    disabled={tab?.disabled}
                                     className={cn(
                                         'relative z-10 flex items-center justify-center whitespace-nowrap px-3 py-2 text-base font-normal text-black transition-colors duration-300',
-                                        tab.disabled && 'cursor-not-allowed opacity-50',
-                                        isVertical ? 'w-full justify-start' : 'flex-none'
+                                        tab?.disabled && 'cursor-not-allowed opacity-50',
+                                        isVertical ? 'w-full justify-start' : 'flex-1 min-w-0' // ✅
                                     )}
                                 >
-                                    {tab.icon && (
-                                        <span
-                                            className={cn(
-                                                'shrink-0 transition-transform duration-200',
-                                                isActive && 'scale-110'
-                                            )}
-                                        >
-                      {tab.icon}
-                    </span>
+                                    {tab?.icon && (
+                                        <span className={cn('shrink-0 transition-transform duration-200', isActive && 'scale-110')}>
+      {tab?.icon}
+    </span>
                                     )}
 
-                                    <span className="relative z-10" title={tab.label}>
-                    {tab.label}
-                  </span>
+                                    <span className="relative z-10 truncate" title={tab?.label}>
+    {tab?.label}
+  </span>
                                 </button>
                             )
                         })}
