@@ -101,7 +101,6 @@ export default function MciTabs({
                         : 'flex-row flex-wrap items-center'
                 )}
             >
-                {/* TABS */}
                 <div
                     className={cn(
                         'flex-1',
@@ -140,9 +139,9 @@ export default function MciTabs({
                                     }}
                                     disabled={tab?.disabled}
                                     className={cn(
-                                        'relative z-10 flex items-center justify-center whitespace-nowrap px-3 py-2 text-base font-normal text-black transition-colors duration-300',
+                                        'relative z-10 flex items-center justify-center whitespace-nowrap px-3 py-2 text-base font-normal text-black transition-colors duration-300 hover:cursor-pointer',
                                         tab?.disabled && 'cursor-not-allowed opacity-50',
-                                        isVertical ? 'w-full justify-start' : 'flex-1 min-w-0' // ✅
+                                        isVertical ? 'w-full justify-start' : 'flex-1 min-w-0'
                                     )}
                                 >
                                     {tab?.icon && (
@@ -160,7 +159,6 @@ export default function MciTabs({
                     </div>
                 </div>
 
-                {/* EXTRA */}
                 {extra && (
                     <div
                         className={cn(
