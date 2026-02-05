@@ -46,7 +46,7 @@ export default function MciTabs({
                     top: `${offsetTop}px`,
                     width: `${offsetWidth}px`,
                     height: `${offsetHeight}px`,
-                    transition: 'all 0.4s cubic-bezier(0.25, 1, 0.5, 1)',
+                    transition: 'all 0.35s cubic-bezier(0.25, 1, 0.5, 1)',
                 })
             }
         })
@@ -54,10 +54,12 @@ export default function MciTabs({
 
     useEffect(() => {
         updateIndicator()
+
         window.addEventListener('resize', updateIndicator)
         if ('fonts' in document) {
             document.fonts.ready.then(updateIndicator)
         }
+
         return () => window.removeEventListener('resize', updateIndicator)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeTab, position, tabs])
@@ -94,15 +96,24 @@ export default function MciTabs({
             <div
                 className={cn(
                     'flex w-full gap-4',
-                    isVertical ? 'flex-col items-start' : 'flex-row items-center'
+                    isVertical
+                        ? 'flex-col items-start'
+                        : 'flex-row flex-wrap items-center'
                 )}
             >
-                <div className={cn('flex-1 min-w-0', isVertical && 'w-full')}>
+                {/* TABS */}
+                <div
+                    className={cn(
+                        'flex-1',
+                        isVertical ? 'w-full' : 'min-w-[520px]'
+                    )}
+                >
                     <div
                         className={cn(
                             'relative flex rounded-xl bg-slate-100 p-1',
                             tabsContainerClasses[position],
-                            !isVertical && 'w-full overflow-x-auto overflow-y-hidden no-scrollbar scroll-smooth',
+                            !isVertical &&
+                            'w-full overflow-x-auto overflow-y-hidden no-scrollbar scroll-smooth',
                             isVertical ? 'min-w-48' : '',
                             tabListClassName
                         )}
@@ -117,35 +128,36 @@ export default function MciTabs({
 
                             return (
                                 <button
-                                    key={tab?.id}
+                                    key={tab.id}
                                     ref={(el) => {
                                         tabsRef.current[index] = el
                                     }}
                                     onClick={() => {
-                                        if (!tab?.disabled) {
-                                            setActiveTab(tab?.id)
-                                            onChange?.(tab?.id)
+                                        if (!tab.disabled) {
+                                            setActiveTab(tab.id)
+                                            onChange?.(tab.id)
                                         }
                                     }}
-                                    disabled={tab?.disabled}
+                                    disabled={tab.disabled}
                                     className={cn(
-                                        'relative z-10 flex cursor-pointer items-center justify-center whitespace-nowrap px-3 py-2 text-base font-normal text-black transition-colors duration-300',
-                                        tab?.disabled && 'cursor-not-allowed opacity-50',
+                                        'relative z-10 flex items-center justify-center whitespace-nowrap px-3 py-2 text-base font-normal text-black transition-colors duration-300',
+                                        tab.disabled && 'cursor-not-allowed opacity-50',
                                         isVertical ? 'w-full justify-start' : 'flex-none'
                                     )}
                                 >
-                                    {tab?.icon && (
+                                    {tab.icon && (
                                         <span
                                             className={cn(
                                                 'shrink-0 transition-transform duration-200',
                                                 isActive && 'scale-110'
                                             )}
                                         >
-                      {tab?.icon}
+                      {tab.icon}
                     </span>
                                     )}
-                                    <span className="relative z-10" title={tab?.label}>
-                    {tab?.label}
+
+                                    <span className="relative z-10" title={tab.label}>
+                    {tab.label}
                   </span>
                                 </button>
                             )
@@ -153,12 +165,24 @@ export default function MciTabs({
                     </div>
                 </div>
 
-                {extra && <div className={cn('shrink-0', isVertical && 'w-full')}>{extra}</div>}
+                {/* EXTRA */}
+                {extra && (
+                    <div
+                        className={cn(
+                            'shrink-0 ml-auto',
+                            isVertical ? 'w-full' : 'max-w-full'
+                        )}
+                    >
+                        <div className="flex flex-wrap items-center justify-end gap-2">
+                            {extra}
+                        </div>
+                    </div>
+                )}
             </div>
 
             <div className={cn('w-full flex-1 overflow-hidden', contentClasses[position], contentClassName)}>
-                <div key={activeTab} className="animate-fade-in w-full" style={{ animationDuration: '0.4s' }}>
-                    {tabs?.find((tab) => tab?.id === activeTab)?.content}
+                <div key={activeTab} className="animate-fade-in w-full" style={{ animationDuration: '0.35s' }}>
+                    {tabs?.find((tab) => tab.id === activeTab)?.content}
                 </div>
             </div>
         </div>
