@@ -34,9 +34,7 @@ export default function MciDrawer({
     const drawerRef = useRef<HTMLDivElement>(null)
     const previousActiveElement = useRef<HTMLElement | null>(null)
 
-    const handleClose = useCallback(() => {
-        onClose()
-    }, [onClose])
+    const handleClose = useCallback(() => onClose(), [onClose])
 
     useEscapeKey(() => {
         if (closeOnEscape && isOpen) handleClose()
@@ -56,27 +54,35 @@ export default function MciDrawer({
     }, [isOpen])
 
     useEffect(() => {
-        if (isOpen) {
-            document.body.style.overflow = 'hidden'
-        }
+        if (isOpen) document.body.style.overflow = 'hidden'
         return () => {
             document.body.style.overflow = 'unset'
         }
     }, [isOpen])
 
-    const drawerStyle = useMemo(() => ({
-        width: typeof width === 'number' ? `${width}px` : width,
-        transform: isOpen
-            ? 'translateX(0)'
-            : position === 'right'
-                ? 'translateX(calc(100% + 48px))'
-                : 'translateX(calc(-100% - 48px))'
-    }), [isOpen, width, position])
+    const drawerStyle = useMemo(
+        () => ({
+            ['--drawer-w' as any]: typeof width === 'number' ? `${width}px` : width,
+            transform: isOpen
+                ? 'translateX(0)'
+                : position === 'right'
+                    ? 'translateX(calc(100% + 48px))'
+                    : 'translateX(calc(-100% - 48px))',
+        }),
+        [isOpen, width, position]
+    )
 
-    const positionClasses = {
-        left: 'top-6 left-6 bottom-6',
-        right: 'top-6 right-6 bottom-6',
-    }
+    const hasHeader = Boolean(title || description || showCloseButton)
+
+    const mobilePos =
+        position === 'right'
+            ? 'top-0 bottom-0 right-0 left-3 rounded-l-3xl rounded-r-none'
+            : 'top-0 bottom-0 left-0 right-3 rounded-r-3xl rounded-l-none'
+
+    const desktopPos =
+        position === 'right'
+            ? 'sm:top-6 sm:bottom-6 sm:right-6 sm:left-auto'
+            : 'sm:top-6 sm:bottom-6 sm:left-6 sm:right-auto'
 
     return (
         <>
@@ -94,23 +100,38 @@ export default function MciDrawer({
                 tabIndex={-1}
                 style={drawerStyle}
                 className={cn(
-                    'fixed flex flex-col z-50 w-full rounded-2xl bg-white transition-transform duration-300 ease-in-out outline-none',
-                    positionClasses[position],
+                    'fixed z-50 flex flex-col bg-white outline-none min-h-0',
+                    'transition-transform duration-300 ease-in-out',
+                    'shadow-2xl',
+
+                    mobilePos,
+                    'h-[100dvh]',
+                    'pb-[env(safe-area-inset-bottom)]',
+
+                    desktopPos,
+                    'sm:h-auto sm:rounded-2xl sm:pb-0',
+                    'sm:w-[var(--drawer-w)]',
+
                     drawerClassName
                 )}
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby={title ? 'drawer-title' : undefined}
             >
-                {(title || showCloseButton || description) && (
-                    <div className="flex items-start justify-between border-b border-slate-200 p-6 shrink-0">
-                        {title && (
-                            <div className="block">
-                                <h2 id="drawer-title" className="text-h3 font-semibold text-black">
-                                    {title}
-                                </h2>
+                {hasHeader && (
+                    <div className="flex items-start justify-between border-b border-slate-200 shrink-0 px-4 py-4 sm:p-6">
+                        {(title || description) && (
+                            <div className="block pr-3">
+                                {title && (
+                                    <h2
+                                        id="drawer-title"
+                                        className="font-semibold text-black text-xl leading-tight sm:text-h3"
+                                    >
+                                        {title}
+                                    </h2>
+                                )}
                                 {description && (
-                                    <p className="text-base text-slate-base font-normal mt-2">
+                                    <p className="text-sm sm:text-base text-slate-base font-normal mt-2">
                                         {description}
                                     </p>
                                 )}
@@ -121,20 +142,20 @@ export default function MciDrawer({
                             <button
                                 type="button"
                                 onClick={handleClose}
-                                className="bg-slate-100 rounded-xl w-12 h-12 hover:cursor-pointer text-black transition flex items-center justify-center group active:scale-95"
+                                className="bg-slate-100 rounded-xl w-11 h-11 sm:w-12 sm:h-12 hover:cursor-pointer text-black transition flex items-center justify-center group active:scale-95"
                             >
-                                <CloseIcon className="h-6 w-6 transition-transform duration-300 group-hover:rotate-180" />
+                                <CloseIcon className="h-5 w-5 sm:h-6 sm:w-6 transition-transform duration-300 group-hover:rotate-180" />
                             </button>
                         )}
                     </div>
                 )}
 
-                <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200 p-6">
+                <div className="flex-1 min-h-0 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200 px-4 py-4 sm:p-6">
                     {children}
                 </div>
 
                 {footer && (
-                    <div className="flex items-center justify-end border-t border-slate-200 p-6 shrink-0">
+                    <div className="shrink-0 flex items-center justify-end border-t border-slate-200 px-4 py-4 sm:p-6 gap-3">
                         {footer}
                     </div>
                 )}
