@@ -11,7 +11,7 @@ function normalizeColWidth(width?: string | number) {
     return width
 }
 
-function DefaultCell({ children, title }: { children: React.ReactNode; title?: string }) {
+function Clamp2({ children, title }: { children: React.ReactNode; title?: string }) {
     const t = typeof children === 'string' ? children : undefined
 
     return (
@@ -215,11 +215,7 @@ export default function MciTable<T extends Record<string, unknown>>({
                                 <td colSpan={columns.length + (rowSelection ? 1 : 0)} className="py-20">
                                     <div className="flex flex-col items-center justify-center">
                                         <div className="relative mb-4">
-                                            <ConfoundedSquare
-                                                weight="Bold"
-                                                size={64}
-                                                className="animate-float text-slate-400"
-                                            />
+                                            <ConfoundedSquare weight="Bold" size={64} className="animate-float text-slate-400" />
                                         </div>
                                         <p className="text-sm font-medium text-slate-400">{noDataText}</p>
                                     </div>
@@ -248,29 +244,21 @@ export default function MciTable<T extends Record<string, unknown>>({
 
                                         {columns.map((col) => {
                                             const cellValue = row[col.key]
-                                            const raw = col.render
-                                                ? col.render(cellValue as any, row)
-                                                : String(cellValue ?? '-')
+                                            const raw = col.render ? col.render(cellValue as any, row) : String(cellValue ?? '-')
 
                                             return (
                                                 <td
                                                     key={col.key}
                                                     className={cn(
                                                         'align-top px-4 py-3 text-sm font-normal text-black',
-                                                        'whitespace-nowrap overflow-hidden text-ellipsis',
+                                                        'min-w-0 whitespace-normal',
                                                         col.align === 'center' && 'text-center',
                                                         col.align === 'right' && 'text-right',
                                                         bodyClassName,
                                                         col.className
                                                     )}
                                                 >
-                                                    {col.render ? (
-                                                        <div className="min-w-0">
-                                                            <div className="clamp-2 break-words">{raw}</div>
-                                                        </div>
-                                                    ) : (
-                                                        <DefaultCell title={typeof raw === 'string' ? raw : undefined}>{raw}</DefaultCell>
-                                                    )}
+                                                    <Clamp2 title={typeof raw === 'string' ? raw : undefined}>{raw}</Clamp2>
                                                 </td>
                                             )
                                         })}
