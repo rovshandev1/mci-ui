@@ -1,8 +1,8 @@
-import {useEffect, useMemo, useRef, useState, useCallback} from 'react'
-import {TransferVertical} from '@solar-icons/react'
-import {cn, useClickOutside} from '../../lib/utils'
-import {MciCheck} from '../../../index.ts'
-import type {ColumnKey, MciTableColumn} from '../../types/mci-table.types.ts'
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
+import { TransferVertical } from '@solar-icons/react'
+import { cn, useClickOutside } from '../../lib/utils'
+import { MciCheck } from '../../../index.ts'
+import type { ColumnKey, MciTableColumn } from '../../types/mci-table.types.ts'
 
 type Props<T extends Record<string, unknown>> = {
     open: boolean
@@ -11,6 +11,8 @@ type Props<T extends Record<string, unknown>> = {
     hidden: ColumnKey<T>[]
     onToggle: (key: ColumnKey<T>) => void
     onMove: (from: number, to: number) => void
+
+    minVisible?: number
 }
 
 export default function MciTableColumnsPanel<T extends Record<string, unknown>>({
@@ -20,9 +22,10 @@ export default function MciTableColumnsPanel<T extends Record<string, unknown>>(
                                                                                     hidden,
                                                                                     onToggle,
                                                                                     onMove,
+                                                                                    minVisible = 5,
                                                                                 }: Props<T>) {
     const ref = useRef<HTMLDivElement>(null)
-    const {handleClick} = useClickOutside(ref, onClose)
+    const { handleClick } = useClickOutside(ref, onClose)
 
     useEffect(() => {
         if (!open) return
@@ -31,6 +34,12 @@ export default function MciTableColumnsPanel<T extends Record<string, unknown>>(
     }, [open, handleClick])
 
     const hiddenSet = useMemo(() => new Set(hidden), [hidden])
+
+    const visibleCount = useMemo(() => {
+        let c = 0
+        for (const col of columns) if (!hiddenSet.has(col.key)) c++
+        return c
+    }, [columns, hiddenSet])
 
     const dragFromRef = useRef<number | null>(null)
     const dragOverRef = useRef<number | null>(null)
@@ -82,6 +91,14 @@ export default function MciTableColumnsPanel<T extends Record<string, unknown>>(
         commitDragOver(null)
     }, [commitDragOver])
 
+    const safeToggle = useCallback(
+        (key: ColumnKey<T>, isLocked: boolean) => {
+            if (isLocked) return
+            onToggle(key)
+        },
+        [onToggle]
+    )
+
     if (!open) return null
 
     return (
@@ -106,7 +123,7 @@ export default function MciTableColumnsPanel<T extends Record<string, unknown>>(
                 </button>
             </div>
 
-            <div className="my-4 h-px bg-slate-100"/>
+            <div className="my-4 h-px bg-slate-100" />
 
             <div
                 className={cn(
@@ -120,6 +137,9 @@ export default function MciTableColumnsPanel<T extends Record<string, unknown>>(
             >
                 {columns.map((col, idx) => {
                     const checked = !hiddenSet.has(col.key)
+
+                    const isLocked = checked && visibleCount <= minVisible
+
                     const isOver = dragOverIndex === idx
                     const isDragging = draggingKey === col.key
 
@@ -154,9 +174,7 @@ export default function MciTableColumnsPanel<T extends Record<string, unknown>>(
                                 }}
                                 onDrop={(e) => {
                                     e.preventDefault()
-                                    const from =
-                                        dragFromRef.current ?? Number(e.dataTransfer.getData('text/plain'))
-
+                                    const from = dragFromRef.current ?? Number(e.dataTransfer.getData('text/plain'))
                                     if (Number.isFinite(from) && from !== idx) onMove(from, idx)
                                     resetDrag()
                                 }}
@@ -165,13 +183,9 @@ export default function MciTableColumnsPanel<T extends Record<string, unknown>>(
                                     'group flex items-center py-2 px-1 gap-4',
                                     'rounded-md box-border overflow-visible',
                                     'transition-[background,transform] duration-150',
-
                                     !isDragging && !isOver && 'hover:bg-slate-50',
-
-                                    isOver && !isDragging && 'bg-slate-50 ',
-
-                                    isDragging &&
-                                    'bg-slate-50 opacity-100 scale-[0.99] cursor-grabbing'
+                                    isOver && !isDragging && 'bg-slate-50',
+                                    isDragging && 'bg-slate-50 opacity-100 scale-[0.99] cursor-grabbing'
                                 )}
                             >
                                 <button
@@ -185,21 +199,31 @@ export default function MciTableColumnsPanel<T extends Record<string, unknown>>(
                                     )}
                                     aria-label="Drag"
                                 >
-                                    <TransferVertical weight="Linear" size={20}/>
+                                    <TransferVertical weight="Linear" size={20} />
                                 </button>
 
                                 <div className="shrink-0">
-                                    <MciCheck checked={checked} onChange={() => onToggle(col.key)} variant="blue"/>
+                                    <MciCheck
+                                        checked={checked}
+                                        disabled={isLocked}
+                                        onChange={() => safeToggle(col.key, isLocked)}
+                                        variant="blue"
+                                    />
                                 </div>
 
                                 <div className="min-w-0 flex-1">
                                     <h4 className="truncate text-slate-700 text-base font-medium" title={col.title}>
                                         {col.title}
                                     </h4>
+                                    {isLocked && (
+                                        <p className="text-xs text-slate-400 mt-0.5">
+                                            Минимум {minVisible} колонок
+                                        </p>
+                                    )}
                                 </div>
                             </div>
 
-                            {idx !== columns.length - 1 && <div className="mx-2 h-px bg-slate-100"/>}
+                            {idx !== columns.length - 1 && <div className="mx-2 h-px bg-slate-100" />}
                         </div>
                     )
                 })}

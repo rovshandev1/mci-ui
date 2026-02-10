@@ -1,9 +1,26 @@
-import {ConfoundedSquare} from '@solar-icons/react'
-import {SortVertical, SortFromBottomToTop, SortFromTopToBottom} from '@solar-icons/react'
-import {useMemo, useState, useEffect} from 'react'
-import {cn} from '../../lib/utils'
-import {MciSkeleton, MciCheck} from '../../../index.ts'
-import type {MciTableColumn, MciTableProps} from '../../types/mci-table.types.ts'
+import { ConfoundedSquare } from '@solar-icons/react'
+import { SortVertical, SortFromBottomToTop, SortFromTopToBottom } from '@solar-icons/react'
+import { useMemo, useState, useEffect, useCallback } from 'react'
+import { cn } from '../../lib/utils'
+import { MciSkeleton, MciCheck } from '../../../index.ts'
+import type { MciTableColumn, MciTableProps } from '../../types/mci-table.types.ts'
+
+function normalizeColWidth(width?: string | number) {
+    if (width == null) return undefined
+    if (typeof width === 'number') return `${width}px`
+    return width
+}
+
+function DefaultCell({ children, title }: { children: React.ReactNode; title?: string }) {
+    const t = typeof children === 'string' ? children : undefined
+    return (
+        <div className="min-w-0">
+            <div className="truncate" title={title ?? t}>
+                {children}
+            </div>
+        </div>
+    )
+}
 
 export default function MciTable<T extends Record<string, unknown>>({
                                                                         columns,
@@ -41,28 +58,31 @@ export default function MciTable<T extends Record<string, unknown>>({
         })
     }, [safeData, activeSort, externalSort])
 
-    const handleSort = (col: MciTableColumn<T>) => {
-        if (!col.sortable) return
-
-        let nextSort: { key: keyof T; direction: 'asc' | 'desc' } | null = null
-
-        if (activeSort?.key !== col.key) nextSort = {key: col.key, direction: 'asc'}
-        else if (activeSort.direction === 'asc') nextSort = {key: col.key, direction: 'desc'}
-
-        if (externalSort !== undefined) onSortChange?.(nextSort as any)
-        else setLocalSort(nextSort)
-    }
-
     useEffect(() => {
         if (externalSort !== undefined) setLocalSort(null)
     }, [externalSort])
 
     const displayData = loading ? [] : externalSort ? safeData : sortedData
 
+    const handleSort = useCallback(
+        (col: MciTableColumn<T>) => {
+            if (!col.sortable) return
+
+            let nextSort: { key: keyof T; direction: 'asc' | 'desc' } | null = null
+
+            if (activeSort?.key !== col.key) nextSort = { key: col.key, direction: 'asc' }
+            else if (activeSort.direction === 'asc') nextSort = { key: col.key, direction: 'desc' }
+
+            if (externalSort !== undefined) onSortChange?.(nextSort as any)
+            else setLocalSort(nextSort)
+        },
+        [activeSort, externalSort, onSortChange]
+    )
+
     const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!rowSelection) return
 
-        const {onChange, getCheckboxProps} = rowSelection
+        const { onChange, getCheckboxProps } = rowSelection
         const checked = e.target.checked
 
         if (checked) {
@@ -76,7 +96,7 @@ export default function MciTable<T extends Record<string, unknown>>({
 
     const handleSelectRow = (row: T, checked: boolean) => {
         if (!rowSelection) return
-        const {selectedRowKeys, onChange} = rowSelection
+        const { selectedRowKeys, onChange } = rowSelection
         const key = row[rowKey] as string | number
 
         const next = checked ? [...selectedRowKeys, key] : selectedRowKeys.filter((k) => k !== key)
@@ -85,9 +105,7 @@ export default function MciTable<T extends Record<string, unknown>>({
 
     const isAllSelected = useMemo(() => {
         if (!rowSelection || displayData.length === 0) return false
-        const selectableRows = displayData.filter(
-            (row) => !rowSelection.getCheckboxProps?.(row)?.disabled
-        )
+        const selectableRows = displayData.filter((row) => !rowSelection.getCheckboxProps?.(row)?.disabled)
         if (selectableRows.length === 0) return false
         return selectableRows.every((row) =>
             rowSelection.selectedRowKeys.includes(row[rowKey] as string | number)
@@ -97,20 +115,20 @@ export default function MciTable<T extends Record<string, unknown>>({
     const getSortIcon = (col: MciTableColumn<T>) => {
         if (!col.sortable) return null
         if (!activeSort || activeSort.key !== col.key) {
-            return <SortVertical weight="Linear" size={20} className="text-slate-base"/>
+            return <SortVertical weight="Linear" size={20} className="text-slate-base shrink-0" />
         }
         return activeSort.direction === 'asc' ? (
-            <SortFromTopToBottom weight="Linear" size={20} className="text-slate-base"/>
+            <SortFromTopToBottom weight="Linear" size={20} className="text-slate-base shrink-0" />
         ) : (
-            <SortFromBottomToTop weight="Linear" size={20} className="text-slate-base"/>
+            <SortFromBottomToTop weight="Linear" size={20} className="text-slate-base shrink-0" />
         )
     }
 
     const renderColGroup = () => (
         <colgroup>
-            {rowSelection && <col style={{width: 48}}/>}
+            {rowSelection && <col style={{ width: 48 }} />}
             {columns.map((col) => (
-                <col key={col.key} style={{width: col.width || 'auto'}}/>
+                <col key={col.key} style={{ width: normalizeColWidth(col.width) ?? 'auto' }} />
             ))}
         </colgroup>
     )
@@ -118,15 +136,11 @@ export default function MciTable<T extends Record<string, unknown>>({
     return (
         <div
             className={cn(
-                'w-full overflow-x-auto',
-                'pb-0.5',
+                'w-full overflow-x-auto pb-0.5',
                 '[&::-webkit-scrollbar]:h-1',
                 '[&::-webkit-scrollbar-track]:bg-transparent',
                 '[&::-webkit-scrollbar-thumb]:bg-slate-200',
                 '[&::-webkit-scrollbar-thumb]:rounded-full',
-                '[&::-webkit-scrollbar-thumb]:border',
-                '[&::-webkit-scrollbar-thumb]:border-transparent',
-                '[&::-webkit-scrollbar-thumb]:bg-clip-padding-box',
                 'hover:[&::-webkit-scrollbar-thumb]:bg-slate-300',
                 className
             )}
@@ -156,13 +170,14 @@ export default function MciTable<T extends Record<string, unknown>>({
                                     onClick={() => handleSort(col)}
                                     className={cn(
                                         'px-4 py-3 text-left text-sm font-medium text-slate-700 transition-colors',
+                                        'whitespace-nowrap overflow-hidden text-ellipsis',
                                         col.align === 'center' && 'text-center',
                                         col.align === 'right' && 'text-right',
                                         col.sortable && 'cursor-pointer hover:bg-slate-200',
                                         headerClassName
                                     )}
                                 >
-                                    <div className="flex items-center gap-2">
+                                    <div className={cn('flex items-center gap-2 min-w-0', col.align === 'right' && 'justify-end')}>
                       <span className="min-w-0 flex-1 truncate" title={col.title}>
                         {col.title}
                       </span>
@@ -180,16 +195,16 @@ export default function MciTable<T extends Record<string, unknown>>({
                         {renderColGroup()}
                         <tbody className="divide-y divide-slate-200">
                         {loading ? (
-                            Array.from({length: skeletonRows}).map((_, idx) => (
+                            Array.from({ length: skeletonRows }).map((_, idx) => (
                                 <tr key={idx}>
                                     {rowSelection && (
                                         <td className="w-12 px-4 py-3">
-                                            <MciSkeleton height={20} width={20} variant="rounded"/>
+                                            <MciSkeleton height={20} width={20} variant="rounded" />
                                         </td>
                                     )}
                                     {columns.map((c) => (
                                         <td key={c.key} className="px-4 py-3">
-                                            <MciSkeleton height={30} variant="rounded"/>
+                                            <MciSkeleton height={30} variant="rounded" />
                                         </td>
                                     ))}
                                 </tr>
@@ -216,7 +231,7 @@ export default function MciTable<T extends Record<string, unknown>>({
                                 const isDisabled = rowSelection?.getCheckboxProps?.(row)?.disabled
 
                                 return (
-                                    <tr key={idx} className={cn('group transition-colors hover:bg-slate-50')}>
+                                    <tr key={idx} className="group transition-colors hover:bg-slate-50">
                                         {rowSelection && (
                                             <td className={cn('w-12 px-4 py-3 align-top', bodyClassName)}>
                                                 <div className="flex items-center justify-center pt-1">
@@ -232,21 +247,27 @@ export default function MciTable<T extends Record<string, unknown>>({
 
                                         {columns.map((col) => {
                                             const cellValue = row[col.key]
+                                            const raw = col.render
+                                                ? col.render(cellValue as any, row)
+                                                : String(cellValue ?? '-')
+
                                             return (
                                                 <td
                                                     key={col.key}
                                                     className={cn(
                                                         'align-top px-4 py-3 text-sm font-normal text-black',
+                                                        'whitespace-nowrap overflow-hidden text-ellipsis',
                                                         col.align === 'center' && 'text-center',
                                                         col.align === 'right' && 'text-right',
                                                         bodyClassName,
                                                         col.className
                                                     )}
                                                 >
-                                                    <div className="min-w-0 break-words whitespace-normal"
-                                                         style={{overflowWrap: 'break-word'}}>
-                                                        {col.render ? col.render(cellValue as any, row) : String(cellValue ?? '-')}
-                                                    </div>
+                                                    {col.render ? (
+                                                        <div className="min-w-0">{raw}</div>
+                                                    ) : (
+                                                        <DefaultCell title={typeof raw === 'string' ? raw : undefined}>{raw}</DefaultCell>
+                                                    )}
                                                 </td>
                                             )
                                         })}

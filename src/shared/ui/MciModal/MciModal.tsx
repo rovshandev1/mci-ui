@@ -70,7 +70,8 @@ export default function MciModal({
     return (
         <div
             className={cn(
-                'bg-black/40 fixed inset-0 z-50 flex items-center justify-center transition-all duration-500 ease-in-out',
+                'bg-black/40 fixed inset-0 z-50 flex justify-center transition-all duration-500 ease-in-out',
+                'items-end sm:items-center',
                 show ? 'opacity-100' : 'pointer-events-none opacity-0',
                 overlayClassName
             )}
@@ -78,14 +79,16 @@ export default function MciModal({
             <div
                 ref={modalRef}
                 className={cn(
-                    'relative bg-white w-full max-w-[720px] rounded-2xl',
-                    'transform transition-all duration-500 ease-out',
-                    show ? 'scale-100 opacity-100' : 'scale-90 opacity-0',
+                    'relative bg-white w-full',
+                    'sm:max-w-[720px]',
+                    'rounded-t-2xl sm:rounded-2xl',
+                    'transition-all duration-500 ease-out',
+                    show ? 'scale-100 opacity-100' : 'scale-95 opacity-0',
                     containerClassName
                 )}
             >
                 {shouldRenderHeader && (
-                    <div className="border-b border-slate-200 flex items-start justify-between p-6 mb-4">
+                    <div className="border-b border-slate-200 flex items-start justify-between p-4 sm:p-6 mb-4">
                         {Header || (
                             <div className="block">
                                 <h2 className="text-h3 font-semibold text-black">{title}</h2>
@@ -112,7 +115,9 @@ export default function MciModal({
                 {Body && (
                     <div
                         className={cn(
-                            'scrollbar-thin scrollbar-thumb-slate-200 max-h-96 px-6 overflow-y-auto mb-2',
+                            'scrollbar-thin scrollbar-thumb-slate-200 overflow-y-auto',
+                            'max-h-[70dvh] sm:max-h-96',
+                            'px-4 sm:px-6 mb-2',
                             bodyClassName
                         )}
                     >
@@ -123,7 +128,8 @@ export default function MciModal({
                 {footer && (
                     <div
                         className={cn(
-                            'flex items-center justify-end gap-3 border-t border-slate-200 p-6',
+                            'flex items-center justify-end gap-3 border-t border-slate-200',
+                            'p-4 sm:p-6',
                             footerClassName
                         )}
                     >
