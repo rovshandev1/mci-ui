@@ -13,9 +13,10 @@ function normalizeColWidth(width?: string | number) {
 
 function DefaultCell({ children, title }: { children: React.ReactNode; title?: string }) {
     const t = typeof children === 'string' ? children : undefined
+
     return (
         <div className="min-w-0">
-            <div className="truncate" title={title ?? t}>
+            <div className="clamp-2 break-words" title={title ?? t}>
                 {children}
             </div>
         </div>
@@ -264,7 +265,9 @@ export default function MciTable<T extends Record<string, unknown>>({
                                                     )}
                                                 >
                                                     {col.render ? (
-                                                        <div className="min-w-0">{raw}</div>
+                                                        <div className="min-w-0">
+                                                            <div className="clamp-2 break-words">{raw}</div>
+                                                        </div>
                                                     ) : (
                                                         <DefaultCell title={typeof raw === 'string' ? raw : undefined}>{raw}</DefaultCell>
                                                     )}

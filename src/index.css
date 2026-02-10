@@ -198,7 +198,29 @@ select {
     .focus\:shadow-slate:focus {
         box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.25);
     }
+
+    .clamp-2 {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+    }
+
+    .clamp-1 {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 1;
+        overflow: hidden;
+    }
+
+    .clamp-3 {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+        overflow: hidden;
+    }
 }
+
 
 .shimmer-mask {
     background: linear-gradient(
