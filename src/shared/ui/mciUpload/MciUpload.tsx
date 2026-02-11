@@ -7,12 +7,11 @@ import {
     File,
     Upload,
     Eye,
-    Download,
 } from '@solar-icons/react'
 import CloseIcon from "../../../assets/icons/close.svg?react"
-import React, {useCallback, useRef, useState} from 'react'
-import {uploadLanguages, type UploadLocale} from '../../lib/uploadLanguage'
-import {cn} from '../../lib/utils'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { uploadLanguages, type UploadLocale } from '../../lib/uploadLanguage'
+import { cn } from '../../lib/utils'
 
 interface FileInfo {
     id: string
@@ -67,53 +66,49 @@ const MciUpload: React.FC<MciUploadProps> = ({
 
     const t = uploadLanguages[locale]
 
-    const theme = variant === 'blue'
-        ? {
-            dropBorder: 'border-blue-200 hover:border-blue-300',
-            dropBg: 'bg-blue-50/40 hover:bg-blue-50/60',
-            dropActive: 'border-blue-600 bg-blue-50',
-            iconWrap: 'text-blue-600',
-            title: 'text-blue-600',
-            hint: 'text-slate-500',
-            progress: 'bg-blue-600/30',
-            progressFill: 'bg-blue-600',
-            fileIconImg: 'bg-blue-50 text-blue-600',
-            fileIconDoc: 'bg-green-50 text-green-600',
-        }
-        : {
-            dropBorder: 'border-yellow-200 hover:border-yellow-300',
-            dropBg: 'bg-yellow-50/40 hover:bg-yellow-50/60',
-            dropActive: 'border-yellow-500 bg-yellow-50',
-            iconWrap: 'text-yellow-700',
-            title: 'text-yellow-700',
-            hint: 'text-slate-500',
-            progress: 'bg-yellow-600/25',
-            progressFill: 'bg-yellow-600',
-            fileIconImg: 'bg-blue-50 text-blue-600',
-            fileIconDoc: 'bg-green-50 text-green-600',
-        }
-
+    const theme =
+        variant === 'blue'
+            ? {
+                dropBorder: 'border-blue-200 hover:border-blue-300',
+                dropBg: 'bg-blue-50/40 hover:bg-blue-50/60',
+                dropActive: 'border-blue-600 bg-blue-50',
+                iconWrap: 'text-blue-600',
+                title: 'text-blue-600',
+                hint: 'text-slate-500',
+                progress: 'bg-blue-600/30',
+                progressFill: 'bg-blue-600',
+                fileIconImg: 'bg-blue-50 text-blue-600',
+                fileIconDoc: 'bg-green-50 text-green-600',
+            }
+            : {
+                dropBorder: 'border-yellow-200 hover:border-yellow-300',
+                dropBg: 'bg-yellow-50/40 hover:bg-yellow-50/60',
+                dropActive: 'border-yellow-500 bg-yellow-50',
+                iconWrap: 'text-yellow-700',
+                title: 'text-yellow-700',
+                hint: 'text-slate-500',
+                progress: 'bg-yellow-600/25',
+                progressFill: 'bg-yellow-600',
+                fileIconImg: 'bg-blue-50 text-blue-600',
+                fileIconDoc: 'bg-green-50 text-green-600',
+            }
 
     const getFileIcon = (file: File) => {
         const type = file.type.split('/')[0]
         switch (type) {
             case 'image':
-                return <Gallery className="h-5 w-5 text-blue-500"/>
+                return <Gallery className="h-5 w-5 text-blue-500" />
             case 'video':
-                return <VideoFramePlayHorizontal className="h-5 w-5 text-purple-500"/>
+                return <VideoFramePlayHorizontal className="h-5 w-5 text-purple-500" />
             case 'audio':
-                return <MusicNote className="h-5 w-5 text-green-500"/>
+                return <MusicNote className="h-5 w-5 text-green-500" />
             default:
-                if (file.type.includes('pdf')) {
-                    return <FileText className="h-5 w-5 text-red-500"/>
-                }
-                if (file.type.includes('word') || file.type.includes('document')) {
-                    return <FileText className="h-5 w-5 text-blue-600"/>
-                }
-                if (file.type.includes('excel') || file.type.includes('spreadsheet')) {
-                    return <FileText className="h-5 w-5 text-green-600"/>
-                }
-                return <File className="h-5 w-5 text-gray-500"/>
+                if (file.type.includes('pdf')) return <FileText className="h-5 w-5 text-red-500" />
+                if (file.type.includes('word') || file.type.includes('document'))
+                    return <FileText className="h-5 w-5 text-blue-600" />
+                if (file.type.includes('excel') || file.type.includes('spreadsheet'))
+                    return <FileText className="h-5 w-5 text-green-600" />
+                return <File className="h-5 w-5 text-gray-500" />
         }
     }
 
@@ -153,6 +148,40 @@ const MciUpload: React.FC<MciUploadProps> = ({
             }
         })
     }
+
+    const objectUrlByIdRef = useRef<Map<string, string>>(new Map())
+    const revokeObjectUrlById = useCallback((id: string) => {
+        const url = objectUrlByIdRef.current.get(id)
+        if (url) {
+            URL.revokeObjectURL(url)
+            objectUrlByIdRef.current.delete(id)
+        }
+    }, [])
+
+    const revokeAllObjectUrls = useCallback(() => {
+        for (const url of objectUrlByIdRef.current.values()) {
+            URL.revokeObjectURL(url)
+        }
+        objectUrlByIdRef.current.clear()
+    }, [])
+
+    useEffect(() => {
+        return () => {
+            revokeAllObjectUrls()
+        }
+    }, [revokeAllObjectUrls])
+
+    const openPreview = useCallback((fileInfo: FileInfo) => {
+        let url = objectUrlByIdRef.current.get(fileInfo.id)
+        if (!url) {
+            url = URL.createObjectURL(fileInfo.file)
+            objectUrlByIdRef.current.set(fileInfo.id, url)
+
+            setTimeout(() => revokeObjectUrlById(fileInfo.id), 5 * 60_000)
+        }
+
+        window.open(url, '_blank', 'noopener,noreferrer')
+    }, [revokeObjectUrlById])
 
     const handleFilesAdd = useCallback(
         async (newFiles: FileList | File[]) => {
@@ -250,9 +279,7 @@ const MciUpload: React.FC<MciUploadProps> = ({
     const handleDragOver = useCallback(
         (e: React.DragEvent) => {
             e.preventDefault()
-            if (!disabled) {
-                setIsDragging(true)
-            }
+            if (!disabled) setIsDragging(true)
         },
         [disabled]
     )
@@ -266,13 +293,10 @@ const MciUpload: React.FC<MciUploadProps> = ({
         (e: React.DragEvent) => {
             e.preventDefault()
             setIsDragging(false)
-
             if (disabled) return
 
             const droppedFiles = e.dataTransfer.files
-            if (droppedFiles.length > 0) {
-                handleFilesAdd(droppedFiles)
-            }
+            if (droppedFiles.length > 0) handleFilesAdd(droppedFiles)
         },
         [disabled, handleFilesAdd]
     )
@@ -282,9 +306,7 @@ const MciUpload: React.FC<MciUploadProps> = ({
             const selectedFiles = e.target.files
             if (selectedFiles && selectedFiles.length > 0) {
                 handleFilesAdd(selectedFiles)
-                if (fileInputRef.current) {
-                    fileInputRef.current.value = ''
-                }
+                if (fileInputRef.current) fileInputRef.current.value = ''
             }
         },
         [handleFilesAdd]
@@ -292,19 +314,23 @@ const MciUpload: React.FC<MciUploadProps> = ({
 
     const handleRemoveFile = useCallback(
         (id: string) => {
+            revokeObjectUrlById(id)
+
             setFiles((prev) => {
                 const updatedFiles = prev.filter((f) => f.id !== id)
                 onFilesChange?.(updatedFiles.map((f) => f.file))
                 return updatedFiles
             })
         },
-        [onFilesChange]
+        [onFilesChange, revokeObjectUrlById]
     )
 
     const handleClearAll = useCallback(() => {
+        revokeAllObjectUrls()
+
         setFiles([])
         onFilesChange?.([])
-    }, [onFilesChange])
+    }, [onFilesChange, revokeAllObjectUrls])
 
     const handleUploadClick = useCallback(() => {
         fileInputRef.current?.click()
@@ -353,9 +379,7 @@ const MciUpload: React.FC<MciUploadProps> = ({
                         <Upload size={20} />
                     </div>
 
-                    <p className={cn('text-base font-medium', theme.title)}>
-                        {t.dropHereTitle}
-                    </p>
+                    <p className={cn('text-base font-medium', theme.title)}>{t.dropHereTitle}</p>
 
                     <p className={cn('text-sm font-normal', theme.hint)}>
                         {t.fileRequirements(multiple, maxFiles, maxSize, accept)}
@@ -366,9 +390,9 @@ const MciUpload: React.FC<MciUploadProps> = ({
             {files.length > 0 && (
                 <div className="mt-4 space-y-3">
                     <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-slate-700">
-            {t.selectedFiles} ({files.length})
-          </span>
+                        <span className="text-sm font-medium text-slate-700">
+                            {t.selectedFiles} ({files.length})
+                        </span>
 
                         {files.length > 1 && (
                             <button
@@ -386,6 +410,7 @@ const MciUpload: React.FC<MciUploadProps> = ({
                         {files.map((fileInfo) => {
                             const isImage = !!fileInfo.preview
                             const leftIconWrapClass = isImage ? theme.fileIconImg : theme.fileIconDoc
+                            const previewDisabled = disabled || isUploading || fileInfo.status === 'uploading'
 
                             return (
                                 <div
@@ -396,7 +421,12 @@ const MciUpload: React.FC<MciUploadProps> = ({
                                     )}
                                 >
                                     <div className="flex min-w-0 items-center gap-4">
-                                        <div className={cn('flex h-14 w-14 items-center justify-center rounded-2xl', leftIconWrapClass)}>
+                                        <div
+                                            className={cn(
+                                                'flex h-14 w-14 items-center justify-center rounded-2xl',
+                                                leftIconWrapClass
+                                            )}
+                                        >
                                             {showPreview && fileInfo.preview ? (
                                                 <img
                                                     src={fileInfo.preview}
@@ -422,9 +452,9 @@ const MciUpload: React.FC<MciUploadProps> = ({
                                                     <>
                                                         <span>•</span>
                                                         <span className="inline-flex items-center">
-                            <Star2 className="mr-1 h-5 w-5 animate-spin" />
+                                                            <Star2 className="mr-1 h-5 w-5 animate-spin" />
                                                             {t.uploading}
-                          </span>
+                                                        </span>
                                                     </>
                                                 )}
 
@@ -439,14 +469,19 @@ const MciUpload: React.FC<MciUploadProps> = ({
                                             {fileInfo.status === 'uploading' && (
                                                 <div className={cn('mt-2 h-1.5 w-full rounded-full bg-slate-200')}>
                                                     <div
-                                                        className={cn('h-1.5 rounded-full transition-all duration-300', theme.progressFill)}
+                                                        className={cn(
+                                                            'h-1.5 rounded-full transition-all duration-300',
+                                                            theme.progressFill
+                                                        )}
                                                         style={{ width: `${fileInfo.progress}%` }}
                                                     />
                                                 </div>
                                             )}
 
                                             {fileInfo.status === 'error' && fileInfo.error && (
-                                                <p className="mt-2 text-sm font-normal text-red-600">{fileInfo.error}</p>
+                                                <p className="mt-2 text-sm font-normal text-red-600">
+                                                    {fileInfo.error}
+                                                </p>
                                             )}
                                         </div>
                                     </div>
@@ -454,20 +489,15 @@ const MciUpload: React.FC<MciUploadProps> = ({
                                     <div className="flex items-center gap-2">
                                         <button
                                             type="button"
-                                            onClick={(e) => e.stopPropagation()}
-                                            className="rounded-xl p-2 hover:bg-slate-100 hover:cursor-pointer"
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                if (!previewDisabled) openPreview(fileInfo)
+                                            }}
+                                            disabled={previewDisabled}
+                                            className="rounded-xl p-2 hover:bg-slate-100 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                             title={t.preview}
                                         >
                                             <Eye size={20} className="text-slate-400" />
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            onClick={(e) => e.stopPropagation()}
-                                            className="rounded-xl p-2 hover:bg-slate-100 hover:cursor-pointer"
-                                            title={t.download}
-                                        >
-                                            <Download size={20} className="text-slate-400" />
                                         </button>
 
                                         <button
@@ -493,7 +523,6 @@ const MciUpload: React.FC<MciUploadProps> = ({
             {error && <p className="mt-2 text-sm font-normal text-red-600">{error}</p>}
         </div>
     )
-
 }
 
 export default MciUpload
