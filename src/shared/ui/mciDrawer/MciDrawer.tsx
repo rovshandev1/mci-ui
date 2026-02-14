@@ -12,6 +12,7 @@ interface DrawerProps {
     description?: string
     showCloseButton?: boolean
     drawerClassName?: string
+    contentClassName?: string
     closeOnOverlayClick?: boolean
     closeOnEscape?: boolean
     width?: string | number
@@ -27,6 +28,7 @@ export default function MciDrawer({
                                       description,
                                       showCloseButton = true,
                                       drawerClassName,
+                                      contentClassName,
                                       closeOnOverlayClick = true,
                                       closeOnEscape = true,
                                       width = 572,
@@ -150,7 +152,12 @@ export default function MciDrawer({
                     </div>
                 )}
 
-                <div className="flex-1 min-h-0 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200 px-4 py-4 sm:p-6">
+                <div
+                    className={cn(
+                        'flex-1 min-h-0 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200 px-4 py-4 sm:p-6',
+                        contentClassName
+                    )}
+                >
                     {children}
                 </div>
 
