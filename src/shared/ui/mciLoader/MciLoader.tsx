@@ -1,4 +1,4 @@
-import {cn} from "../../lib/utils.ts"
+import { cn } from "../../lib/utils.ts"
 import LoaderIcon from "../../../assets/icons/loaderIcon.svg?react"
 
 interface MciLoaderProps {
@@ -7,6 +7,7 @@ interface MciLoaderProps {
     iconClassName?: string
     isLoading?: boolean
     isFullPage?: boolean
+    variant?: 'yellow' | 'blue'
 }
 
 export default function MciLoader({
@@ -14,15 +15,18 @@ export default function MciLoader({
                                       size = 150,
                                       iconClassName,
                                       isLoading = false,
-                                      isFullPage = true
+                                      isFullPage = true,
+                                      variant = 'yellow'
                                   }: MciLoaderProps) {
-    if (!isLoading) return null;
+    if (!isLoading) return null
 
     return (
         <div
             className={cn(
                 "z-[99px] flex flex-col items-center justify-center transition-all duration-300",
-                isFullPage ? "fixed inset-0 backdrop-blur-[2px]" : "absolute inset-0 w-full h-full rounded-[inherit]",
+                isFullPage
+                    ? "fixed inset-0 backdrop-blur-[2px]"
+                    : "absolute inset-0 w-full h-full rounded-[inherit]",
                 className
             )}
         >
@@ -31,10 +35,11 @@ export default function MciLoader({
                 height={size}
                 className={cn(
                     "animate-spin",
-                    !iconClassName && "text-yellow-500",
+                    !iconClassName &&
+                    (variant === 'blue' ? "text-blue-600" : "text-yellow-500"),
                     iconClassName
                 )}
-                style={{fill: 'currentColor', stroke: 'currentColor'}}
+                style={{ fill: 'currentColor', stroke: 'currentColor' }}
             />
         </div>
     )
