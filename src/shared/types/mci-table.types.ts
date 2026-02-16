@@ -30,6 +30,7 @@ export type MciTableColumnSettingsOptions<T> = {
     storageKey?: string
     defaultVisibleKeys?: ColumnKey<T>[]
     defaultOrder?: ColumnKey<T>[]
+    minVisible?: number
     onChange?: (state: MciTableColumnSettingsState<T>) => void
 }
 

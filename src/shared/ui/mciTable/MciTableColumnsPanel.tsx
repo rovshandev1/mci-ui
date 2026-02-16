@@ -4,6 +4,8 @@ import { cn, useClickOutside } from '../../lib/utils'
 import { MciCheck } from '../../../index.ts'
 import type { ColumnKey, MciTableColumn } from '../../types/mci-table.types.ts'
 
+type DropPosition = 'before' | 'after'
+
 type Props<T extends Record<string, unknown>> = {
     open: boolean
     onClose: () => void
@@ -11,6 +13,7 @@ type Props<T extends Record<string, unknown>> = {
     hidden: ColumnKey<T>[]
     onToggle: (key: ColumnKey<T>) => void
     onMove: (from: number, to: number) => void
+    onMoveByKey?: (from: ColumnKey<T>, to: ColumnKey<T>, position: DropPosition) => void
 
     minVisible?: number
 }
@@ -22,6 +25,7 @@ export default function MciTableColumnsPanel<T extends Record<string, unknown>>(
                                                                                     hidden,
                                                                                     onToggle,
                                                                                     onMove,
+                                                                                    onMoveByKey,
                                                                                     minVisible = 5,
                                                                                 }: Props<T>) {
     const ref = useRef<HTMLDivElement>(null)
@@ -41,55 +45,74 @@ export default function MciTableColumnsPanel<T extends Record<string, unknown>>(
         return c
     }, [columns, hiddenSet])
 
-    const dragFromRef = useRef<number | null>(null)
-    const dragOverRef = useRef<number | null>(null)
-    const allowDragRef = useRef(false)
-
+    const [dragFromIndex, setDragFromIndex] = useState<number | null>(null)
     const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
     const [draggingKey, setDraggingKey] = useState<string | null>(null)
+    const [dropPosition, setDropPosition] = useState<DropPosition>('before')
 
-    const rafRef = useRef<number | null>(null)
-    const commitDragOver = useCallback((next: number | null) => {
-        dragOverRef.current = next
-        if (rafRef.current != null) return
-
-        rafRef.current = requestAnimationFrame(() => {
-            rafRef.current = null
-            setDragOverIndex(dragOverRef.current)
-        })
-    }, [])
-
-    useEffect(() => {
-        return () => {
-            if (rafRef.current != null) cancelAnimationFrame(rafRef.current)
-        }
-    }, [])
-
-    const onHandleMouseDown = useCallback(
-        (idx: number) => {
-            allowDragRef.current = true
-            dragFromRef.current = idx
-            setDraggingKey(columns[idx]?.key ?? null)
+    const computeInsertIndex = useCallback(
+        (from: number, over: number, position: DropPosition) => {
+            let insertTo = position === 'after' ? over + 1 : over
+            if (from < insertTo) insertTo -= 1
+            return insertTo
         },
-        [columns]
+        []
     )
 
-    const onHandleMouseUp = useCallback(() => {
-        allowDragRef.current = false
+    const resetDrag = useCallback(() => {
+        setDragFromIndex(null)
+        setDraggingKey(null)
+        setDragOverIndex(null)
+        setDropPosition('before')
     }, [])
 
-    useEffect(() => {
-        if (!open) return
-        document.addEventListener('mouseup', onHandleMouseUp)
-        return () => document.removeEventListener('mouseup', onHandleMouseUp)
-    }, [open, onHandleMouseUp])
+    const handleDragStart = useCallback(
+        (event: React.DragEvent<HTMLDivElement>, idx: number, key: ColumnKey<T>) => {
+            setDragFromIndex(idx)
+            setDraggingKey(String(key))
+            setDragOverIndex(null)
+            setDropPosition('before')
 
-    const resetDrag = useCallback(() => {
-        dragFromRef.current = null
-        allowDragRef.current = false
-        setDraggingKey(null)
-        commitDragOver(null)
-    }, [commitDragOver])
+            event.dataTransfer.effectAllowed = 'move'
+            event.dataTransfer.setData('text/plain', String(idx))
+
+            const img = new Image()
+            img.src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='
+            event.dataTransfer.setDragImage(img, 0, 0)
+        },
+        []
+    )
+
+    const handleDrop = useCallback(
+        (event: React.DragEvent<HTMLDivElement>, overIndex: number) => {
+            event.preventDefault()
+
+            const from =
+                dragFromIndex ?? Number.parseInt(event.dataTransfer.getData('text/plain') || '-1', 10)
+
+            if (!Number.isFinite(from) || from < 0) {
+                resetDrag()
+                return
+            }
+
+            const fromColumn = columns[from]
+            const toColumn = columns[overIndex]
+            if (!fromColumn || !toColumn) {
+                resetDrag()
+                return
+            }
+
+            const insertTo = computeInsertIndex(from, overIndex, dropPosition)
+
+            if (insertTo !== from) {
+                if (onMoveByKey) onMoveByKey(fromColumn.key, toColumn.key, dropPosition)
+                else onMove(from, insertTo)
+            }
+
+            resetDrag()
+        },
+        [columns, computeInsertIndex, dragFromIndex, dropPosition, onMove, onMoveByKey, resetDrag]
+    )
 
     const safeToggle = useCallback(
         (key: ColumnKey<T>, isLocked: boolean) => {
@@ -124,6 +147,9 @@ export default function MciTableColumnsPanel<T extends Record<string, unknown>>(
             </div>
 
             <div className="my-4 h-px bg-slate-100" />
+            <p className="mb-3 text-xs text-slate-500">
+                Active columns: {visibleCount}/{columns.length}
+            </p>
 
             <div
                 className={cn(
@@ -144,40 +170,32 @@ export default function MciTableColumnsPanel<T extends Record<string, unknown>>(
                     const isDragging = draggingKey === col.key
 
                     return (
-                        <div key={col.key}>
+                        <div key={col.key} className="relative">
+                            {isOver && !isDragging && (
+                                <div
+                                    className={cn(
+                                        'pointer-events-none absolute left-2 right-2 z-10 h-0.5 rounded-full bg-blue-300',
+                                        dropPosition === 'before' ? 'top-0' : 'bottom-0'
+                                    )}
+                                />
+                            )}
+
                             <div
                                 draggable
-                                onDragStart={(e) => {
-                                    if (!allowDragRef.current) {
-                                        e.preventDefault()
-                                        return
-                                    }
-
-                                    e.dataTransfer.setData('text/plain', String(idx))
-                                    e.dataTransfer.effectAllowed = 'move'
-
-                                    setDraggingKey(col.key)
-                                    commitDragOver(null)
-
-                                    const img = new Image()
-                                    img.src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='
-                                    e.dataTransfer.setDragImage(img, 0, 0)
-                                }}
+                                onDragStart={(e) => handleDragStart(e, idx, col.key)}
                                 onDragOver={(e) => {
-                                    if (dragFromRef.current == null) return
+                                    if (dragFromIndex == null) return
                                     e.preventDefault()
                                     e.dataTransfer.dropEffect = 'move'
-                                    commitDragOver(idx)
+
+                                    const rect = e.currentTarget.getBoundingClientRect()
+                                    const nextPosition: DropPosition =
+                                        e.clientY - rect.top > rect.height / 2 ? 'after' : 'before'
+
+                                    if (dragOverIndex !== idx) setDragOverIndex(idx)
+                                    if (dropPosition !== nextPosition) setDropPosition(nextPosition)
                                 }}
-                                onDragLeave={() => {
-                                    if (dragOverRef.current === idx) commitDragOver(null)
-                                }}
-                                onDrop={(e) => {
-                                    e.preventDefault()
-                                    const from = dragFromRef.current ?? Number(e.dataTransfer.getData('text/plain'))
-                                    if (Number.isFinite(from) && from !== idx) onMove(from, idx)
-                                    resetDrag()
-                                }}
+                                onDrop={(e) => handleDrop(e, idx)}
                                 onDragEnd={resetDrag}
                                 className={cn(
                                     'group flex items-center py-2 px-1 gap-4',
@@ -190,7 +208,6 @@ export default function MciTableColumnsPanel<T extends Record<string, unknown>>(
                             >
                                 <button
                                     type="button"
-                                    onMouseDown={() => onHandleMouseDown(idx)}
                                     className={cn(
                                         'shrink-0 text-slate-400',
                                         'cursor-grab active:cursor-grabbing',
