@@ -75,7 +75,7 @@ export default function MciButton({
             onClick={onClick}
             disabled={isDisabled}
             className={cn(
-                'inline-flex items-center justify-center font-medium transition-all duration-200 cursor-pointer',
+                'inline-flex w-fit shrink-0 items-center justify-center whitespace-nowrap text-center font-medium transition-all duration-200 cursor-pointer',
                 sizes[size],
                 baseVariant,
                 !isDisabled && baseVariant,
@@ -87,7 +87,7 @@ export default function MciButton({
                 <span className="flex items-center">{icon}</span>
             )}
 
-            {content && <span>{content}</span>}
+            {content && <span className="whitespace-nowrap">{content}</span>}
 
             {icon && iconPosition === 'right' && !loading && (
                 <span className="flex items-center">{icon}</span>

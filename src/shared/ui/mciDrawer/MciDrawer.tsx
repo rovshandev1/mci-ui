@@ -62,9 +62,9 @@ export default function MciDrawer({
         }
     }, [isOpen])
 
-    const drawerStyle = useMemo(
+    const drawerStyle = useMemo<React.CSSProperties & Record<'--drawer-w', string>>(
         () => ({
-            ['--drawer-w' as any]: typeof width === 'number' ? `${width}px` : width,
+            '--drawer-w': typeof width === 'number' ? `${width}px` : width,
             transform: isOpen
                 ? 'translateX(0)'
                 : position === 'right'
@@ -103,8 +103,8 @@ export default function MciDrawer({
                 style={drawerStyle}
                 className={cn(
                     'fixed z-50 flex flex-col bg-white outline-none min-h-0',
-                    'transition-transform duration-300 ease-in-out',
-                    'shadow-2xl',
+                    'transition-[transform,opacity,visibility] duration-300 ease-in-out',
+                    isOpen ? 'opacity-100 visible pointer-events-auto shadow-2xl' : 'opacity-0 invisible pointer-events-none shadow-none',
 
                     mobilePos,
                     'h-[100dvh]',
@@ -118,6 +118,7 @@ export default function MciDrawer({
                 )}
                 role="dialog"
                 aria-modal="true"
+                aria-hidden={!isOpen}
                 aria-labelledby={title ? 'drawer-title' : undefined}
             >
                 {hasHeader && (
@@ -162,7 +163,7 @@ export default function MciDrawer({
                 </div>
 
                 {footer && (
-                    <div className="shrink-0 flex items-center justify-end border-t border-slate-200 px-4 py-4 sm:p-6 gap-3">
+                    <div className="shrink-0 flex items-center justify-end border-t border-slate-200 px-4 py-4 sm:p-6 gap-3 [&>*]:w-fit [&>*]:shrink-0 [&>*]:whitespace-nowrap">
                         {footer}
                     </div>
                 )}
