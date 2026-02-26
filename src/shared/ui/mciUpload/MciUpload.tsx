@@ -10,8 +10,10 @@ import { uploadLanguages } from '../../lib/uploadLanguage'
 import { cn } from '../../lib/utils'
 import type { FileInfo, MciUploadProps } from '../../types/ui/upload.types'
 import {
+    buildSecureAccept,
     createPreview,
     formatFileSize,
+    getAllowedFormatsHint,
     getFileIcon,
     validateFileSize,
     validateFileType,
@@ -70,6 +72,8 @@ const MciUpload: React.FC<MciUploadProps> = ({
     const t = uploadLanguages[locale]
 
     const theme = useMemo(() => UPLOAD_THEME[variant], [variant])
+    const secureAccept = useMemo(() => buildSecureAccept(accept), [accept])
+    const allowedFormatsHint = useMemo(() => getAllowedFormatsHint(accept), [accept])
 
     const objectUrlByIdRef = useRef<Map<string, string>>(new Map())
     const revokeObjectUrlById = useCallback((id: string) => {
@@ -121,8 +125,13 @@ const MciUpload: React.FC<MciUploadProps> = ({
                     continue
                 }
 
-                if (!validateFileType(file, accept)) {
-                    alert(t.fileTypeError(file.name))
+                const fileTypeValidation = validateFileType(file, accept)
+                if (!fileTypeValidation.isValid) {
+                    if (fileTypeValidation.reason === 'blocked') {
+                        alert(t.blockedFileTypeError(file.name))
+                    } else {
+                        alert(t.fileTypeError(file.name))
+                    }
                     continue
                 }
 
@@ -289,7 +298,7 @@ const MciUpload: React.FC<MciUploadProps> = ({
                     ref={fileInputRef}
                     type="file"
                     multiple={multiple}
-                    accept={accept}
+                    accept={secureAccept}
                     onChange={handleFileInput}
                     disabled={disabled}
                     className="hidden"
@@ -303,7 +312,7 @@ const MciUpload: React.FC<MciUploadProps> = ({
                     <p className={cn('text-base font-medium', theme.title)}>{t.dropHereTitle}</p>
 
                     <p className={cn('text-sm font-normal', theme.hint)}>
-                        {t.fileRequirements(multiple, maxFiles, maxSize, accept)}
+                        {t.fileRequirements(multiple, maxFiles, maxSize, allowedFormatsHint)}
                     </p>
                 </div>
             </div>

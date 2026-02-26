@@ -26,6 +26,7 @@ export interface UploadLanguage {
     maxFilesError: (maxFiles: number) => string
     fileSizeError: (fileName: string, maxSize: number) => string
     fileTypeError: (fileName: string) => string
+    blockedFileTypeError: (fileName: string) => string
     uploadFailed: string
 
     file: string
@@ -64,6 +65,8 @@ export const uploadLanguages: Record<string, UploadLanguage> = {
         fileSizeError: (fileName, maxSize) =>
             `"${fileName}" fayl hajmi ${maxSize}MB dan kichik bo‘lishi kerak`,
         fileTypeError: (fileName) => `"${fileName}" fayl turi qabul qilinmaydi`,
+        blockedFileTypeError: (fileName) =>
+            `"${fileName}" fayli xavfsizlik sabab bloklandi (arxiv yoki bajariladigan fayl)`,
         uploadFailed: 'Yuklash muvaffaqiyatsiz tugadi',
 
         file: 'Fayl',
@@ -100,6 +103,8 @@ export const uploadLanguages: Record<string, UploadLanguage> = {
         fileSizeError: (fileName, maxSize) =>
             `Размер файла "${fileName}" должен быть меньше ${maxSize}MB`,
         fileTypeError: (fileName) => `Тип файла "${fileName}" не поддерживается`,
+        blockedFileTypeError: (fileName) =>
+            `Файл "${fileName}" заблокирован политикой безопасности (архив или исполняемый тип)`,
         uploadFailed: 'Не удалось загрузить файл',
 
         file: 'Файл',
@@ -136,6 +141,8 @@ export const uploadLanguages: Record<string, UploadLanguage> = {
         fileSizeError: (fileName, maxSize) =>
             `File "${fileName}" must be smaller than ${maxSize}MB`,
         fileTypeError: (fileName) => `File type "${fileName}" is not supported`,
+        blockedFileTypeError: (fileName) =>
+            `File "${fileName}" is blocked by security policy (archive or executable type)`,
         uploadFailed: 'Upload failed',
 
         file: 'File',

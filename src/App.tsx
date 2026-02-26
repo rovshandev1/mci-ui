@@ -426,7 +426,6 @@ export default function App() {
               multiple
               maxFiles={6}
               maxSize={10}
-              accept="image/*,.pdf"
               showPreview
               locale="uz"
               variant={uploadVariant}
