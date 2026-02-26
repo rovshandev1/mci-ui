@@ -2,14 +2,9 @@
 
 React 19 uchun tayyor UI component kutubxonasi.
 
-## Local Playground (Barcha Component Demo)
-
-Repo ichida barcha componentlar ishlaydigan demo UI bor (`src/App.tsx`).
-
-```bash
-npm i
-npm run dev
-```
+- Har bir component section real ishlaydi
+- `variant / size / color` kabi optionlarni tepasidagi control orqali almashtirib ko'rasiz
+- Table qismida `MciTableColumnsPanel` drag-drop va hidden/active ustunlarni boshqarishni tekshirasiz
 
 Eslatma:
 - Demo UI library build bundle'iga qo'shilmaydi.
@@ -259,18 +254,11 @@ loading.close()
 - Hook: `useTableColumnSettings`
 - Type'lar: `MciTableColumn`, `MciTableProps`, `ColumnKey` va boshqa UI type'lar
 
-## 6. NPM publish (Owner uchun)
-
-```bash
-npm run lint
-npm run build
-npm version patch
-npm publish --access public
-```
-
-## 7. Consumer loyiha uchun minimal tekshiruv
+## 6. Consumer loyiha uchun minimal tekshiruv
 
 1. `npm i @mci-ui/mci-ui`
 2. `import '@mci-ui/mci-ui/style.css'`
 3. React 19 ishlatayotganiga ishonch hosil qiling
 4. Peer deps (`@solar-icons/react`, `clsx`, `tailwind-merge`) o'rnatilgan bo'lsin
+
+Release/publish qadamlar alohida: `RELEASE.md`
