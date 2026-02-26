@@ -9,68 +9,13 @@ import React, {
     useState,
 } from 'react'
 import { cn, useClickOutside, useEscapeKey } from '../../lib/utils'
-
-type Option = {
-    value: string | number
-    label: string
-}
-
-type SelectProps = {
-    label?: string
-    placeholder?: string
-    options: Option[]
-    icon?: React.ReactNode
-    iconPosition?: 'left' | 'right'
-    size?: 'sm' | 'md' | 'base'
-    error?: string
-    disabled?: boolean
-    required?: boolean
-    value?: string | number
-    onChange?: (value: string | number) => void
-    onFocus?: () => void
-    onBlur?: () => void
-    className?: string
-    clearable?: boolean
-    searchable?: boolean
-    onSearch?: (searchTerm: string) => void
-    name?: string
-}
-
-const SIZES = {
-    sm: {
-        container: 'h-9 text-sm',
-        padding: 'px-2',
-        iconPaddingLeft: 'pl-7',
-        iconPaddingRight: 'pr-7',
-        iconSize: 'w-4 h-4',
-        iconWrapper: 'left-2',
-        rightIconWrapper: 'right-2',
-        label: 'text-sm',
-        dropdown: 'text-sm',
-    },
-    md: {
-        container: 'h-10 text-sm',
-        padding: 'px-4',
-        iconPaddingLeft: 'pl-8',
-        iconPaddingRight: 'pr-8',
-        iconSize: 'w-5 h-5',
-        iconWrapper: 'left-3',
-        rightIconWrapper: 'right-3',
-        label: 'text-sm',
-        dropdown: 'text-sm',
-    },
-    base: {
-        container: 'h-12 text-base',
-        padding: 'px-4',
-        iconPaddingLeft: 'pl-10',
-        iconPaddingRight: 'pl-3',
-        iconSize: 'w-5 h-5',
-        iconWrapper: 'left-4',
-        rightIconWrapper: 'right-16',
-        label: 'text-base',
-        dropdown: 'text-base',
-    },
-} as const
+import type { SelectProps } from '../../types/ui/select.types'
+import {
+    getFilteredOptions,
+    getSelectIconColor,
+    getSelectStateStyles,
+    SELECT_SIZES,
+} from './mci-select.utils'
 
 const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
     (
@@ -108,22 +53,10 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
         const currentValue = value !== undefined ? value : internalValue
         const selectedOption = options.find((opt) => opt.value === currentValue)
         const hasValue = currentValue !== '' && currentValue !== undefined
-        const currentSize = SIZES[size]
+        const currentSize = SELECT_SIZES[size]
 
-        // --- Search Logic Update ---
         const filteredOptions = useMemo(() => {
-            // If search is disabled, return all options
-            if (!searchable) return options
-
-            // If onSearch (backend search) is provided, return options as-is.
-            // We assume the parent updates 'options' based on the search term.
-            if (onSearch) return options
-
-            // Fallback: Local client-side filtering
-            const lower = searchTerm.toLowerCase()
-            return options.filter((opt) =>
-                opt.label.toLowerCase().includes(lower)
-            )
+            return getFilteredOptions(options, searchTerm, searchable, Boolean(onSearch))
         }, [options, searchTerm, searchable, onSearch])
 
         const closeDropdown = useCallback(() => {
@@ -154,6 +87,31 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
                 searchInputRef.current.focus()
             }
         }, [isOpen, searchable])
+
+        const handleToggle = useCallback(() => {
+            if (disabled) return
+            setIsOpen((prev) => !prev)
+            if (!isOpen) {
+                setIsFocused(true)
+                onFocus?.()
+            } else {
+                setSearchTerm('')
+                setHighlightedIndex(-1)
+            }
+        }, [disabled, isOpen, onFocus])
+
+        const handleSelect = useCallback(
+            (optionValue: string | number) => {
+                if (value === undefined) setInternalValue(optionValue)
+                onChange?.(optionValue)
+                setIsOpen(false)
+                setIsFocused(false)
+                setSearchTerm('')
+                setHighlightedIndex(-1)
+                onBlur?.()
+            },
+            [value, onChange, onBlur]
+        )
 
         const handleKeyDown = useCallback(
             (e: React.KeyboardEvent) => {
@@ -188,32 +146,7 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
                         break
                 }
             },
-            [isOpen, filteredOptions, highlightedIndex, disabled]
-        )
-
-        const handleToggle = useCallback(() => {
-            if (disabled) return
-            setIsOpen((prev) => !prev)
-            if (!isOpen) {
-                setIsFocused(true)
-                onFocus?.()
-            } else {
-                setSearchTerm('')
-                setHighlightedIndex(-1)
-            }
-        }, [disabled, isOpen, onFocus])
-
-        const handleSelect = useCallback(
-            (optionValue: string | number) => {
-                if (value === undefined) setInternalValue(optionValue)
-                onChange?.(optionValue)
-                setIsOpen(false)
-                setIsFocused(false)
-                setSearchTerm('')
-                setHighlightedIndex(-1)
-                onBlur?.()
-            },
-            [value, onChange, onBlur]
+            [isOpen, filteredOptions, highlightedIndex, disabled, handleSelect]
         )
 
         const handleClear = useCallback(
@@ -231,25 +164,18 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
         const handleSearchChange = useCallback(
             (term: string) => {
                 setSearchTerm(term)
-                onSearch?.(term) // Trigger backend search callback if exists
+                onSearch?.(term)
                 setHighlightedIndex(0)
             },
             [onSearch]
         )
 
-        // --- Styles Logic Update ---
-        const stateStyles = useMemo(() => {
-            if (disabled) return 'border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed'
-            if (error) return 'border-red-600 focus:border-red-600 shadow-red bg-white'
-            return 'border-slate-200 hover:border-slate-400 focus:shadow-blue focus:border-blue-600 bg-white'
-        }, [error, disabled])
+        const stateStyles = useMemo(() => getSelectStateStyles(disabled, error), [error, disabled])
 
-        const iconColor = useMemo(() => {
-            if (disabled) return 'text-slate-400'
-            if (error) return 'text-red-600'
-            if (isOpen || isFocused) return 'text-black'
-            return 'text-slate-400'
-        }, [disabled, error, isOpen, isFocused])
+        const iconColor = useMemo(
+            () => getSelectIconColor(disabled, error, isOpen, isFocused),
+            [disabled, error, isOpen, isFocused]
+        )
 
         return (
             <div className={cn('w-full', className)} ref={ref}>

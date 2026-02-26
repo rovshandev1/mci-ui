@@ -1,15 +1,7 @@
 import {AltArrowDown} from '@solar-icons/react'
-import React, {useEffect, useRef, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {cn} from '../../lib/utils.ts'
-
-type CollapseProps = {
-    title: React.ReactNode | string
-    children: React.ReactNode
-    defaultOpen?: boolean
-    icon?: React.ReactNode
-    className?: string
-    contentClassName?: string
-}
+import type { CollapseProps } from '../../types/ui/collapse.types'
 
 export default function MciCollapse({
                                         title,

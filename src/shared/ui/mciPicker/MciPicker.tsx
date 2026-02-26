@@ -14,32 +14,21 @@ import {
     useState,
 } from 'react'
 import { cn, useClickOutside, useEscapeKey } from '../../lib/utils'
-import { Locale, locales } from '../../lib/locales'
+import { locales } from '../../lib/locales'
 import {MciInput} from "../../../index.ts";
-
-type DateValue = Date | string | null
-type RangeValue = [DateValue, DateValue]
-
-export interface MciPickerProps {
-    type?: 'date' | 'range'
-    value?: DateValue | RangeValue
-    onChange?: (value: any) => void
-    placeholder?: string | [string, string]
-    label?: string
-    disabled?: boolean
-    required?: boolean
-    className?: string
-    format?: string
-    minDate?: Date
-    maxDate?: Date
-    error?: string
-    showClear?: boolean
-    allowManualInput?: boolean
-    locale?: Locale
-    startView?: 'day' | 'month' | 'year'
-    iconPosition?: 'left' | 'right'
-    align?: 'left' | 'right' | 'center' | 'auto'
-}
+import type { DateValue, MciPickerProps, RangeValue } from '../../types/ui/picker.types'
+import {
+    formatDateByPattern,
+    formatManualDateInput,
+    getCalendarDays,
+    isDateOutsideBounds,
+    isSameCalendarDay,
+    normalizeDate,
+    parseDateFromInput,
+    shiftMonth,
+    shiftYear,
+    toSafeDate,
+} from './mci-picker.utils'
 
 const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
     (
@@ -71,12 +60,6 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
         )
         const [tempRange, setTempRange] = useState<RangeValue>([null, null])
 
-        const safeDate = useCallback((d: DateValue | undefined): Date | null => {
-            if (!d) return null
-            const date = new Date(d)
-            return isNaN(date.getTime()) ? null : date
-        }, [])
-
         const [currentMonth, setCurrentMonth] = useState(new Date())
         const [view, setView] = useState<'day' | 'month' | 'year'>(startView)
         const [yearPage, setYearPage] = useState(0)
@@ -87,53 +70,25 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
 
         const currentValue = useMemo(() => {
             const val = value !== undefined ? value : internalValue
-            if (type === 'date') return safeDate(val as DateValue)
+            if (type === 'date') return toSafeDate(val as DateValue)
             const range = val as RangeValue
-            return [safeDate(range[0]), safeDate(range[1])]
-        }, [value, internalValue, type, safeDate])
+            return [toSafeDate(range[0]), toSafeDate(range[1])]
+        }, [value, internalValue, type])
 
         const t = locales[locale]
 
-        const normalize = useCallback((date: Date) => {
-            return new Date(date.getFullYear(), date.getMonth(), date.getDate())
-        }, [])
-
         const formatDate = useCallback(
             (date: Date | null): string => {
-                if (!date) return ''
-                const d = date.getDate().toString().padStart(2, '0')
-                const m = (date.getMonth() + 1).toString().padStart(2, '0')
-                const y = date.getFullYear()
-                return format.replace('DD', d).replace('MM', m).replace('YYYY', y.toString())
+                return formatDateByPattern(date, format)
             },
             [format]
         )
 
-        const parseDateFromStr = useCallback((str: string): Date | null => {
-            if (!str || str.length !== 10) return null
-            const digits = str.replace(/\D/g, '')
-            if (digits.length !== 8) return null
-
-            const d = parseInt(digits.slice(0, 2), 10)
-            const m = parseInt(digits.slice(2, 4), 10)
-            const y = parseInt(digits.slice(4, 8), 10)
-
-            if (y < 1000 || m < 1 || m > 12 || d < 1 || d > 31) return null
-
-            const date = new Date(y, m - 1, d)
-            if (date.getFullYear() !== y || date.getMonth() !== m - 1 || date.getDate() !== d) return null
-
-            return date
-        }, [])
-
         const isDisabled = useCallback(
             (date: Date) => {
-                const d = normalize(date)
-                if (minDate && d < normalize(minDate)) return true
-                if (maxDate && d > normalize(maxDate)) return true
-                return false
+                return isDateOutsideBounds(date, minDate, maxDate)
             },
-            [minDate, maxDate, normalize]
+            [minDate, maxDate]
         )
 
         const displayText = useMemo(() => {
@@ -150,7 +105,7 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
             } else if (displayValue === '' && displayText !== '') {
                 setDisplayValue(displayText)
             }
-        }, [displayText, isOpen])
+        }, [displayText, isOpen, displayValue])
 
         useEffect(() => {
             if (isOpen) {
@@ -166,7 +121,7 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
                     else setCurrentMonth(new Date())
                 }
             }
-        }, [isOpen])
+        }, [isOpen, type, currentValue])
 
         useEffect(() => {
             if (isOpen && align === 'auto' && containerRef.current) {
@@ -215,24 +170,13 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
 
         const handleManualInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             if (type !== 'date') return
-            let raw = e.target.value
-            let numbers = raw.replace(/\D/g, '')
-
-            if (numbers.length > 8) numbers = numbers.slice(0, 8)
-
-            let formatted = ''
-            if (numbers.length > 4) {
-                formatted = `${numbers.slice(0, 2)}.${numbers.slice(2, 4)}.${numbers.slice(4)}`
-            } else if (numbers.length > 2) {
-                formatted = `${numbers.slice(0, 2)}.${numbers.slice(2)}`
-            } else {
-                formatted = numbers
-            }
+            const raw = e.target.value
+            const formatted = formatManualDateInput(raw)
 
             setDisplayValue(formatted)
 
             if (formatted.length === 10) {
-                const date = parseDateFromStr(formatted)
+                const date = parseDateFromInput(formatted)
                 if (date && !isDisabled(date)) {
                     setInternalValue(date)
                     onChange?.(date)
@@ -255,7 +199,7 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
         const handleSelect = useCallback(
             (date: Date) => {
                 if (isDisabled(date)) return
-                const normalized = normalize(date)
+                const normalized = normalizeDate(date)
 
                 if (type === 'date') {
                     setInternalValue(normalized)
@@ -280,7 +224,7 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
                     }
                 }
             },
-            [type, tempRange, isDisabled, normalize, onChange, close, formatDate]
+            [type, tempRange, isDisabled, onChange, close, formatDate]
         )
 
         const handleSelectMonth = useCallback((monthIndex: number) => {
@@ -312,54 +256,40 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
         }, [currentMonth, startView, onChange, close, type, formatDate]);
 
         const changeMonth = (offset: number) => {
-            setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + offset, 1))
+            setCurrentMonth((prev) => shiftMonth(prev, offset))
         }
 
         const changeYear = (offset: number) => {
-            setCurrentMonth(prev => new Date(prev.getFullYear() + offset, prev.getMonth(), 1))
+            setCurrentMonth((prev) => shiftYear(prev, offset))
         }
 
-        const getDays = useCallback((monthDate: Date) => {
-            const year = monthDate.getFullYear()
-            const month = monthDate.getMonth()
-            const firstDay = new Date(year, month, 1).getDay()
-            const daysInMonth = new Date(year, month + 1, 0).getDate()
-            const days = []
-
-            for (let i = firstDay; i > 0; i--) days.push({ date: new Date(year, month, 1 - i), isCurrentMonth: false })
-            for (let i = 1; i <= daysInMonth; i++) days.push({ date: new Date(year, month, i), isCurrentMonth: true })
-            const remaining = 42 - days.length
-            for (let i = 1; i <= remaining; i++) days.push({ date: new Date(year, month + 1, i), isCurrentMonth: false })
-            return days
-        }, [])
-
-        const isSameDay = useCallback((a: Date, b: Date) => normalize(a).getTime() === normalize(b).getTime(), [normalize])
+        const isSameDay = useCallback((a: Date, b: Date) => isSameCalendarDay(a, b), [])
 
         const isSelectedStart = (date: Date) => {
-            const d = normalize(date)
+            const d = normalizeDate(date)
             if (type === 'date') return currentValue && isSameDay(d, currentValue as Date)
             const [s] = tempRange[0] ? tempRange as [Date, DateValue] : (currentValue as [DateValue, DateValue])
-            return safeDate(s) && isSameDay(d, safeDate(s)!)
+            return toSafeDate(s) && isSameDay(d, toSafeDate(s)!)
         }
 
         const isSelectedEnd = (date: Date) => {
             if (type !== 'range') return false
-            const d = normalize(date)
+            const d = normalizeDate(date)
             const [, e] = tempRange[1] ? tempRange as [DateValue, Date] : (currentValue as [DateValue, DateValue])
-            return safeDate(e) && isSameDay(d, safeDate(e)!)
+            return toSafeDate(e) && isSameDay(d, toSafeDate(e)!)
         }
 
         const isInRange = (date: Date) => {
             if (type !== 'range') return false
-            const d = normalize(date)
+            const d = normalizeDate(date)
             const [s, e] = tempRange[0] ? tempRange as [DateValue, DateValue] : (currentValue as [DateValue, DateValue])
-            const startNode = safeDate(s), endNode = safeDate(e);
+            const startNode = toSafeDate(s), endNode = toSafeDate(e);
             if (startNode && !endNode) return false;
-            return startNode && endNode && d > normalize(startNode) && d < normalize(endNode)
+            return startNode && endNode && d > normalizeDate(startNode) && d < normalizeDate(endNode)
         }
 
         const renderCalendarView = (baseDate: Date, showLeftArrow: boolean, showRightArrow: boolean) => {
-            const days = getDays(baseDate)
+            const days = getCalendarDays(baseDate)
             return (
                 <div className="w-[300px] p-2 select-none">
                     <div className="flex items-center justify-between mb-4 py-1">

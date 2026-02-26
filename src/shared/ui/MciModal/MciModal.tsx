@@ -1,26 +1,7 @@
 import CloseIcon from '../../../assets/icons/close.svg?react'
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { cn, useClickOutside, useEscapeKey } from '../../lib/utils'
-
-interface ModalProps {
-    show: boolean
-    setShow: (show: boolean) => void
-
-    title?: string
-    description?: string
-    Header?: React.ReactNode
-    Body?: React.ReactNode
-    footer?: React.ReactNode
-    handleClickOutside?: boolean
-
-    showCloseIcon?: boolean
-    showHeader?: boolean
-
-    overlayClassName?: string
-    containerClassName?: string
-    bodyClassName?: string
-    footerClassName?: string
-}
+import type { ModalProps } from '../../types/ui/modal.types'
 
 export default function MciModal({
                                      show,

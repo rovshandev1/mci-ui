@@ -2,31 +2,12 @@ import {Eye, EyeClosed} from '@solar-icons/react'
 import React, {forwardRef, useMemo, useState} from 'react'
 import CloseIcon from "../../../assets/icons/close.svg?react"
 import {cn} from '../../lib/utils'
-
-type InputProps = {
-    label?: string
-    placeholder?: string
-    type?: 'text' | 'email' | 'password' | 'number' | 'tel'
-    icon?: React.ReactNode
-    rightIcon?: React.ReactNode
-    iconPosition?: 'left' | 'right'
-    size?: 'sm' | 'md' | 'base'
-    error?: string
-    disabled?: boolean
-    required?: boolean
-    value?: string
-    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
-    onFocus?: () => void
-    onBlur?: () => void
-    className?: string
-    name?: string
-    readOnly?: boolean
-    maxLength?: number
-    onClear?: () => void
-    showClearButton?: boolean
-    step?: string | number
-    autoComplete?: string
-}
+import type { InputProps } from '../../types/ui/input.types'
+import {
+    getInputIconColor,
+    getInputSizes,
+    getInputStateStyles,
+} from './mci-input.utils'
 
 const MciInput = forwardRef<HTMLInputElement, InputProps>(
     (
@@ -99,70 +80,16 @@ const MciInput = forwardRef<HTMLInputElement, InputProps>(
         }
 
         const sizes = useMemo(
-            () => ({
-                sm: {
-                    input: 'h-9 text-sm',
-                    padding:
-                        hasLeftIcon && hasRightIcon
-                            ? 'pl-7 pr-7'
-                            : hasLeftIcon
-                                ? 'pl-7 pr-2'
-                                : hasRightIcon
-                                    ? 'pl-2 pr-7'
-                                    : 'px-2',
-                    icon: 'w-4 h-4',
-                    leftIcon: 'left-2',
-                    rightIcon: 'right-2',
-                    labelFont: 'text-sm',
-                    iconWrapper: 'h-4',
-                },
-                md: {
-                    input: 'h-10 text-sm',
-                    padding:
-                        hasLeftIcon && hasRightIcon
-                            ? 'pl-8 pr-8'
-                            : hasLeftIcon
-                                ? 'pl-8 pr-2'
-                                : hasRightIcon
-                                    ? 'pl-2 pr-8'
-                                    : 'px-4',
-                    icon: 'w-4 h-4',
-                    leftIcon: 'left-2',
-                    rightIcon: 'right-2',
-                    labelFont: 'text-base',
-                    iconWrapper: 'h-4',
-                },
-                base: {
-                    input: 'h-12 text-base',
-                    padding:
-                        hasLeftIcon && hasRightIcon
-                            ? 'pl-9 pr-9'
-                            : hasLeftIcon
-                                ? 'pl-9 pr-3'
-                                : hasRightIcon
-                                    ? 'pl-3 pr-9'
-                                    : 'px-4',
-                    icon: 'w-5 h-5',
-                    leftIcon: 'left-3',
-                    rightIcon: 'right-3',
-                    labelFont: 'text-base',
-                    iconWrapper: 'h-5',
-                },
-            }),
+            () => getInputSizes(Boolean(hasLeftIcon), Boolean(hasRightIcon)),
             [hasLeftIcon, hasRightIcon]
         )
 
-        const stateStyles = useMemo(() => {
-            if (error) return 'border-red-600 focus:border-red-600 shadow-red'
-            return 'border-slate-200 hover:border-slate-400 focus:shadow-blue focus:border-blue-600'
-        }, [error])
+        const stateStyles = useMemo(() => getInputStateStyles(error), [error])
 
-        const iconColor = useMemo(() => {
-            if (disabled) return 'text-slate-400'
-            if (error) return 'text-red-600'
-            if (isFocused) return 'text-black'
-            return 'text-slate-400'
-        }, [error, isFocused, disabled])
+        const iconColor = useMemo(
+            () => getInputIconColor(disabled, error, isFocused),
+            [error, isFocused, disabled]
+        )
 
         return (
             <div className={cn('w-full', className)}>

@@ -1,24 +1,27 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { cn } from '../../lib/utils.ts'
+import type { TabsProps } from '../../types/ui/tabs.types'
 
-type Tab = {
-    id: string
-    label: string
-    icon?: React.ReactNode
-    content: React.ReactNode
-    disabled?: boolean
-}
+const CONTAINER_CLASSES = {
+    top: 'flex-col',
+    bottom: 'flex-col-reverse',
+    left: 'flex-row',
+    right: 'flex-row-reverse',
+} as const
 
-type TabsProps = {
-    tabs: Tab[]
-    defaultTab?: string
-    position?: 'top' | 'bottom' | 'left' | 'right'
-    className?: string
-    tabListClassName?: string
-    contentClassName?: string
-    extra?: React.ReactNode
-    onChange?: (tabId: string | number) => void
-}
+const TABS_CONTAINER_CLASSES = {
+    top: 'flex-row',
+    bottom: 'flex-row',
+    left: 'flex-col',
+    right: 'flex-col',
+} as const
+
+const CONTENT_CLASSES = {
+    top: 'mt-4',
+    bottom: 'mb-4',
+    left: 'ml-4',
+    right: 'mr-4',
+} as const
 
 export default function MciTabs({
                                     tabs,
@@ -34,7 +37,7 @@ export default function MciTabs({
     const [indicatorStyle, setIndicatorStyle] = useState<React.CSSProperties>({})
     const tabsRef = useRef<(HTMLButtonElement | null)[]>([])
 
-    const updateIndicator = () => {
+    const updateIndicator = useCallback(() => {
         requestAnimationFrame(() => {
             const activeIndex = tabs.findIndex((tab) => tab?.id === activeTab)
             const activeTabElement = tabsRef.current[activeIndex]
@@ -50,7 +53,7 @@ export default function MciTabs({
                 })
             }
         })
-    }
+    }, [activeTab, tabs])
 
     useEffect(() => {
         updateIndicator()
@@ -61,8 +64,7 @@ export default function MciTabs({
         }
 
         return () => window.removeEventListener('resize', updateIndicator)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [activeTab, position, tabs])
+    }, [position, updateIndicator])
 
     useEffect(() => {
         tabsRef.current = tabsRef.current.slice(0, tabs.length)
@@ -70,29 +72,8 @@ export default function MciTabs({
 
     const isVertical = position === 'left' || position === 'right'
 
-    const containerClasses = {
-        top: 'flex-col',
-        bottom: 'flex-col-reverse',
-        left: 'flex-row',
-        right: 'flex-row-reverse',
-    }
-
-    const tabsContainerClasses = {
-        top: 'flex-row',
-        bottom: 'flex-row',
-        left: 'flex-col',
-        right: 'flex-col',
-    }
-
-    const contentClasses = {
-        top: 'mt-4',
-        bottom: 'mb-4',
-        left: 'ml-4',
-        right: 'mr-4',
-    }
-
     return (
-        <div className={cn('flex w-full', containerClasses[position], className)}>
+        <div className={cn('flex w-full', CONTAINER_CLASSES[position], className)}>
             <div
                 className={cn(
                     'flex w-full gap-4',
@@ -110,7 +91,7 @@ export default function MciTabs({
                     <div
                         className={cn(
                             'relative flex rounded-xl bg-slate-100 p-1',
-                            tabsContainerClasses[position],
+                            TABS_CONTAINER_CLASSES[position],
                             !isVertical &&
                             'w-full overflow-hidden',
                             isVertical ? 'min-w-48' : '',
@@ -173,7 +154,7 @@ export default function MciTabs({
                 )}
             </div>
 
-            <div className={cn('w-full flex-1 overflow-hidden', contentClasses[position], contentClassName)}>
+            <div className={cn('w-full flex-1 overflow-hidden', CONTENT_CLASSES[position], contentClassName)}>
                 <div key={activeTab} className="animate-fade-in w-full" style={{ animationDuration: '0.35s' }}>
                     {tabs?.find((tab) => tab.id === activeTab)?.content}
                 </div>

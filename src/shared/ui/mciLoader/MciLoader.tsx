@@ -1,14 +1,6 @@
 import { cn } from "../../lib/utils.ts"
 import LoaderIcon from "../../../assets/icons/loaderIcon.svg?react"
-
-interface MciLoaderProps {
-    className?: string
-    size?: number
-    iconClassName?: string
-    isLoading?: boolean
-    isFullPage?: boolean
-    variant?: 'yellow' | 'blue'
-}
+import type { MciLoaderProps } from '../../types/ui/loader.types'
 
 export default function MciLoader({
                                       className,

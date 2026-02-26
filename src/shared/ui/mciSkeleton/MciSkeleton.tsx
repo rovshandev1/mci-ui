@@ -1,11 +1,5 @@
 import { cn } from '../../lib/utils.ts'
-
-type SkeletonProps = {
-   className?: string
-   variant?: 'default' | 'rounded' | 'circle'
-   width?: string | number
-   height?: string | number
-}
+import type { SkeletonProps } from '../../types/ui/skeleton.types'
 
 export default function MciSkeleton({
    className,

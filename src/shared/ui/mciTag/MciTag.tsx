@@ -1,15 +1,5 @@
-import React from 'react'
 import { cn } from '../../lib/utils.ts'
-
-type TagProps = {
-   children: React.ReactNode
-   variant?: 'success' | 'warning' | 'error' | 'gray' | 'blue'
-   size?: 'sm' | 'md' | 'lg'
-   icon?: React.ReactNode
-   iconPosition?: 'left' | 'right'
-   rounded?: boolean
-   className?: string
-}
+import type { TagProps } from '../../types/ui/tag.types'
 
 const sizes = {
    sm: 'px-2 py-0.5',

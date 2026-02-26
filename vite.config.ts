@@ -13,6 +13,7 @@ export default defineConfig({
         dts({
             insertTypesEntry: true,
             outDir: 'dist/types',
+            exclude: ['src/App.tsx', 'src/main.tsx'],
         }),
     ],
     build: {

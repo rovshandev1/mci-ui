@@ -1,18 +1,6 @@
 import {forwardRef, useMemo} from 'react'
 import {cn} from '../../lib/utils.ts'
-
-type TextareaProps = {
-    label?: string
-    placeholder?: string
-    value?: string
-    onChange?: (value: string) => void
-    required?: boolean
-    disabled?: boolean
-    error?: string
-    className?: string
-    rows?: number
-    name?: string
-}
+import type { TextareaProps } from '../../types/ui/textarea.types'
 
 const MciTextarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     (

@@ -3,25 +3,9 @@ import { SortVertical, SortFromBottomToTop, SortFromTopToBottom } from '@solar-i
 import { useMemo, useState, useEffect, useCallback } from 'react'
 import { cn } from '../../lib/utils'
 import { MciSkeleton, MciCheck } from '../../../index.ts'
-import type { MciTableColumn, MciTableProps } from '../../types/mci-table.types.ts'
-
-function normalizeColWidth(width?: string | number) {
-    if (width == null) return undefined
-    if (typeof width === 'number') return `${width}px`
-    return width
-}
-
-function Clamp2({ children, title }: { children: React.ReactNode; title?: string }) {
-    const t = typeof children === 'string' ? children : undefined
-
-    return (
-        <div className="min-w-0">
-            <div className="clamp-2 break-words" title={title ?? t}>
-                {children}
-            </div>
-        </div>
-    )
-}
+import type { MciTableColumn, MciTableProps, MciTableSort } from '../../types/mci-table.types.ts'
+import MciTableClamp2 from './MciTableClamp2'
+import { normalizeColWidth, sortRows } from './mci-table.utils'
 
 export default function MciTable<T extends Record<string, unknown>>({
                                                                         columns,
@@ -34,47 +18,37 @@ export default function MciTable<T extends Record<string, unknown>>({
                                                                         className,
                                                                         headerClassName,
                                                                         bodyClassName,
-                                                                        rowKey = 'id' as keyof T,
-                                                                        rowSelection,
+                                                                    rowKey = 'id' as keyof T,
+                                                                    rowSelection,
                                                                     }: MciTableProps<T>) {
-    const [localSort, setLocalSort] = useState<{ key: keyof T; direction: 'asc' | 'desc' } | null>(
-        null
-    )
+    const [localSort, setLocalSort] = useState<MciTableSort<T> | null>(null)
 
     const activeSort = externalSort ?? localSort
     const safeData = useMemo(() => (Array.isArray(data) ? data : []), [data])
 
     const sortedData = useMemo(() => {
-        if (!activeSort || externalSort) return safeData
-
-        return [...safeData].sort((a, b) => {
-            const aVal = a[activeSort.key]
-            const bVal = b[activeSort.key]
-
-            if (aVal == null) return 1
-            if (bVal == null) return -1
-            if (aVal < bVal) return activeSort.direction === 'asc' ? -1 : 1
-            if (aVal > bVal) return activeSort.direction === 'asc' ? 1 : -1
-            return 0
-        })
+        return sortRows(safeData, activeSort, Boolean(externalSort))
     }, [safeData, activeSort, externalSort])
 
     useEffect(() => {
         if (externalSort !== undefined) setLocalSort(null)
     }, [externalSort])
 
-    const displayData = loading ? [] : externalSort ? safeData : sortedData
+    const displayData = useMemo(
+        () => (loading ? [] : externalSort ? safeData : sortedData),
+        [loading, externalSort, safeData, sortedData]
+    )
 
     const handleSort = useCallback(
         (col: MciTableColumn<T>) => {
             if (!col.sortable) return
 
-            let nextSort: { key: keyof T; direction: 'asc' | 'desc' } | null = null
+            let nextSort: MciTableSort<T> | null = null
 
             if (activeSort?.key !== col.key) nextSort = { key: col.key, direction: 'asc' }
             else if (activeSort.direction === 'asc') nextSort = { key: col.key, direction: 'desc' }
 
-            if (externalSort !== undefined) onSortChange?.(nextSort as any)
+            if (externalSort !== undefined) onSortChange?.(nextSort)
             else setLocalSort(nextSort)
         },
         [activeSort, externalSort, onSortChange]
@@ -244,7 +218,9 @@ export default function MciTable<T extends Record<string, unknown>>({
 
                                         {columns.map((col) => {
                                             const cellValue = row[col.key]
-                                            const raw = col.render ? col.render(cellValue as any, row) : String(cellValue ?? '-')
+                                            const raw = col.render
+                                                ? col.render(cellValue as T[Extract<keyof T, string>], row)
+                                                : String(cellValue ?? '-')
 
                                             return (
                                                 <td
@@ -258,7 +234,9 @@ export default function MciTable<T extends Record<string, unknown>>({
                                                         col.className
                                                     )}
                                                 >
-                                                    <Clamp2 title={typeof raw === 'string' ? raw : undefined}>{raw}</Clamp2>
+                                                    <MciTableClamp2 title={typeof raw === 'string' ? raw : undefined}>
+                                                        {raw}
+                                                    </MciTableClamp2>
                                                 </td>
                                             )
                                         })}

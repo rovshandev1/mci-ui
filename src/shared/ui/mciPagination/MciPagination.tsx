@@ -1,19 +1,28 @@
 import {AltArrowLeft, AltArrowRight, AltArrowDown, MenuDots} from '@solar-icons/react'
+import { useMemo } from 'react'
 import {cn} from '../../lib/utils'
+import type { PaginationProps } from '../../types/ui/pagination.types'
+import { createPageRange } from './mci-pagination.utils'
 
-interface PaginationProps {
-    totalItems: number
-    currentPage: number
-    perPage: number
-    onPageChange: (page: number) => void
-    onPerPageChange?: (value: number) => void
-    siblingCount?: number
-    perPageOptions?: number[]
-    showPerPage?: boolean
-    variant?: 'yellow' | 'blue'
-    size?: 'medium' | 'large'
-    paginationClassName?: string
-}
+const PAGINATION_SIZE_CLASSES = {
+    medium: 'h-9 text-sm',
+    large: 'h-10 text-base',
+} as const
+
+const PAGINATION_THEME = {
+    yellow: {
+        active: 'bg-yellow-500 text-white border-yellow-500',
+        inactive: 'bg-slate-100 border-slate-200 text-black hover:bg-slate-200',
+        disabled: 'text-slate-400 border-slate-200',
+        arrow: 'text-black',
+    },
+    blue: {
+        active: 'bg-blue-600 text-white border-blue-600',
+        inactive: 'bg-slate-100 border-slate-200 text-black hover:bg-slate-200',
+        disabled: 'text-slate-400 border-slate-300',
+        arrow: 'text-black',
+    },
+} as const
 
 export default function MciPagination({
                                           totalItems,
@@ -33,49 +42,15 @@ export default function MciPagination({
     const safeCurrentPage = Math.max(1, Number.isFinite(currentPage) ? currentPage : 1)
 
     const totalPages = Math.ceil(safeTotalItems / safePerPage)
+
+    const pages = useMemo(() => {
+        return createPageRange(safeCurrentPage, siblingCount, totalPages)
+    }, [safeCurrentPage, siblingCount, totalPages])
+
+    const sizeClasses = PAGINATION_SIZE_CLASSES[size]
+    const theme = PAGINATION_THEME[variant ?? 'yellow']
+
     if (totalPages <= 1 || safeTotalItems === 0) return null
-
-    const createPageRange = () => {
-        const pages: (number | string)[] = []
-        const totalPageNumbers = siblingCount * 2 + 5
-
-        if (totalPages <= totalPageNumbers) {
-            return Array.from({length: totalPages}, (_, i) => i + 1)
-        }
-
-        const leftSibling = Math.max(safeCurrentPage - siblingCount, 2)
-        const rightSibling = Math.min(safeCurrentPage + siblingCount, totalPages - 1)
-
-        pages.push(1)
-        if (leftSibling > 2) pages.push('...')
-        for (let i = leftSibling; i <= rightSibling; i++) pages.push(i)
-        if (rightSibling < totalPages - 1) pages.push('...')
-        if (totalPages > 1) pages.push(totalPages)
-
-        return pages
-    }
-
-    const pages = createPageRange()
-
-    const sizeClasses = {
-        medium: 'h-9 text-sm',
-        large: 'h-10 text-base',
-    }[size]
-
-    const theme = {
-        yellow: {
-            active: 'bg-yellow-500 text-white border-yellow-500',
-            inactive: 'bg-slate-100 border-slate-200 text-black hover:bg-slate-200',
-            disabled: 'text-slate-400 border-slate-200',
-            arrow: 'text-black',
-        },
-        blue: {
-            active: 'bg-blue-600 text-white border-blue-600',
-            inactive: 'bg-slate-100 border-slate-200 text-black hover:bg-slate-200',
-            disabled: 'text-slate-400 border-slate-300',
-            arrow: 'text-black',
-        },
-    }[variant ?? 'yellow']
 
     return (
         <div className={cn(

@@ -1,21 +1,6 @@
 import {AltArrowRight} from '@solar-icons/react'
-import React from 'react'
 import {cn} from '../../lib/utils'
-
-type BreadcrumbItem = {
-    label: string
-    href?: string
-    onClick?: () => void
-    icon?: React.ReactNode
-}
-
-type Variant = 'blue' | 'yellow'
-
-type MciBreadcrumbProps = {
-    items: BreadcrumbItem[]
-    variant?: Variant
-    className?: string
-}
+import type { MciBreadcrumbProps } from '../../types/ui/breadcrumb.types'
 
 export default function MciBreadcrumb({
                                           items,

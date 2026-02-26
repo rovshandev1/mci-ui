@@ -1,45 +1,48 @@
 import {
     Star2,
-    Gallery,
-    VideoFramePlayHorizontal,
-    MusicNote,
-    FileText,
     File,
     Upload,
     Eye,
 } from '@solar-icons/react'
 import CloseIcon from "../../../assets/icons/close.svg?react"
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { uploadLanguages, type UploadLocale } from '../../lib/uploadLanguage'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { uploadLanguages } from '../../lib/uploadLanguage'
 import { cn } from '../../lib/utils'
+import type { FileInfo, MciUploadProps } from '../../types/ui/upload.types'
+import {
+    createPreview,
+    formatFileSize,
+    getFileIcon,
+    validateFileSize,
+    validateFileType,
+} from './mci-upload.utils'
 
-interface FileInfo {
-    id: string
-    file: File
-    preview?: string
-    progress: number
-    status: 'uploading' | 'success' | 'error'
-    error?: string
-}
-
-interface MciUploadProps {
-    multiple?: boolean
-    accept?: string
-    maxSize?: number
-    maxFiles?: number
-    disabled?: boolean
-    label?: string
-    required?: boolean
-    error?: string
-    className?: string
-    onFilesChange?: (files: File[]) => void
-    onUpload?: (files: FileInfo[]) => Promise<void>
-    showPreview?: boolean
-    locale?: UploadLocale
-    showFileTypeIcon?: boolean
-    customValidator?: (file: File) => string | null
-    variant?: 'yellow' | 'blue'
-}
+const UPLOAD_THEME = {
+    blue: {
+        dropBorder: 'border-blue-200 hover:border-blue-300',
+        dropBg: 'bg-blue-50/40 hover:bg-blue-50/60',
+        dropActive: 'border-blue-600 bg-blue-50',
+        iconWrap: 'text-blue-600',
+        title: 'text-blue-600',
+        hint: 'text-slate-500',
+        progress: 'bg-blue-600/30',
+        progressFill: 'bg-blue-600',
+        fileIconImg: 'bg-blue-50 text-blue-600',
+        fileIconDoc: 'bg-green-50 text-green-600',
+    },
+    yellow: {
+        dropBorder: 'border-yellow-200 hover:border-yellow-300',
+        dropBg: 'bg-yellow-50/40 hover:bg-yellow-50/60',
+        dropActive: 'border-yellow-500 bg-yellow-50',
+        iconWrap: 'text-yellow-700',
+        title: 'text-yellow-700',
+        hint: 'text-slate-500',
+        progress: 'bg-yellow-600/25',
+        progressFill: 'bg-yellow-600',
+        fileIconImg: 'bg-blue-50 text-blue-600',
+        fileIconDoc: 'bg-green-50 text-green-600',
+    },
+} as const
 
 const MciUpload: React.FC<MciUploadProps> = ({
                                                  multiple = false,
@@ -66,88 +69,7 @@ const MciUpload: React.FC<MciUploadProps> = ({
 
     const t = uploadLanguages[locale]
 
-    const theme =
-        variant === 'blue'
-            ? {
-                dropBorder: 'border-blue-200 hover:border-blue-300',
-                dropBg: 'bg-blue-50/40 hover:bg-blue-50/60',
-                dropActive: 'border-blue-600 bg-blue-50',
-                iconWrap: 'text-blue-600',
-                title: 'text-blue-600',
-                hint: 'text-slate-500',
-                progress: 'bg-blue-600/30',
-                progressFill: 'bg-blue-600',
-                fileIconImg: 'bg-blue-50 text-blue-600',
-                fileIconDoc: 'bg-green-50 text-green-600',
-            }
-            : {
-                dropBorder: 'border-yellow-200 hover:border-yellow-300',
-                dropBg: 'bg-yellow-50/40 hover:bg-yellow-50/60',
-                dropActive: 'border-yellow-500 bg-yellow-50',
-                iconWrap: 'text-yellow-700',
-                title: 'text-yellow-700',
-                hint: 'text-slate-500',
-                progress: 'bg-yellow-600/25',
-                progressFill: 'bg-yellow-600',
-                fileIconImg: 'bg-blue-50 text-blue-600',
-                fileIconDoc: 'bg-green-50 text-green-600',
-            }
-
-    const getFileIcon = (file: File) => {
-        const type = file.type.split('/')[0]
-        switch (type) {
-            case 'image':
-                return <Gallery className="h-5 w-5 text-blue-500" />
-            case 'video':
-                return <VideoFramePlayHorizontal className="h-5 w-5 text-purple-500" />
-            case 'audio':
-                return <MusicNote className="h-5 w-5 text-green-500" />
-            default:
-                if (file.type.includes('pdf')) return <FileText className="h-5 w-5 text-red-500" />
-                if (file.type.includes('word') || file.type.includes('document'))
-                    return <FileText className="h-5 w-5 text-blue-600" />
-                if (file.type.includes('excel') || file.type.includes('spreadsheet'))
-                    return <FileText className="h-5 w-5 text-green-600" />
-                return <File className="h-5 w-5 text-gray-500" />
-        }
-    }
-
-    const formatFileSize = (bytes: number) => {
-        if (bytes === 0) return '0 Bytes'
-        const k = 1024
-        const sizes = ['Bytes', 'KB', 'MB', 'GB']
-        const i = Math.floor(Math.log(bytes) / Math.log(k))
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-    }
-
-    const validateFileSize = (file: File) => {
-        const maxSizeBytes = maxSize * 1024 * 1024
-        return file.size <= maxSizeBytes
-    }
-
-    const validateFileType = (file: File) => {
-        if (accept === '*/*') return true
-        const acceptedTypes = accept.split(',').map((type) => type.trim())
-        return acceptedTypes.some((type) => {
-            if (type.endsWith('/*')) {
-                const category = type.replace('/*', '')
-                return file.type.startsWith(category)
-            }
-            return file.type === type || file.name.toLowerCase().endsWith(type.replace('*.', '.'))
-        })
-    }
-
-    const createPreview = (file: File): Promise<string> => {
-        return new Promise((resolve) => {
-            if (file.type.startsWith('image/')) {
-                const reader = new FileReader()
-                reader.onload = (e) => resolve(e.target?.result as string)
-                reader.readAsDataURL(file)
-            } else {
-                resolve('')
-            }
-        })
-    }
+    const theme = useMemo(() => UPLOAD_THEME[variant], [variant])
 
     const objectUrlByIdRef = useRef<Map<string, string>>(new Map())
     const revokeObjectUrlById = useCallback((id: string) => {
@@ -194,12 +116,12 @@ const MciUpload: React.FC<MciUploadProps> = ({
                     break
                 }
 
-                if (!validateFileSize(file)) {
+                if (!validateFileSize(file, maxSize)) {
                     alert(t.fileSizeError(file.name, maxSize))
                     continue
                 }
 
-                if (!validateFileType(file)) {
+                if (!validateFileType(file, accept)) {
                     alert(t.fileTypeError(file.name))
                     continue
                 }
@@ -265,10 +187,9 @@ const MciUpload: React.FC<MciUploadProps> = ({
         [
             files,
             maxFiles,
-            validateFileSize,
-            validateFileType,
             customValidator,
             t,
+            accept,
             maxSize,
             multiple,
             onFilesChange,

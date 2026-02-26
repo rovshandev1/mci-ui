@@ -25,3 +25,4 @@ export { default as MciIdentityInput } from './shared/ui/mciIdentityInput/MciIde
 export { default as MciTableColumnsPanel } from './shared/ui/mciTable/MciTableColumnsPanel.tsx'
 export {default as useTableColumnSettings } from './shared/lib/hooks/useTableColumnSettings.ts'
 export type { MciTableColumn, MciTableProps, ColumnKey } from './shared/types/mci-table.types.ts'
+export type * from './shared/types/mci-ui.types.ts'

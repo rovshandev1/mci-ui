@@ -1,14 +1,18 @@
 import {cn} from '../../lib/utils'
+import type { ToggleProps } from '../../types/ui/toggle.types'
 
-type ToggleProps = {
-    checked?: boolean
-    onChange?: (checked: boolean) => void
-    disabled?: boolean
-    variant?: 'blue' | 'yellow'
-    label?: string
-    supportText?: string
-    className?: string
-}
+const TOGGLE_COLORS = {
+    blue: {
+        active: 'bg-blue-600',
+        hover: 'hover:bg-blue-600',
+        focus: 'focus:shadow-blue',
+    },
+    yellow: {
+        active: 'bg-yellow-500',
+        hover: 'hover:bg-yellow-500',
+        focus: 'focus:ring-2 focus:ring-yellow-200',
+    },
+} as const
 
 export default function MciToggle({
                                       checked = false,
@@ -22,19 +26,6 @@ export default function MciToggle({
     const handleToggle = () => {
         if (disabled) return
         onChange?.(!checked)
-    }
-
-    const colors = {
-        blue: {
-            active: 'bg-blue-600',
-            hover: 'hover:bg-blue-600',
-            focus: 'focus:shadow-blue',
-        },
-        yellow: {
-            active: 'bg-yellow-500',
-            hover: 'hover:bg-yellow-500',
-            focus: 'focus:ring-2 focus:ring-yellow-200',
-        },
     }
 
     const disabledStyle =
@@ -53,10 +44,10 @@ export default function MciToggle({
                 className={cn(
                     'relative h-6 w-11 rounded-xl transition-all duration-300 outline-none cursor-pointer',
                     checked
-                        ? colors[variant].active
+                        ? TOGGLE_COLORS[variant].active
                         : 'bg-slate-200',
-                    !disabled && colors[variant].hover,
-                    !disabled && colors[variant].focus,
+                    !disabled && TOGGLE_COLORS[variant].hover,
+                    !disabled && TOGGLE_COLORS[variant].focus,
                     disabled && disabledStyle
                 )}
                 onClick={handleToggle}

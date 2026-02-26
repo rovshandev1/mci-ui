@@ -1,21 +1,7 @@
 import React, {useState, useCallback, useMemo, memo} from 'react';
 import CheckIcon from "../../../assets/icons/check.svg?react"
 import {cn} from '../../lib/utils';
-
-type MciCheckProps = {
-    type?: 'checkbox' | 'radio';
-    label?: string;
-    supportText?: string;
-    checked?: boolean;
-    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    error?: string;
-    disabled?: boolean;
-    required?: boolean;
-    className?: string;
-    variant?: 'blue' | 'yellow';
-    name?: string;
-    value?: string;
-};
+import type { MciCheckProps } from '../../types/ui/check.types'
 
 const STYLE_MAP = {
     blue: {

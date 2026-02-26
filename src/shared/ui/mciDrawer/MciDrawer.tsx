@@ -1,22 +1,7 @@
 import React, { useEffect, useRef, useCallback, useMemo } from 'react'
 import { cn, useClickOutside, useEscapeKey } from '../../lib/utils'
 import CloseIcon from '../../../assets/icons/close.svg?react'
-
-interface DrawerProps {
-    isOpen: boolean
-    onClose: () => void
-    position?: 'left' | 'right'
-    children?: React.ReactNode
-    footer?: React.ReactNode
-    title?: string
-    description?: string
-    showCloseButton?: boolean
-    drawerClassName?: string
-    contentClassName?: string
-    closeOnOverlayClick?: boolean
-    closeOnEscape?: boolean
-    width?: string | number
-}
+import type { DrawerProps } from '../../types/ui/drawer.types'
 
 export default function MciDrawer({
                                       isOpen,
