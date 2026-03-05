@@ -64,6 +64,7 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
         const [view, setView] = useState<'day' | 'month' | 'year'>(startView)
         const [yearPage, setYearPage] = useState(0)
         const [displayValue, setDisplayValue] = useState('')
+        const [isInputFocused, setIsInputFocused] = useState(false)
         const [dropdownAlign, setDropdownAlign] = useState(align)
 
         const containerRef = useRef<HTMLDivElement>(null)
@@ -100,12 +101,12 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
         }, [type, currentValue, formatDate])
 
         useEffect(() => {
-            if (!isOpen) {
+            if (!isOpen && !isInputFocused) {
                 setDisplayValue(displayText)
             } else if (displayValue === '' && displayText !== '') {
                 setDisplayValue(displayText)
             }
-        }, [displayText, isOpen, displayValue])
+        }, [displayText, isOpen, displayValue, isInputFocused])
 
         useEffect(() => {
             if (isOpen) {
@@ -161,6 +162,7 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
         }, [isOpen, handleClickOutside, handleEscape])
 
         const handleInputFocus = () => {
+            setIsInputFocused(true)
             if (disabled || isOpen) return;
             if (type === 'range' || !allowManualInput) {
                 setIsOpen(true);
@@ -168,10 +170,55 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
             }
         };
 
+        const handleInputBlur = () => {
+            setIsInputFocused(false)
+            if (type !== 'date') return
+
+            const normalizedInput = displayValue.trim()
+            if (!normalizedInput) {
+                setInternalValue(null)
+                onChange?.(null)
+                return
+            }
+
+            const parsedDate = parseDateFromInput(normalizedInput)
+            if (parsedDate && !isDisabled(parsedDate)) {
+                const normalizedDate = normalizeDate(parsedDate)
+                setInternalValue(normalizedDate)
+                onChange?.(normalizedDate)
+                setDisplayValue(formatDate(normalizedDate))
+                setCurrentMonth(normalizedDate)
+                return
+            }
+
+            setDisplayValue(displayText)
+        }
+
         const handleManualInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             if (type !== 'date') return
             const raw = e.target.value
             const formatted = formatManualDateInput(raw)
+            const numbersOnly = formatted.replace(/\D/g, '')
+
+            if (numbersOnly.length >= 1) {
+                const dayFirst = Number.parseInt(numbersOnly[0] ?? '0', 10)
+                if (dayFirst > 3) return
+            }
+
+            if (numbersOnly.length >= 2) {
+                const day = Number.parseInt(numbersOnly.slice(0, 2), 10)
+                if (day < 1 || day > 31) return
+            }
+
+            if (numbersOnly.length >= 3) {
+                const monthFirst = Number.parseInt(numbersOnly[2] ?? '0', 10)
+                if (monthFirst > 1) return
+            }
+
+            if (numbersOnly.length >= 4) {
+                const month = Number.parseInt(numbersOnly.slice(2, 4), 10)
+                if (month < 1 || month > 12) return
+            }
 
             setDisplayValue(formatted)
 
@@ -382,6 +429,7 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
                         error={error}
                         maxLength={type === 'date' ? 10 : undefined}
                         onFocus={handleInputFocus}
+                        onBlur={handleInputBlur}
                         readOnly={!allowManualInput || type === 'range'}
                         showClearButton={showClear}
                         onClear={handleInputClear}
