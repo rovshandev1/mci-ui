@@ -5,6 +5,7 @@ import {cn} from '../../lib/utils'
 import type { InputProps } from '../../types/ui/input.types'
 import {
     getInputIconColor,
+    getInputRightPaddingClass,
     getInputSizes,
     getInputStateStyles,
 } from './mci-input.utils'
@@ -49,6 +50,20 @@ const MciInput = forwardRef<HTMLInputElement, InputProps>(
         const hasRightIcon = (icon && iconPosition === 'right') || rightIcon || isPassword
 
         const shouldRenderRightIconsWrapper = hasRightIcon || showClear;
+        const rightControlsCount = useMemo(() => {
+            let count = 0
+            if (showClear) count += 1
+
+            if (isPassword) {
+                count += 1
+                if (rightIcon) count += 1
+                return count
+            }
+
+            if (rightIcon) count += 1
+            if (icon && iconPosition === 'right') count += 1
+            return count
+        }, [showClear, isPassword, rightIcon, icon, iconPosition])
 
         const handleFocus = () => {
             setIsFocused(true)
@@ -91,6 +106,11 @@ const MciInput = forwardRef<HTMLInputElement, InputProps>(
             [error, isFocused, disabled]
         )
 
+        const rightPaddingClass = useMemo(
+            () => getInputRightPaddingClass(size, rightControlsCount),
+            [size, rightControlsCount]
+        )
+
         return (
             <div className={cn('w-full', className)}>
                 {label && (
@@ -128,6 +148,7 @@ const MciInput = forwardRef<HTMLInputElement, InputProps>(
                             '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
                             sizes[size].input,
                             sizes[size].padding,
+                            rightPaddingClass,
                             stateStyles
                         )}
                         maxLength={maxLength}

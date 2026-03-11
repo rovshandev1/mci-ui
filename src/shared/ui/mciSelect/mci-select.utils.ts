@@ -27,7 +27,7 @@ export const SELECT_SIZES = {
         container: 'h-12 text-base',
         padding: 'px-4',
         iconPaddingLeft: 'pl-10',
-        iconPaddingRight: 'pl-3',
+        iconPaddingRight: 'pr-10',
         iconSize: 'w-5 h-5',
         iconWrapper: 'left-4',
         rightIconWrapper: 'right-16',

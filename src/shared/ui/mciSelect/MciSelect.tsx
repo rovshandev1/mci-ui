@@ -53,7 +53,27 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
         const currentValue = value !== undefined ? value : internalValue
         const selectedOption = options.find((opt) => opt.value === currentValue)
         const hasValue = currentValue !== '' && currentValue !== undefined
+        const showClearButton = clearable && hasValue && !disabled
+        const hasRightIcon = Boolean(icon && iconPosition === 'right')
         const currentSize = SELECT_SIZES[size]
+
+        const rightPaddingClass = useMemo(() => {
+            if (hasRightIcon && showClearButton) {
+                if (size === 'sm') return 'pr-16'
+                if (size === 'md') return 'pr-16'
+                return 'pr-20'
+            }
+
+            if (hasRightIcon || showClearButton) {
+                if (size === 'sm') return 'pr-11'
+                if (size === 'md') return 'pr-12'
+                return 'pr-14'
+            }
+
+            if (size === 'sm') return 'pr-8'
+            if (size === 'md') return 'pr-9'
+            return 'pr-10'
+        }, [hasRightIcon, showClearButton, size])
 
         const filteredOptions = useMemo(() => {
             return getFilteredOptions(options, searchTerm, searchable, Boolean(onSearch))
@@ -210,11 +230,8 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
                             'flex w-full items-center border font-normal transition-all duration-300 ease-in-out',
                             size === 'base' ? 'rounded-xl' : 'rounded-lg',
                             currentSize.container,
-                            icon
-                                ? iconPosition === 'left'
-                                    ? currentSize.iconPaddingLeft
-                                    : currentSize.iconPaddingRight
-                                : currentSize.padding,
+                            icon && iconPosition === 'left' ? currentSize.iconPaddingLeft : currentSize.padding,
+                            rightPaddingClass,
                             stateStyles,
                             !disabled && isFocused && 'shadow-blue border-blue-600'
                         )}
@@ -240,13 +257,14 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
                                 value={searchTerm}
                                 onChange={(e) => handleSearchChange(e.target.value)}
                                 placeholder={placeholder}
-                                className="w-full bg-transparent outline-none"
+                                className="w-full min-w-0 flex-1 bg-transparent outline-none"
                                 onClick={(e) => e.stopPropagation()}
                             />
                         ) : (
                             <span
+                                title={selectedOption?.label || placeholder}
                                 className={cn(
-                                    'block truncate select-none',
+                                    'block min-w-0 flex-1 truncate select-none',
                                     !hasValue && !disabled && 'text-slate-400'
                                 )}
                             >
@@ -254,13 +272,23 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
                             </span>
                         )}
 
-                        {clearable && hasValue && !disabled && (
+                        {showClearButton && (
                             <button
                                 type="button"
                                 onClick={handleClear}
                                 className={cn(
                                     'absolute top-1/2 -translate-y-1/2 text-slate-400 hover:text-black transition-colors cursor-pointer',
-                                    icon ? (iconPosition === 'left' ? 'right-8' : 'right-10') : 'right-10'
+                                    hasRightIcon
+                                        ? size === 'sm'
+                                            ? 'right-8'
+                                            : size === 'md'
+                                                ? 'right-9'
+                                                : 'right-10'
+                                        : size === 'sm'
+                                            ? 'right-7'
+                                            : size === 'md'
+                                                ? 'right-8'
+                                                : 'right-9'
                                 )}
                                 aria-label="Очистить"
                             >
@@ -270,7 +298,8 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
 
                         <div
                             className={cn(
-                                'absolute top-1/2 right-3 -translate-y-1/2 pointer-events-none transition-all duration-300',
+                                'absolute top-1/2 -translate-y-1/2 pointer-events-none transition-all duration-300',
+                                size === 'sm' ? 'right-2' : 'right-3',
                                 isOpen && 'rotate-180',
                                 iconColor
                             )}
@@ -299,8 +328,9 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
                                         role="option"
                                         aria-selected={currentValue === option.value}
                                         onClick={() => handleSelect(option.value)}
+                                        title={option.label}
                                         className={cn(
-                                            'cursor-pointer px-3 py-2 font-normal transition-colors hover:bg-slate-100 rounded-sm',
+                                            'cursor-pointer truncate px-3 py-2 font-normal transition-colors hover:bg-slate-100 rounded-sm',
                                             currentValue === option.value
                                                 ? 'bg-slate-100'
                                                 : '',

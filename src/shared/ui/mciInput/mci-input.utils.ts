@@ -76,3 +76,23 @@ export function getInputIconColor(disabled: boolean, error: string | undefined, 
     if (isFocused) return 'text-black'
     return 'text-slate-400'
 }
+
+export function getInputRightPaddingClass(size: 'sm' | 'md' | 'base', rightControlsCount: number) {
+    if (rightControlsCount <= 0) return ''
+
+    if (size === 'sm') {
+        if (rightControlsCount >= 3) return 'pr-14'
+        if (rightControlsCount === 2) return 'pr-11'
+        return 'pr-7'
+    }
+
+    if (size === 'md') {
+        if (rightControlsCount >= 3) return 'pr-16'
+        if (rightControlsCount === 2) return 'pr-12'
+        return 'pr-8'
+    }
+
+    if (rightControlsCount >= 3) return 'pr-20'
+    if (rightControlsCount === 2) return 'pr-16'
+    return 'pr-10'
+}
