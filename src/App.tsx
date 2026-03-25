@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Home, Settings, User } from '@solar-icons/react'
+import { Home, Settings, Ufo3, User } from '@solar-icons/react'
 import {
+  MciAccordion,
   MciBreadcrumb,
   MciButton,
   MciCheck,
@@ -381,6 +382,20 @@ export default function App() {
               <MciCollapse title="MciCollapse">
                 <div className="demo-note">Collapsible content ishlayapti.</div>
               </MciCollapse>
+
+               <MciAccordion icon={<Ufo3 weight="Linear" size={30} />}>
+                <MciAccordion.Title className="flex w-full items-center justify-between px-1">
+                    <p>MciAccordion</p>
+                    <div className="flex items-center gap-3 text-extra-small font-normal text-slate-700">
+                      <p>John Doe</p>
+                      <span className="h-6 w-px bg-slate-200"></span>
+                      <p>{new Date().toLocaleDateString()}</p>
+                    </div>
+                </MciAccordion.Title>
+                <MciAccordion.Content>
+                    <div className="demo-note">Accordion content ishlayapti.</div>
+                </MciAccordion.Content>
+              </MciAccordion>
             </div>
 
             <div className="demo-stack">

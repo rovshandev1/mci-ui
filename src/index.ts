@@ -4,6 +4,7 @@ export { default as MciBreadcrumb } from './shared/ui/mciBreadcrumb/MciBreadcrum
 export { default as MciButton } from './shared/ui/mciButton/MciButton.tsx'
 export { default as MciCheck } from './shared/ui/mciCheck/MciCheck.tsx'
 export { default as MciCollapse } from './shared/ui/mciCollapse/MciCollapse.tsx'
+export { default as MciAccordion } from './shared/ui/mciAccordion/MciAccordion.tsx'
 export { default as MciDrawer } from './shared/ui/mciDrawer/MciDrawer.tsx'
 export { default as MciInput } from './shared/ui/mciInput/MciInput.tsx'
 export { default as MciPicker } from './shared/ui/mciPicker/MciPicker.tsx'
