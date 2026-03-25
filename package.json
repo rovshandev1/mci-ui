@@ -3,21 +3,19 @@
   "private": false,
   "version": "0.0.84",
   "type": "module",
-  "main": "./dist/index.umd.js",
-  "module": "./dist/index.es.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
   "types": "./dist/types/index.d.ts",
   "style": "./dist/index.css",
   "exports": {
     ".": {
       "types": "./dist/types/index.d.ts",
-      "import": "./dist/index.es.js",
-      "require": "./dist/index.umd.js"
+      "import": "./dist/index.js"
     },
     "./style.css": "./dist/index.css"
   },
   "sideEffects": [
-    "./dist/index.css",
-    "./style.css"
+    "**/*.css"
   ],
   "files": [
     "dist"
@@ -33,7 +31,10 @@
     "preview": "vite preview",
     "format": "prettier --write ."
   },
-  "dependencies": {},
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.4.0"
+  },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@solar-icons/react": "^1.0.1",
@@ -62,10 +63,12 @@
   },
   "peerDependencies": {
     "react": ">=19",
-    "react-dom": ">=19",
-    "@solar-icons/react": "^1.0.1",
-    "clsx": "^2.1.1",
-    "tailwind-merge": "^3.4.0"
+    "react-dom": ">=19"
+  },
+  "peerDependenciesMeta": {
+    "@solar-icons/react": {
+      "optional": true
+    }
   },
   "description": "Minimal UI component library built with React and Tailwind CSS.",
   "keywords": [
