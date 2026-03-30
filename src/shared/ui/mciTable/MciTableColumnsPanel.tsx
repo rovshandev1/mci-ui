@@ -2,9 +2,35 @@ import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { TransferVertical } from '@solar-icons/react'
 import { cn, useClickOutside } from '../../lib/utils'
 import { MciCheck } from '../../../index.ts'
-import type { ColumnKey, MciTableColumn } from '../../types/mci-table.types.ts'
+import type { ColumnKey, MciTableColumn, MciTablePanelLocale } from '../../types/mci-table.types.ts'
 
 type DropPosition = 'before' | 'after'
+
+const PANEL_TRANSLATIONS: Record<
+    MciTablePanelLocale,
+    {
+        title: string
+        close: string
+        activeColumns: string
+        minColumns: (count: number) => string
+        drag: string
+    }
+> = {
+    ru: {
+        title: 'Настройки',
+        close: 'Закрыть',
+        activeColumns: 'Активные колонки',
+        minColumns: (count) => `Минимум ${count} колонок`,
+        drag: 'Перетащить',
+    },
+    uz: {
+        title: 'Sozlamalar',
+        close: 'Yopish',
+        activeColumns: 'Aktiv ustunlar',
+        minColumns: (count) => `Kamida ${count} ta ustun`,
+        drag: 'Sudrash',
+    },
+}
 
 type Props<T extends Record<string, unknown>> = {
     open: boolean
@@ -16,6 +42,7 @@ type Props<T extends Record<string, unknown>> = {
     onMoveByKey?: (from: ColumnKey<T>, to: ColumnKey<T>, position: DropPosition) => void
 
     minVisible?: number
+    locale?: MciTablePanelLocale
 }
 
 export default function MciTableColumnsPanel<T extends Record<string, unknown>>({
@@ -27,9 +54,11 @@ export default function MciTableColumnsPanel<T extends Record<string, unknown>>(
                                                                                     onMove,
                                                                                     onMoveByKey,
                                                                                     minVisible = 5,
+                                                                                    locale = 'ru',
                                                                                 }: Props<T>) {
     const ref = useRef<HTMLDivElement>(null)
     const { handleClick } = useClickOutside(ref, onClose)
+    const t = PANEL_TRANSLATIONS[locale]
 
     useEffect(() => {
         if (!open) return
@@ -134,13 +163,13 @@ export default function MciTableColumnsPanel<T extends Record<string, unknown>>(
             )}
         >
             <div className="flex items-center justify-between gap-4">
-                <h4 className="text-slate-600 text-large font-normal">Settings</h4>
+                <h4 className="text-slate-600 text-large font-normal">{t.title}</h4>
 
                 <button
                     type="button"
                     onClick={onClose}
                     className="rounded-lg px-2 py-1 text-slate-500 hover:bg-slate-100"
-                    aria-label="Close"
+                    aria-label={t.close}
                 >
                     ✕
                 </button>
@@ -148,7 +177,7 @@ export default function MciTableColumnsPanel<T extends Record<string, unknown>>(
 
             <div className="my-4 h-px bg-slate-100" />
             <p className="mb-3 text-xs text-slate-500">
-                Active columns: {visibleCount}/{columns.length}
+                {t.activeColumns}: {visibleCount}/{columns.length}
             </p>
 
             <div
@@ -214,7 +243,7 @@ export default function MciTableColumnsPanel<T extends Record<string, unknown>>(
                                         'rounded-lg p-1 hover:bg-slate-100',
                                         isDragging && 'cursor-grabbing'
                                     )}
-                                    aria-label="Drag"
+                                    aria-label={t.drag}
                                 >
                                     <TransferVertical weight="Linear" size={20} />
                                 </button>
@@ -234,7 +263,7 @@ export default function MciTableColumnsPanel<T extends Record<string, unknown>>(
                                     </h4>
                                     {isLocked && (
                                         <p className="text-xs text-slate-400 mt-0.5">
-                                            Минимум {minVisible} колонок
+                                            {t.minColumns(minVisible)}
                                         </p>
                                     )}
                                 </div>

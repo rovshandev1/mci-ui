@@ -526,6 +526,7 @@ export default function App() {
               onMove={moveColumn}
               onMoveByKey={moveColumnByKey}
               minVisible={5}
+              locale="uz"
             />
           </div>
 

@@ -2,6 +2,7 @@ import type {ReactNode} from 'react'
 
 export type Align = 'left' | 'center' | 'right'
 export type ColumnKey<T> = Extract<keyof T, string>
+export type MciTablePanelLocale = 'ru' | 'uz'
 
 export type MciTableColumn<T> = {
     key: ColumnKey<T>
