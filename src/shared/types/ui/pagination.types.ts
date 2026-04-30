@@ -9,5 +9,6 @@ export interface PaginationProps {
     showPerPage?: boolean
     variant?: 'yellow' | 'blue'
     size?: 'medium' | 'large'
+    darkMode?: boolean
     paginationClassName?: string
 }

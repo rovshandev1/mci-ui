@@ -12,6 +12,7 @@ export type TabsProps = {
     tabs: Tab[]
     defaultTab?: string
     position?: 'top' | 'bottom' | 'left' | 'right'
+    darkMode?: boolean
     className?: string
     tabListClassName?: string
     contentClassName?: string

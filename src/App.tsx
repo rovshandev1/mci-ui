@@ -505,6 +505,7 @@ export default function App() {
 
         <Section title="Tabs">
           <MciTabs
+            darkMode={appDarkMode}
             tabs={[
               {
                 id: 'profile',
@@ -581,6 +582,7 @@ export default function App() {
               totalItems={DEMO_ROWS.length}
               currentPage={page}
               perPage={perPage}
+              darkMode={appDarkMode}
               onPageChange={setPage}
               onPerPageChange={(value) => {
                 setPerPage(value)

@@ -27,6 +27,7 @@ export default function MciTabs({
                                     tabs,
                                     defaultTab,
                                     position = 'top',
+                                    darkMode = false,
                                     className,
                                     tabListClassName,
                                     contentClassName,
@@ -90,7 +91,8 @@ export default function MciTabs({
                 >
                     <div
                         className={cn(
-                            'relative flex rounded-xl bg-slate-100 p-1',
+                            'relative flex rounded-xl p-1',
+                            darkMode ? 'bg-neutral-300' : 'bg-slate-100',
                             TABS_CONTAINER_CLASSES[position],
                             !isVertical &&
                             'w-full overflow-hidden',
@@ -99,7 +101,11 @@ export default function MciTabs({
                         )}
                     >
                         <div
-                            className={cn('absolute rounded-lg bg-white', isVertical ? 'w-full' : 'h-full')}
+                            className={cn(
+                                'absolute rounded-lg',
+                                darkMode ? 'bg-black' : 'bg-white',
+                                isVertical ? 'w-full' : 'h-full'
+                            )}
                             style={indicatorStyle}
                         />
 
@@ -120,8 +126,11 @@ export default function MciTabs({
                                     }}
                                     disabled={tab?.disabled}
                                     className={cn(
-                                        'relative z-10 flex items-center justify-center whitespace-nowrap px-3 py-2 text-base font-normal text-black transition-colors duration-300 hover:cursor-pointer',
-                                        tab?.disabled && 'cursor-not-allowed opacity-50',
+                                        'relative z-10 flex items-center justify-center whitespace-nowrap px-3 py-2 text-base font-normal transition-colors duration-300 hover:cursor-pointer',
+                                        darkMode
+                                            ? 'text-white'
+                                            : 'text-black',
+                                        tab?.disabled && (darkMode ? 'cursor-not-allowed text-neutral-100/50 opacity-60' : 'cursor-not-allowed opacity-50'),
                                         isVertical ? 'w-full justify-start' : 'flex-1 min-w-0'
                                     )}
                                 >
