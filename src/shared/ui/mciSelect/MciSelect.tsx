@@ -26,6 +26,7 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
             icon,
             iconPosition = 'left',
             size = 'base',
+            darkMode = false,
             error,
             disabled = false,
             required = false,
@@ -190,11 +191,14 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
             [onSearch]
         )
 
-        const stateStyles = useMemo(() => getSelectStateStyles(disabled, error), [error, disabled])
+        const stateStyles = useMemo(
+            () => getSelectStateStyles(disabled, error, darkMode),
+            [error, disabled, darkMode]
+        )
 
         const iconColor = useMemo(
-            () => getSelectIconColor(disabled, error, isOpen, isFocused),
-            [disabled, error, isOpen, isFocused]
+            () => getSelectIconColor(disabled, error, isOpen, isFocused, darkMode),
+            [disabled, error, isOpen, isFocused, darkMode]
         )
 
         return (
@@ -204,7 +208,13 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
                         htmlFor={name}
                         className={cn(
                             'mb-2 block text-base font-medium',
-                            error ? 'text-red-600' : 'text-slate-700',
+                            error
+                                ? darkMode
+                                    ? 'text-red-500'
+                                    : 'text-red-600'
+                                : darkMode
+                                    ? 'text-neutral-50'
+                                    : 'text-slate-700',
                             currentSize.label
                         )}
                     >
@@ -233,7 +243,9 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
                             icon && iconPosition === 'left' ? currentSize.iconPaddingLeft : currentSize.padding,
                             rightPaddingClass,
                             stateStyles,
-                            !disabled && isFocused && 'shadow-blue border-blue-600'
+                            darkMode && !disabled && (isFocused || isOpen) && !error && 'border-blue-500 shadow-[0_0_0_2px_var(--opacity-25,rgba(21,93,252,0.25))] text-white',
+                            darkMode && !disabled && (isFocused || isOpen) && error && 'border-red-500 shadow-[0_0_0_2px_rgba(231,0,11,0.25)]',
+                            !darkMode && !disabled && isFocused && 'shadow-blue border-blue-600'
                         )}
                     >
                         {icon && (
@@ -257,7 +269,12 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
                                 value={searchTerm}
                                 onChange={(e) => handleSearchChange(e.target.value)}
                                 placeholder={placeholder}
-                                className="w-full min-w-0 flex-1 bg-transparent outline-none"
+                                className={cn(
+                                    'w-full min-w-0 flex-1 bg-transparent outline-none',
+                                    darkMode
+                                        ? 'text-white placeholder:text-neutral-100'
+                                        : 'text-black'
+                                )}
                                 onClick={(e) => e.stopPropagation()}
                             />
                         ) : (
@@ -265,7 +282,9 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
                                 title={selectedOption?.label || placeholder}
                                 className={cn(
                                     'block min-w-0 flex-1 truncate select-none',
-                                    !hasValue && !disabled && 'text-slate-400'
+                                    !hasValue && !disabled && (darkMode ? 'text-neutral-100' : 'text-slate-400'),
+                                    darkMode && hasValue && (isFocused || isOpen) && 'text-white',
+                                    darkMode && hasValue && !isFocused && !isOpen && 'text-neutral-50'
                                 )}
                             >
                                 {selectedOption?.label || placeholder}
@@ -277,7 +296,10 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
                                 type="button"
                                 onClick={handleClear}
                                 className={cn(
-                                    'absolute top-1/2 -translate-y-1/2 text-slate-400 hover:text-black transition-colors cursor-pointer',
+                                    'absolute top-1/2 -translate-y-1/2 transition-colors cursor-pointer',
+                                    darkMode
+                                        ? 'text-neutral-100 hover:text-white'
+                                        : 'text-slate-400 hover:text-black',
                                     hasRightIcon
                                         ? size === 'sm'
                                             ? 'right-8'
@@ -313,12 +335,18 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
                             id={`${name}-listbox`}
                             role="listbox"
                             className={cn(
-                                'absolute z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-md p-1 text-black',
+                                'absolute z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-lg border p-1 shadow-md',
+                                darkMode
+                                    ? 'border-neutral-200 bg-[#1F2025] text-neutral-50'
+                                    : 'border-slate-200 bg-white text-black',
                                 currentSize.dropdown
                             )}
                         >
                             {filteredOptions.length === 0 ? (
-                                <div className="px-3 py-2 text-center text-base font-normal text-slate-500">
+                                <div className={cn(
+                                    'px-3 py-2 text-center text-base font-normal',
+                                    darkMode ? 'text-neutral-100' : 'text-slate-500'
+                                )}>
                                     Ничего не найдено
                                 </div>
                             ) : (
@@ -330,10 +358,14 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
                                         onClick={() => handleSelect(option.value)}
                                         title={option.label}
                                         className={cn(
-                                            'cursor-pointer truncate px-3 py-2 font-normal transition-colors hover:bg-slate-100 rounded-sm',
+                                            'cursor-pointer truncate rounded-sm px-3 py-2 font-normal transition-colors',
                                             currentValue === option.value
-                                                ? 'bg-slate-100'
-                                                : '',
+                                                ? darkMode
+                                                    ? 'bg-neutral-300 text-white'
+                                                    : 'bg-slate-100'
+                                                : darkMode
+                                                    ? 'hover:bg-neutral-300 hover:text-white'
+                                                    : 'hover:bg-slate-100',
                                         )}
                                     >
                                         {option.label}
@@ -345,7 +377,10 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
                 </div>
 
                 {error && (
-                    <p className="mt-2 animate-[slideDown_0.3s_ease-out] text-sm font-normal text-red-600">{error}</p>
+                    <p className={cn(
+                        'mt-2 animate-[slideDown_0.3s_ease-out] text-sm font-normal',
+                        darkMode ? 'text-red-500' : 'text-red-600'
+                    )}>{error}</p>
                 )}
             </div>
         )

@@ -49,7 +49,17 @@ export function getFilteredOptions(
     return options.filter((opt) => opt.label.toLowerCase().includes(lower))
 }
 
-export function getSelectStateStyles(disabled: boolean, error?: string) {
+export function getSelectStateStyles(disabled: boolean, error?: string, darkMode = false) {
+    if (darkMode) {
+        if (disabled) {
+            return 'border-neutral-200 bg-neutral-300 text-neutral-100/50 cursor-not-allowed'
+        }
+        if (error) {
+            return 'border-red-500 bg-transparent text-neutral-50 hover:border-red-500'
+        }
+        return 'border-neutral-200 bg-transparent text-neutral-50 hover:border-neutral-100'
+    }
+
     if (disabled) return 'border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed'
     if (error) return 'border-red-600 focus:border-red-600 shadow-red bg-white'
     return 'border-slate-200 hover:border-slate-400 focus:shadow-blue focus:border-blue-600 bg-white'
@@ -59,8 +69,16 @@ export function getSelectIconColor(
     disabled: boolean,
     error: string | undefined,
     isOpen: boolean,
-    isFocused: boolean
+    isFocused: boolean,
+    darkMode = false
 ) {
+    if (darkMode) {
+        if (disabled) return 'text-neutral-100/50'
+        if (error) return 'text-red-500'
+        if (isOpen || isFocused) return 'text-white'
+        return 'text-neutral-100'
+    }
+
     if (disabled) return 'text-slate-400'
     if (error) return 'text-red-600'
     if (isOpen || isFocused) return 'text-black'

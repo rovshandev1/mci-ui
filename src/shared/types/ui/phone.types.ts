@@ -2,6 +2,7 @@ export type PhoneInputProps = {
     label?: string
     placeholder?: string
     size?: 'sm' | 'md' | 'base'
+    darkMode?: boolean
     error?: string
     disabled?: boolean
     required?: boolean

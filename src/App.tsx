@@ -326,6 +326,7 @@ export default function App() {
             <MciSelect
               label="MciSelect"
               size={fieldSize}
+              darkMode={appDarkMode}
               value={selectValue}
               onChange={setSelectValue}
               clearable
@@ -337,7 +338,7 @@ export default function App() {
               ]}
             />
 
-            <MciPhone label="MciPhone" size={fieldSize} value={phoneValue} onChange={setPhoneValue} showIcon />
+            <MciPhone label="MciPhone" size={fieldSize} darkMode={appDarkMode} value={phoneValue} onChange={setPhoneValue} showIcon />
 
             <MciIdentityInput
               label="MciIdentityInput"

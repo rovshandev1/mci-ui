@@ -15,6 +15,7 @@ const MciPhone = forwardRef<HTMLInputElement, PhoneInputProps>(
             label,
             placeholder = '+998 (__) ___ __ __',
             size = 'base',
+            darkMode = false,
             error,
             disabled = false,
             required = false,
@@ -56,11 +57,11 @@ const MciPhone = forwardRef<HTMLInputElement, PhoneInputProps>(
         const sizeConfig = PHONE_SIZES[size]
         const inputPadding = showIcon ? sizeConfig.iconPadding : sizeConfig.defaultPadding
 
-        const stateStyles = useMemo(() => getPhoneStateStyles(error), [error])
+        const stateStyles = useMemo(() => getPhoneStateStyles(error, darkMode), [error, darkMode])
 
         const iconColor = useMemo(
-            () => getPhoneIconColor(disabled, error, isFocused),
-            [error, isFocused, disabled]
+            () => getPhoneIconColor(disabled, error, isFocused, darkMode),
+            [error, isFocused, disabled, darkMode]
         )
 
         return (
@@ -68,7 +69,15 @@ const MciPhone = forwardRef<HTMLInputElement, PhoneInputProps>(
                 {label && (
                     <label className={cn(
                         'mb-2 block font-medium transition-colors duration-200',
-                        error ? 'text-red-600' : isFocused ? 'text-blue-600' : 'text-slate-700',
+                        error
+                            ? darkMode
+                                ? 'text-red-500'
+                                : 'text-red-600'
+                            : darkMode
+                                ? 'text-neutral-50'
+                                : isFocused
+                                    ? 'text-blue-600'
+                                    : 'text-slate-700',
                         sizeConfig.labelFont
                     )}>
                         {label}
@@ -100,9 +109,12 @@ const MciPhone = forwardRef<HTMLInputElement, PhoneInputProps>(
                         disabled={disabled}
                         placeholder={placeholder}
                         className={cn(
-                            'w-full border bg-white font-normal transition-all duration-300 outline-none',
+                            'w-full border font-normal transition-all duration-300 outline-none',
                             size === 'base' ? 'rounded-xl' : 'rounded-lg',
-                            'disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed',
+                            darkMode
+                                ? 'text-neutral-50 placeholder:text-neutral-100 disabled:cursor-not-allowed disabled:border-neutral-200 disabled:bg-neutral-300 disabled:text-neutral-100/50 disabled:placeholder:text-neutral-100/50'
+                                : 'bg-white disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed',
+                            darkMode && isFocused && !disabled && 'text-white',
                             sizeConfig.input,
                             inputPadding,
                             stateStyles
@@ -111,7 +123,10 @@ const MciPhone = forwardRef<HTMLInputElement, PhoneInputProps>(
                 </div>
 
                 {error && (
-                    <p className="mt-2 animate-slide-up text-sm font-normal text-red-600">
+                    <p className={cn(
+                        'mt-2 animate-slide-up text-sm font-normal',
+                        darkMode ? 'text-red-500' : 'text-red-600'
+                    )}>
                         {error}
                     </p>
                 )}

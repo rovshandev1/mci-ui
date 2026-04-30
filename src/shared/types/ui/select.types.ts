@@ -12,6 +12,7 @@ export type SelectProps = {
     icon?: ReactNode
     iconPosition?: 'left' | 'right'
     size?: 'sm' | 'md' | 'base'
+    darkMode?: boolean
     error?: string
     disabled?: boolean
     required?: boolean
