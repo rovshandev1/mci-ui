@@ -20,6 +20,7 @@ const MciInput = forwardRef<HTMLInputElement, InputProps>(
             rightIcon,
             iconPosition = 'left',
             size = 'base',
+            darkMode = false,
             error,
             disabled = false,
             required = false,
@@ -99,11 +100,11 @@ const MciInput = forwardRef<HTMLInputElement, InputProps>(
             [hasLeftIcon, hasRightIcon]
         )
 
-        const stateStyles = useMemo(() => getInputStateStyles(error), [error])
+        const stateStyles = useMemo(() => getInputStateStyles(error, darkMode), [error, darkMode])
 
         const iconColor = useMemo(
-            () => getInputIconColor(disabled, error, isFocused),
-            [error, isFocused, disabled]
+            () => getInputIconColor(disabled, error, isFocused, darkMode),
+            [error, isFocused, disabled, darkMode]
         )
 
         const rightPaddingClass = useMemo(
@@ -118,7 +119,13 @@ const MciInput = forwardRef<HTMLInputElement, InputProps>(
                         htmlFor={name}
                         className={cn(
                             'mb-2 block text-base font-medium',
-                            error ? 'text-red-600' : 'text-slate-700',
+                            error
+                                ? darkMode
+                                    ? 'text-red-500'
+                                    : 'text-red-600'
+                                : darkMode
+                                    ? 'text-neutral-50'
+                                    : 'text-slate-700',
                             sizes[size].labelFont
                         )}
                     >
@@ -142,9 +149,12 @@ const MciInput = forwardRef<HTMLInputElement, InputProps>(
                         placeholder={placeholder}
                         step={step}
                         className={cn(
-                            'w-full border bg-white font-normal transition-all duration-300 ease-in-out outline-none',
+                            'w-full border font-normal transition-all duration-300 ease-in-out outline-none',
                             size === 'base' ? 'rounded-xl' : 'rounded-lg',
-                            'disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400',
+                            darkMode
+                                ? 'text-neutral-50 placeholder:text-neutral-100 disabled:cursor-not-allowed disabled:border-neutral-200 disabled:bg-neutral-300 disabled:text-neutral-100/50 disabled:placeholder:text-neutral-100/50'
+                                : 'bg-white disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400',
+                            darkMode && isFocused && !disabled && 'text-white',
                             '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
                             sizes[size].input,
                             sizes[size].padding,
@@ -188,7 +198,9 @@ const MciInput = forwardRef<HTMLInputElement, InputProps>(
                                     className={cn(
                                         'flex items-center justify-center',
                                         sizes[size].iconWrapper,
-                                        'text-slate-base hover:text-black'
+                                        darkMode
+                                            ? 'text-neutral-100 hover:text-white'
+                                            : 'text-slate-base hover:text-black'
                                     )}
                                     style={{cursor: 'pointer'}}
                                 >
@@ -277,7 +289,12 @@ const MciInput = forwardRef<HTMLInputElement, InputProps>(
                 </div>
 
                 {error && (
-                    <p className="mt-2 animate-[slideDown_0.3s_ease-out] text-sm font-normal text-red-600">
+                    <p
+                        className={cn(
+                            'mt-2 animate-[slideDown_0.3s_ease-out] text-sm font-normal',
+                            darkMode ? 'text-red-500' : 'text-red-600'
+                        )}
+                    >
                         {error}
                     </p>
                 )}

@@ -1,6 +1,7 @@
 export type TextareaProps = {
     label?: string
     placeholder?: string
+    darkMode?: boolean
     value?: string
     onChange?: (value: string) => void
     required?: boolean

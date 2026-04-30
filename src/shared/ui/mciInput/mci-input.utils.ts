@@ -65,12 +65,31 @@ export function getInputSizes(hasLeftIcon: boolean, hasRightIcon: boolean) {
     }
 }
 
-export function getInputStateStyles(error?: string) {
+export function getInputStateStyles(error: string | undefined, darkMode: boolean) {
+    if (darkMode) {
+        if (error) {
+            return 'border-red-500 hover:border-red-500 focus:border-red-500 focus:shadow-[0_0_0_2px_rgba(231,0,11,0.25)]'
+        }
+        return 'border-neutral-200 hover:border-neutral-100 focus:border-blue-500 focus:shadow-[0_0_0_2px_var(--opacity-25,rgba(21,93,252,0.25))]'
+    }
+
     if (error) return 'border-red-600 focus:border-red-600 shadow-red'
     return 'border-slate-200 hover:border-slate-400 focus:shadow-blue focus:border-blue-600'
 }
 
-export function getInputIconColor(disabled: boolean, error: string | undefined, isFocused: boolean) {
+export function getInputIconColor(
+    disabled: boolean,
+    error: string | undefined,
+    isFocused: boolean,
+    darkMode: boolean
+) {
+    if (darkMode) {
+        if (disabled) return 'text-neutral-100/50'
+        if (error) return 'text-red-500'
+        if (isFocused) return 'text-white'
+        return 'text-neutral-100'
+    }
+
     if (disabled) return 'text-slate-400'
     if (error) return 'text-red-600'
     if (isFocused) return 'text-black'

@@ -139,6 +139,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 export default function App() {
+  const [appDarkMode, setAppDarkMode] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [panelOpen, setPanelOpen] = useState(false)
@@ -176,6 +177,8 @@ export default function App() {
   const [perPage, setPerPage] = useState(5)
   const [selectedRowKeys, setSelectedRowKeys] = useState<Array<string | number>>([])
 
+  const effectiveButtonDarkMode = appDarkMode || buttonDarkMode
+
   const totalPages = Math.max(1, Math.ceil(DEMO_ROWS.length / perPage))
 
   useEffect(() => {
@@ -201,17 +204,27 @@ export default function App() {
   })
 
   return (
-    <div className="demo-root">
+    <div className={appDarkMode ? 'demo-root demo-root-dark' : 'demo-root'}>
       <div className="demo-shell">
         <header className="demo-header">
-          <MciBreadcrumb
-            variant={breadcrumbVariant}
-            items={[
-              { label: 'Home', href: '#', icon: <Home size={18} /> },
-              { label: 'Library', href: '#' },
-              { label: 'Playground', icon: <Settings size={18} /> },
-            ]}
-          />
+          <div className="demo-header-top">
+            <MciBreadcrumb
+              variant={breadcrumbVariant}
+              items={[
+                { label: 'Home', href: '#', icon: <Home size={18} /> },
+                { label: 'Library', href: '#' },
+                { label: 'Playground', icon: <Settings size={18} /> },
+              ]}
+            />
+            <MciButton
+              variant={appDarkMode ? 'secondary' : 'outline'}
+              color="blue"
+              darkMode={appDarkMode}
+              onClick={() => setAppDarkMode((prev) => !prev)}
+            >
+              {appDarkMode ? 'Light demo' : 'Dark demo'}
+            </MciButton>
+          </div>
           <div className="demo-top-gap">
             <ControlSelect
               label="Breadcrumb variant"
@@ -261,12 +274,12 @@ export default function App() {
             <ControlCheckbox label="Tag rounded" checked={tagRounded} onChange={setTagRounded} />
           </div>
 
-          <div className={buttonDarkMode ? 'demo-row demo-wrap demo-dark-preview' : 'demo-row demo-wrap'}>
+          <div className={effectiveButtonDarkMode ? 'demo-row demo-wrap demo-dark-preview' : 'demo-row demo-wrap'}>
             <MciButton
               color={buttonColor}
               variant={buttonVariant}
               size={buttonSize}
-              darkMode={buttonDarkMode}
+              darkMode={effectiveButtonDarkMode}
               loading={buttonLoading}
               disabled={buttonDisabled}
             >
@@ -280,6 +293,7 @@ export default function App() {
             </MciTooltip>
             <MciButton
               color="blue"
+              darkMode={effectiveButtonDarkMode}
               onClick={() => MciToast.success('Saved', 'Component muvaffaqiyatli ishga tushdi')}
             >
               Toast Success
@@ -301,6 +315,7 @@ export default function App() {
             <MciInput
               label="MciInput"
               size={fieldSize}
+              darkMode={appDarkMode}
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               placeholder="Type..."
@@ -326,6 +341,7 @@ export default function App() {
 
             <MciIdentityInput
               label="MciIdentityInput"
+              darkMode={appDarkMode}
               mode="passport"
               value={identityValue}
               onChange={(val) => setIdentityValue(val)}
@@ -348,6 +364,7 @@ export default function App() {
             <div className="demo-span-2">
               <MciTextarea
                 label="MciTextarea"
+                darkMode={appDarkMode}
                 value={textValue}
                 onChange={setTextValue}
                 placeholder="Izoh..."
@@ -417,7 +434,12 @@ export default function App() {
                 <div className="demo-note">MciLoader container</div>
               </div>
 
-              <MciButton variant="secondary" color="blue" onClick={() => setShowLoader((s) => !s)}>
+              <MciButton
+                variant="secondary"
+                color="blue"
+                darkMode={effectiveButtonDarkMode}
+                onClick={() => setShowLoader((s) => !s)}
+              >
                 Loader Toggle
               </MciButton>
             </div>
@@ -435,8 +457,8 @@ export default function App() {
           </div>
 
           <div className="demo-row demo-wrap">
-            <MciButton color="blue" onClick={() => setModalOpen(true)}>Open Modal</MciButton>
-            <MciButton variant="tertiary" onClick={() => setDrawerOpen(true)}>Open Drawer</MciButton>
+            <MciButton color="blue" darkMode={effectiveButtonDarkMode} onClick={() => setModalOpen(true)}>Open Modal</MciButton>
+            <MciButton variant="tertiary" darkMode={effectiveButtonDarkMode} onClick={() => setDrawerOpen(true)}>Open Drawer</MciButton>
           </div>
 
           <div className="demo-top-gap">
@@ -455,14 +477,14 @@ export default function App() {
             setShow={setModalOpen}
             title="Demo Modal"
             Body={<div className="demo-note">Modal kontenti.</div>}
-            footer={<MciButton color="blue" onClick={() => setModalOpen(false)}>Close</MciButton>}
+            footer={<MciButton color="blue" darkMode={effectiveButtonDarkMode} onClick={() => setModalOpen(false)}>Close</MciButton>}
           />
 
           <MciDrawer
             isOpen={drawerOpen}
             onClose={() => setDrawerOpen(false)}
             title="Demo Drawer"
-            footer={<MciButton color="blue" onClick={() => setDrawerOpen(false)}>Yopish</MciButton>}
+            footer={<MciButton color="blue" darkMode={effectiveButtonDarkMode} onClick={() => setDrawerOpen(false)}>Yopish</MciButton>}
           >
             <div className="demo-stack">
               <p className="demo-note">Drawer ichida istalgan form/ma'lumot joylashtirish mumkin.</p>
@@ -516,7 +538,7 @@ export default function App() {
           </div>
 
           <div className="demo-table-head">
-            <MciButton variant="tertiary" onClick={() => setPanelOpen((v) => !v)}>
+            <MciButton variant="tertiary" darkMode={effectiveButtonDarkMode} onClick={() => setPanelOpen((v) => !v)}>
               Columns Panel
             </MciButton>
 
