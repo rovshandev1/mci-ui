@@ -41,6 +41,7 @@ export interface MciTableProps<T extends Record<string, unknown>> {
     loading?: boolean
     skeletonRows?: number
     noDataText?: string
+    darkMode?: boolean
 
     sort?: MciTableSort<T> | null
     onSortChange?: (sort: MciTableSort<T> | null) => void

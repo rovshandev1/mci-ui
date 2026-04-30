@@ -563,6 +563,7 @@ export default function App() {
               onMoveByKey={moveColumnByKey}
               minVisible={5}
               locale="uz"
+              darkMode={appDarkMode}
             />
           </div>
 
@@ -570,6 +571,7 @@ export default function App() {
             columns={orderedColumns}
             data={pagedRows}
             noDataText="No data"
+            darkMode={appDarkMode}
             rowSelection={{
               selectedRowKeys,
               onChange: setSelectedRowKeys,

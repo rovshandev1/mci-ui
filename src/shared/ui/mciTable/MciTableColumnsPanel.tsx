@@ -43,6 +43,7 @@ type Props<T extends Record<string, unknown>> = {
 
     minVisible?: number
     locale?: MciTablePanelLocale
+    darkMode?: boolean
 }
 
 export default function MciTableColumnsPanel<T extends Record<string, unknown>>({
@@ -55,6 +56,7 @@ export default function MciTableColumnsPanel<T extends Record<string, unknown>>(
                                                                                     onMoveByKey,
                                                                                     minVisible = 5,
                                                                                     locale = 'ru',
+                                                                                    darkMode = false,
                                                                                 }: Props<T>) {
     const ref = useRef<HTMLDivElement>(null)
     const { handleClick } = useClickOutside(ref, onClose)
@@ -158,25 +160,32 @@ export default function MciTableColumnsPanel<T extends Record<string, unknown>>(
             ref={ref}
             className={cn(
                 'absolute right-0 top-full z-50 mt-2 w-[320px]',
-                'rounded-2xl p-4 bg-white',
-                'border border-slate-200'
+                'rounded-2xl p-4',
+                darkMode
+                    ? 'border border-neutral-200 bg-[#22242A] shadow-xl'
+                    : 'border border-slate-200 bg-white'
             )}
         >
             <div className="flex items-center justify-between gap-4">
-                <h4 className="text-slate-600 text-large font-normal">{t.title}</h4>
+                <h4 className={cn('text-large font-normal', darkMode ? 'text-neutral-50' : 'text-slate-600')}>{t.title}</h4>
 
                 <button
                     type="button"
                     onClick={onClose}
-                    className="rounded-lg px-2 py-1 text-slate-500 hover:bg-slate-100"
+                    className={cn(
+                        'rounded-lg px-2 py-1',
+                        darkMode
+                            ? 'text-neutral-100 hover:bg-neutral-300'
+                            : 'text-slate-500 hover:bg-slate-100'
+                    )}
                     aria-label={t.close}
                 >
                     ✕
                 </button>
             </div>
 
-            <div className="my-4 h-px bg-slate-100" />
-            <p className="mb-3 text-xs text-slate-500">
+            <div className={cn('my-4 h-px', darkMode ? 'bg-neutral-200' : 'bg-slate-100')} />
+            <p className={cn('mb-3 text-xs', darkMode ? 'text-neutral-100' : 'text-slate-500')}>
                 {t.activeColumns}: {visibleCount}/{columns.length}
             </p>
 
@@ -185,9 +194,9 @@ export default function MciTableColumnsPanel<T extends Record<string, unknown>>(
                     'max-h-[275px] overflow-auto',
                     '[&::-webkit-scrollbar]:w-1.5',
                     '[&::-webkit-scrollbar-track]:bg-transparent',
-                    '[&::-webkit-scrollbar-thumb]:bg-slate-200',
+                    darkMode ? '[&::-webkit-scrollbar-thumb]:bg-neutral-200' : '[&::-webkit-scrollbar-thumb]:bg-slate-200',
                     '[&::-webkit-scrollbar-thumb]:rounded-full',
-                    'hover:[&::-webkit-scrollbar-thumb]:bg-slate-300'
+                    darkMode ? 'hover:[&::-webkit-scrollbar-thumb]:bg-neutral-100' : 'hover:[&::-webkit-scrollbar-thumb]:bg-slate-300'
                 )}
             >
                 {columns.map((col, idx) => {
@@ -203,7 +212,8 @@ export default function MciTableColumnsPanel<T extends Record<string, unknown>>(
                             {isOver && !isDragging && (
                                 <div
                                     className={cn(
-                                        'pointer-events-none absolute left-2 right-2 z-10 h-0.5 rounded-full bg-blue-300',
+                                        'pointer-events-none absolute left-2 right-2 z-10 h-0.5 rounded-full',
+                                        darkMode ? 'bg-blue-500' : 'bg-blue-300',
                                         dropPosition === 'before' ? 'top-0' : 'bottom-0'
                                     )}
                                 />
@@ -230,17 +240,18 @@ export default function MciTableColumnsPanel<T extends Record<string, unknown>>(
                                     'group flex items-center py-2 px-1 gap-4',
                                     'rounded-md box-border overflow-visible',
                                     'transition-[background,transform] duration-150',
-                                    !isDragging && !isOver && 'hover:bg-slate-50',
-                                    isOver && !isDragging && 'bg-slate-50',
-                                    isDragging && 'bg-slate-50 opacity-100 scale-[0.99] cursor-grabbing'
+                                    !isDragging && !isOver && (darkMode ? 'hover:bg-neutral-300/60' : 'hover:bg-slate-50'),
+                                    isOver && !isDragging && (darkMode ? 'bg-neutral-300/60' : 'bg-slate-50'),
+                                    isDragging && (darkMode ? 'bg-neutral-300 opacity-100 scale-[0.99] cursor-grabbing' : 'bg-slate-50 opacity-100 scale-[0.99] cursor-grabbing')
                                 )}
                             >
                                 <button
                                     type="button"
                                     className={cn(
-                                        'shrink-0 text-slate-400',
+                                        'shrink-0',
+                                        darkMode ? 'text-neutral-100' : 'text-slate-400',
                                         'cursor-grab active:cursor-grabbing',
-                                        'rounded-lg p-1 hover:bg-slate-100',
+                                        darkMode ? 'rounded-lg p-1 hover:bg-neutral-200' : 'rounded-lg p-1 hover:bg-slate-100',
                                         isDragging && 'cursor-grabbing'
                                     )}
                                     aria-label={t.drag}
@@ -254,22 +265,23 @@ export default function MciTableColumnsPanel<T extends Record<string, unknown>>(
                                         disabled={isLocked}
                                         onChange={() => safeToggle(col.key, isLocked)}
                                         variant="blue"
+                                        darkMode={darkMode}
                                     />
                                 </div>
 
                                 <div className="min-w-0 flex-1">
-                                    <h4 className="truncate text-slate-700 text-base font-medium" title={col.title}>
+                                    <h4 className={cn('truncate text-base font-medium', darkMode ? 'text-neutral-50' : 'text-slate-700')} title={col.title}>
                                         {col.title}
                                     </h4>
                                     {isLocked && (
-                                        <p className="text-xs text-slate-400 mt-0.5">
+                                        <p className={cn('mt-0.5 text-xs', darkMode ? 'text-neutral-100' : 'text-slate-400')}>
                                             {t.minColumns(minVisible)}
                                         </p>
                                     )}
                                 </div>
                             </div>
 
-                            {idx !== columns.length - 1 && <div className="mx-2 h-px bg-slate-100" />}
+                            {idx !== columns.length - 1 && <div className={cn('mx-2 h-px', darkMode ? 'bg-neutral-200' : 'bg-slate-100')} />}
                         </div>
                     )
                 })}
