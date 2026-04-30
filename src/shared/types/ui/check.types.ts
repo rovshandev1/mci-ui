@@ -11,6 +11,7 @@ export type MciCheckProps = {
     required?: boolean
     className?: string
     variant?: 'blue' | 'yellow'
+    darkMode?: boolean
     name?: string
     value?: string
 }

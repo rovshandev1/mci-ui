@@ -160,7 +160,6 @@ export default function App() {
   const [buttonVariant, setButtonVariant] = useState<(typeof BUTTON_VARIANTS)[number]>('primary')
   const [buttonColor, setButtonColor] = useState<(typeof BUTTON_COLORS)[number]>('blue')
   const [buttonSize, setButtonSize] = useState<(typeof FIELD_SIZES)[number]>('base')
-  const [buttonDarkMode, setButtonDarkMode] = useState(false)
   const [buttonLoading, setButtonLoading] = useState(false)
   const [buttonDisabled, setButtonDisabled] = useState(false)
   const [tagVariant, setTagVariant] = useState<(typeof TAG_VARIANTS)[number]>('blue')
@@ -177,7 +176,7 @@ export default function App() {
   const [perPage, setPerPage] = useState(5)
   const [selectedRowKeys, setSelectedRowKeys] = useState<Array<string | number>>([])
 
-  const effectiveButtonDarkMode = appDarkMode || buttonDarkMode
+  const effectiveButtonDarkMode = appDarkMode
 
   const totalPages = Math.max(1, Math.ceil(DEMO_ROWS.length / perPage))
 
@@ -256,7 +255,6 @@ export default function App() {
               options={FIELD_SIZES}
               onChange={(value) => setButtonSize(value as (typeof FIELD_SIZES)[number])}
             />
-            <ControlCheckbox label="Button dark mode" checked={buttonDarkMode} onChange={setButtonDarkMode} />
             <ControlCheckbox label="Button loading" checked={buttonLoading} onChange={setButtonLoading} />
             <ControlCheckbox label="Button disabled" checked={buttonDisabled} onChange={setButtonDisabled} />
             <ControlSelect
@@ -398,9 +396,18 @@ export default function App() {
                 checked={checked}
                 onChange={(e) => setChecked(e.target.checked)}
                 label="MciCheck"
+                supportText="Support text"
                 variant={toneVariant}
+                darkMode={appDarkMode}
               />
-              <MciToggle checked={enabled} onChange={setEnabled} label="MciToggle" variant={toneVariant} />
+              <MciToggle
+                checked={enabled}
+                onChange={setEnabled}
+                label="MciToggle"
+                supportText="Support text"
+                variant={toneVariant}
+                darkMode={appDarkMode}
+              />
 
               <MciCollapse title="MciCollapse">
                 <div className="demo-note">Collapsible content ishlayapti.</div>

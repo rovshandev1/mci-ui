@@ -8,13 +8,21 @@ const STYLE_MAP = {
         border: 'border-blue-600',
         bg: 'bg-blue-600',
         hover: 'hover:border-blue-600 hover:bg-blue-100',
-        focus: 'focus:shadow-blue',
+        focus: 'peer-focus-visible:shadow-blue',
+        darkFocus: 'peer-focus-visible:shadow-[0_0_0_2px_var(--opacity-25,rgba(21,93,252,0.25))]',
+        darkBorder: 'border-blue-500',
+        darkBg: 'bg-blue-500',
+        darkHover: 'hover:border-blue-500 hover:bg-blue-500',
     },
     yellow: {
         border: 'border-yellow-500',
         bg: 'bg-yellow-500',
-        hover: 'hover:border-yellow-500 hover:bg-yello-100',
-        focus: 'focus:ring-2 focus:ring-yellow-300',
+        hover: 'hover:border-yellow-500 hover:bg-yellow-100',
+        focus: 'peer-focus-visible:ring-2 peer-focus-visible:ring-yellow-300',
+        darkFocus: 'peer-focus-visible:ring-2 peer-focus-visible:ring-yellow-300/40',
+        darkBorder: 'border-yellow-500',
+        darkBg: 'bg-yellow-500',
+        darkHover: 'hover:border-yellow-500 hover:bg-yellow-500',
     }
 } as const;
 
@@ -29,6 +37,7 @@ const MciCheck = memo(function MciCheck({
                                             required = false,
                                             className,
                                             variant = 'yellow',
+                                            darkMode = false,
                                             name,
                                             value
                                         }: MciCheckProps) {
@@ -53,20 +62,26 @@ const MciCheck = memo(function MciCheck({
 
     const styles = useMemo(() => {
         if (disabled) {
-            const base = 'border-slate-200 bg-slate-100';
+            const base = darkMode
+                ? 'border-neutral-200 bg-neutral-300/60'
+                : 'border-slate-200 bg-slate-100';
 
             if (isRadio) {
                 return {
                     container: base,
-                    dot: checked ? 'bg-slate-300' : 'bg-transparent',
-                    check: 'text-slate-400'
+                    dot: checked
+                        ? (darkMode ? 'bg-neutral-100/70' : 'bg-slate-300')
+                        : 'bg-transparent',
+                    check: darkMode ? 'text-neutral-100/50' : 'text-slate-400'
                 };
             }
 
             return {
                 container: base,
                 dot: '',
-                check: checked ? 'text-slate-400' : 'text-transparent'
+                check: checked
+                    ? (darkMode ? 'text-neutral-100/50' : 'text-slate-400')
+                    : 'text-transparent'
             };
         }
 
@@ -76,15 +91,15 @@ const MciCheck = memo(function MciCheck({
         if (isRadio) {
             const container = cn(
                 'border transition-all duration-200',
-                checked ? st.border : 'border-slate-400',
-                !checked && st.hover,
-                st.focus,
+                checked ? (darkMode ? st.darkBorder : st.border) : darkMode ? 'border-neutral-200 bg-transparent' : 'border-slate-400',
+                !checked && (darkMode ? 'hover:border-neutral-100 hover:bg-neutral-300' : st.hover),
+                darkMode ? st.darkFocus : st.focus,
                 checked && ''
             );
 
             const dot = cn(
                 'transition-all duration-200 rounded-full',
-                checked ? st.bg : 'bg-transparent'
+                checked ? (darkMode ? 'bg-white' : st.bg) : 'bg-transparent'
             );
 
             return {
@@ -97,9 +112,14 @@ const MciCheck = memo(function MciCheck({
         // CHECKBOX STYLING
         const container = cn(
             'border transition-all duration-200',
-            checked ? cn(st.bg, st.border) : 'border-slate-400',
-            !checked && st.hover,
-            st.focus
+            checked
+                ? cn(darkMode ? st.darkBg : st.bg, darkMode ? st.darkBorder : st.border)
+                : darkMode
+                    ? 'border-neutral-200 bg-transparent'
+                    : 'border-slate-400',
+            !checked && (darkMode ? 'hover:border-neutral-100 hover:bg-neutral-300' : st.hover),
+            checked && darkMode && st.darkHover,
+            darkMode ? st.darkFocus : st.focus
         );
 
         return {
@@ -107,7 +127,7 @@ const MciCheck = memo(function MciCheck({
             dot: '',
             check: checked ? 'text-white' : 'text-transparent'
         };
-    }, [isRadio, checked, disabled, variant]);
+    }, [isRadio, checked, disabled, variant, darkMode]);
 
     const LabelSection = useMemo(() => {
         if (!label && !supportText) return null;
@@ -117,9 +137,10 @@ const MciCheck = memo(function MciCheck({
                 {label && (
                     <span
                         className={cn(
-                            'text-base font-medium text-slate-700',
-                            error && 'text-red-600',
-                            disabled && 'text-slate-400'
+                            'text-base font-medium',
+                            error && (darkMode ? 'text-red-500' : 'text-red-600'),
+                            !error && (darkMode ? 'text-neutral-50' : 'text-slate-700'),
+                            disabled && (darkMode ? 'text-neutral-50/50' : 'text-slate-400')
                         )}
                     >
                         {label}
@@ -130,8 +151,9 @@ const MciCheck = memo(function MciCheck({
                 {supportText && (
                     <span
                         className={cn(
-                            'text-slate-500 text-base font-normal',
-                            disabled && 'text-slate-400'
+                            'text-base font-normal',
+                            darkMode ? 'text-neutral-100' : 'text-slate-500',
+                            disabled && (darkMode ? 'text-neutral-100/50' : 'text-slate-400')
                         )}
                     >
                         {supportText}
@@ -139,7 +161,7 @@ const MciCheck = memo(function MciCheck({
                 )}
             </div>
         );
-    }, [label, supportText, error, disabled, required]);
+    }, [label, supportText, error, disabled, required, darkMode]);
 
     return (
         <div className={cn('flex items-start', className)}>
@@ -155,7 +177,7 @@ const MciCheck = memo(function MciCheck({
                     onChange={handleChange}
                     disabled={disabled}
                     required={required}
-                    className="sr-only"
+                    className="peer sr-only"
                     aria-invalid={!!error}
                     aria-describedby={error ? `${name}-error` : undefined}
                     name={name}
@@ -194,7 +216,13 @@ const MciCheck = memo(function MciCheck({
             </label>
 
             {error && (
-                <p id={`${name}-error`} className="mt-1 text-extra-small text-red-600">
+                <p
+                    id={`${name}-error`}
+                    className={cn(
+                        'mt-1 text-extra-small',
+                        darkMode ? 'text-red-500' : 'text-red-600'
+                    )}
+                >
                     {error}
                 </p>
             )}
