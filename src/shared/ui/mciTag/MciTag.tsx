@@ -21,20 +21,31 @@ const variants = {
     blue: 'bg-blue-50 text-blue-600',
 }
 
+const darkVariants = {
+    success: 'bg-green-950 text-green-400',
+    warning: 'bg-orange-900 text-orange-400',
+    error: 'bg-red-950 text-red-400',
+    gray: 'bg-neutral-200 text-neutral-50',
+    blue: 'bg-blue-900 text-blue-400',
+}
+
 export default function MciTag({
    children,
    variant = 'success',
    size = 'lg',
+   darkMode = false,
    icon,
    iconPosition = 'left',
+   rounded = false,
    className,
 }: TagProps) {
    return (
       <span
          className={cn(
-            'inline-flex animate-[fadeIn_0.3s_ease-out] items-center rounded-lg text-extra-small font-medium',
+            'inline-flex animate-[fadeIn_0.3s_ease-out] items-center text-extra-small font-medium',
+            rounded ? 'rounded-full' : 'rounded-lg',
             sizes[size],
-            variants[variant],
+            darkMode ? darkVariants[variant] : variants[variant],
             icon && 'gap-[2px]',
             className
          )}

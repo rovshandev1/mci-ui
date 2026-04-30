@@ -53,27 +53,6 @@ const DEMO_ROWS: DemoRow[] = [
   { id: 8, name: 'Shahnoza Raximova', role: 'Manager', status: 'Blocked', age: 28, city: 'Qarshi', email: 'shahnoza@mail.com', createdAt: '2024-12-08' },
 ]
 
-const DEMO_COLUMNS: MciTableColumn<DemoRow>[] = [
-  { key: 'id', title: 'ID', width: 72, sortable: true, align: 'right' },
-  { key: 'name', title: 'Name', sortable: true },
-  { key: 'role', title: 'Role', sortable: true },
-  {
-    key: 'status',
-    title: 'Status',
-    sortable: true,
-    render: (value) => {
-      const status = String(value)
-      if (status === 'Active') return <MciTag variant="success" size="sm">Active</MciTag>
-      if (status === 'Pending') return <MciTag variant="warning" size="sm">Pending</MciTag>
-      return <MciTag variant="error" size="sm">Blocked</MciTag>
-    },
-  },
-  { key: 'age', title: 'Age', sortable: true, align: 'right' },
-  { key: 'city', title: 'City', sortable: true },
-  { key: 'email', title: 'Email' },
-  { key: 'createdAt', title: 'Created', sortable: true },
-]
-
 const BREADCRUMB_VARIANTS = ['blue', 'yellow'] as const
 const BUTTON_VARIANTS = ['primary', 'secondary', 'outline', 'danger', 'tertiary'] as const
 const BUTTON_COLORS = ['blue', 'yellow'] as const
@@ -189,6 +168,27 @@ export default function App() {
     return DEMO_ROWS.slice(start, start + perPage)
   }, [page, perPage])
 
+  const demoColumns = useMemo<MciTableColumn<DemoRow>[]>(() => [
+    { key: 'id', title: 'ID', width: 72, sortable: true, align: 'right' },
+    { key: 'name', title: 'Name', sortable: true },
+    { key: 'role', title: 'Role', sortable: true },
+    {
+      key: 'status',
+      title: 'Status',
+      sortable: true,
+      render: (value) => {
+        const status = String(value)
+        if (status === 'Active') return <MciTag variant="success" size="sm" darkMode={appDarkMode}>Active</MciTag>
+        if (status === 'Pending') return <MciTag variant="warning" size="sm" darkMode={appDarkMode}>Pending</MciTag>
+        return <MciTag variant="error" size="sm" darkMode={appDarkMode}>Blocked</MciTag>
+      },
+    },
+    { key: 'age', title: 'Age', sortable: true, align: 'right' },
+    { key: 'city', title: 'City', sortable: true },
+    { key: 'email', title: 'Email' },
+    { key: 'createdAt', title: 'Created', sortable: true },
+  ], [appDarkMode])
+
   const {
     orderedColumns,
     orderedAllColumns,
@@ -198,7 +198,7 @@ export default function App() {
     moveColumnByKey,
   } = useTableColumnSettings<DemoRow>({
     storageKey: 'mci-demo-columns',
-    columns: DEMO_COLUMNS,
+    columns: demoColumns,
     minVisible: 5,
   })
 
@@ -283,7 +283,7 @@ export default function App() {
             >
               Button Preview
             </MciButton>
-            <MciTag variant={tagVariant} size={tagSize} rounded={tagRounded}>
+            <MciTag variant={tagVariant} size={tagSize} rounded={tagRounded} darkMode={appDarkMode}>
               Tag Preview
             </MciTag>
             <MciTooltip content="Tooltip ishlayapti">
