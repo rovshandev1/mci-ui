@@ -351,6 +351,7 @@ export default function App() {
             <MciPicker
               label="MciPicker Date"
               type="date"
+              darkMode={appDarkMode}
               value={dateValue}
               onChange={(val) => setDateValue(val as DateValue)}
             />
@@ -358,6 +359,7 @@ export default function App() {
             <MciPicker
               label="MciPicker Range"
               type="range"
+              darkMode={appDarkMode}
               value={rangeValue}
               onChange={(val) => setRangeValue(val as RangeValue)}
             />

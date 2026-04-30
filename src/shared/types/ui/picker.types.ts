@@ -10,6 +10,7 @@ export interface MciPickerProps {
     onChange?: (value: MciPickerValue) => void
     placeholder?: string | [string, string]
     label?: string
+    darkMode?: boolean
     disabled?: boolean
     required?: boolean
     className?: string

@@ -38,6 +38,7 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
             onChange,
             placeholder,
             label,
+            darkMode = false,
             disabled = false,
             required = false,
             className,
@@ -343,31 +344,128 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
                         <div className="flex gap-2 w-16">
                             {showLeftArrow && (
                                 <>
-                                    <button onClick={() => changeYear(-1)} type="button" className="hover:bg-slate-100 p-1 rounded transition-colors text-slate-500"><DoubleAltArrowLeft size={18} /></button>
-                                    <button onClick={() => changeMonth(-1)} type="button" className="hover:bg-slate-100 p-1 rounded transition-colors text-slate-500"><AltArrowLeft size={18} /></button>
+                                    <button
+                                        onClick={() => changeYear(-1)}
+                                        type="button"
+                                        className={cn(
+                                            'rounded p-1 transition-colors',
+                                            darkMode
+                                                ? 'text-neutral-100 hover:bg-neutral-300 hover:text-white'
+                                                : 'text-slate-500 hover:bg-slate-100'
+                                        )}
+                                    ><DoubleAltArrowLeft size={18} /></button>
+                                    <button
+                                        onClick={() => changeMonth(-1)}
+                                        type="button"
+                                        className={cn(
+                                            'rounded p-1 transition-colors',
+                                            darkMode
+                                                ? 'text-neutral-100 hover:bg-neutral-300 hover:text-white'
+                                                : 'text-slate-500 hover:bg-slate-100'
+                                        )}
+                                    ><AltArrowLeft size={18} /></button>
                                 </>
                             )}
                         </div>
-                        <div className="flex gap-1 font-semibold text-slate-700 text-sm whitespace-nowrap">
-                            <span className="cursor-pointer hover:text-blue-600 transition-colors p-1 rounded hover:bg-slate-50" onClick={() => setView('month')}>{t.months[baseDate.getMonth()]}</span>
-                            <span className="cursor-pointer hover:text-blue-600 transition-colors p-1 rounded hover:bg-slate-50" onClick={() => setView('year')}>{baseDate.getFullYear()}</span>
+                        <div
+                            className={cn(
+                                'flex gap-1 text-sm font-semibold whitespace-nowrap',
+                                darkMode ? 'text-neutral-50' : 'text-slate-700'
+                            )}
+                        >
+                            <span
+                                className={cn(
+                                    'cursor-pointer rounded p-1 transition-colors',
+                                    darkMode
+                                        ? 'hover:bg-neutral-300 hover:text-white'
+                                        : 'hover:bg-slate-50 hover:text-blue-600'
+                                )}
+                                onClick={() => setView('month')}
+                            >{t.months[baseDate.getMonth()]}</span>
+                            <span
+                                className={cn(
+                                    'cursor-pointer rounded p-1 transition-colors',
+                                    darkMode
+                                        ? 'hover:bg-neutral-300 hover:text-white'
+                                        : 'hover:bg-slate-50 hover:text-blue-600'
+                                )}
+                                onClick={() => setView('year')}
+                            >{baseDate.getFullYear()}</span>
                         </div>
                         <div className="flex gap-2 w-16 justify-end">
                             {showRightArrow && (
                                 <>
-                                    <button onClick={() => changeMonth(1)} type="button" className="hover:bg-slate-100 p-1 rounded transition-colors text-slate-500"><AltArrowRight size={18} /></button>
-                                    <button onClick={() => changeYear(1)} type="button" className="hover:bg-slate-100 p-1 rounded transition-colors text-slate-500"><DoubleAltArrowRight size={18} /></button>
+                                    <button
+                                        onClick={() => changeMonth(1)}
+                                        type="button"
+                                        className={cn(
+                                            'rounded p-1 transition-colors',
+                                            darkMode
+                                                ? 'text-neutral-100 hover:bg-neutral-300 hover:text-white'
+                                                : 'text-slate-500 hover:bg-slate-100'
+                                        )}
+                                    ><AltArrowRight size={18} /></button>
+                                    <button
+                                        onClick={() => changeYear(1)}
+                                        type="button"
+                                        className={cn(
+                                            'rounded p-1 transition-colors',
+                                            darkMode
+                                                ? 'text-neutral-100 hover:bg-neutral-300 hover:text-white'
+                                                : 'text-slate-500 hover:bg-slate-100'
+                                        )}
+                                    ><DoubleAltArrowRight size={18} /></button>
                                 </>
                             )}
                         </div>
                     </div>
-                    <div className="grid grid-cols-7 mb-1 text-center text-[11px] font-bold text-blue-600 uppercase">{t.weekdaysShort.map(day => <div key={day} className="py-1">{day}</div>)}</div>
+                    <div
+                        className={cn(
+                            'mb-1 grid grid-cols-7 text-center text-[11px] font-bold uppercase',
+                            darkMode ? 'text-blue-500' : 'text-blue-600'
+                        )}
+                    >{t.weekdaysShort.map(day => <div key={day} className="py-1">{day}</div>)}</div>
                     <div className="grid grid-cols-7 gap-y-1 relative">
                         {days.map((item, idx) => {
                             const date = item.date, disabled = isDisabled(date), isStart = isSelectedStart(date), isEnd = isSelectedEnd(date), isBetween = isInRange(date)
                             return (
-                                <div key={idx} className={cn("h-10 flex items-center justify-center relative", isBetween && "bg-blue-50", (isStart && type === 'range' && isEnd) ? "bg-blue-50 rounded-full" : (isStart && type === 'range') ? "bg-gradient-to-r from-transparent to-blue-50 rounded-l-full" : "", (isEnd && type === 'range') ? "bg-gradient-to-l from-transparent to-blue-50 rounded-r-full" : "")}>
-                                    <button type="button" onClick={() => handleSelect(date)} disabled={disabled} className={cn("w-9 h-9 cursor-pointer rounded-full flex items-center justify-center text-sm font-medium transition-all z-10", !item.isCurrentMonth ? "text-slate-300" : "text-slate-700", disabled && "opacity-20 cursor-not-allowed", (isStart || isEnd) ? "bg-blue-600 text-white shadow-md shadow-blue-200 hover:bg-blue-700" : "hover:bg-blue-50", isSameDay(date, new Date()) && !isStart && !isEnd && "text-blue-600 border border-blue-600")}>{date.getDate()}</button>
+                                <div
+                                    key={idx}
+                                    className={cn(
+                                        'relative flex h-10 items-center justify-center',
+                                        isBetween && (darkMode ? 'bg-blue-500/15' : 'bg-blue-50'),
+                                        (isStart && type === 'range' && isEnd)
+                                            ? (darkMode ? 'rounded-full bg-blue-500' : 'rounded-full bg-blue-50')
+                                            : (isStart && type === 'range')
+                                                ? (darkMode ? 'rounded-l-full bg-gradient-to-r from-transparent to-blue-500/15' : 'rounded-l-full bg-gradient-to-r from-transparent to-blue-50')
+                                                : '',
+                                        (isEnd && type === 'range')
+                                            ? (darkMode ? 'rounded-r-full bg-gradient-to-l from-transparent to-blue-500/15' : 'rounded-r-full bg-gradient-to-l from-transparent to-blue-50')
+                                            : ''
+                                    )}
+                                >
+                                    <button
+                                        type="button"
+                                        onClick={() => handleSelect(date)}
+                                        disabled={disabled}
+                                        className={cn(
+                                            'z-10 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-sm font-medium transition-all',
+                                            !item.isCurrentMonth
+                                                ? darkMode
+                                                    ? 'text-neutral-100/40'
+                                                    : 'text-slate-300'
+                                                : darkMode
+                                                    ? 'text-neutral-50'
+                                                    : 'text-slate-700',
+                                            disabled && 'cursor-not-allowed opacity-20',
+                                            (isStart || isEnd)
+                                                ? 'bg-blue-600 text-white shadow-md shadow-blue-200 hover:bg-blue-700'
+                                                : darkMode
+                                                    ? 'hover:bg-neutral-300 hover:text-white'
+                                                    : 'hover:bg-blue-50',
+                                            isSameDay(date, new Date()) && !isStart && !isEnd && (darkMode ? 'border border-blue-500 text-blue-500' : 'border border-blue-600 text-blue-600')
+                                        )}
+                                    >{date.getDate()}</button>
                                 </div>
                             )
                         })}
@@ -379,11 +477,29 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
         const renderMonthPicker = () => (
             <div className="w-[300px] p-3">
                 <div className="flex justify-between items-center mb-4 px-2">
-                    <button type="button" onClick={() => changeYear(-1)} className="p-1 hover:bg-slate-100 rounded text-slate-500"><AltArrowLeft size={20} /></button>
-                    <span className="font-bold text-slate-800">{currentMonth.getFullYear()}</span>
-                    <button type="button" onClick={() => changeYear(1)} className="p-1 hover:bg-slate-100 rounded text-slate-500"><AltArrowRight size={20} /></button>
+                    <button
+                        type="button"
+                        onClick={() => changeYear(-1)}
+                        className={cn(
+                            'rounded p-1',
+                            darkMode
+                                ? 'text-neutral-100 hover:bg-neutral-300 hover:text-white'
+                                : 'text-slate-500 hover:bg-slate-100'
+                        )}
+                    ><AltArrowLeft size={20} /></button>
+                    <span className={cn('font-bold', darkMode ? 'text-neutral-50' : 'text-slate-800')}>{currentMonth.getFullYear()}</span>
+                    <button
+                        type="button"
+                        onClick={() => changeYear(1)}
+                        className={cn(
+                            'rounded p-1',
+                            darkMode
+                                ? 'text-neutral-100 hover:bg-neutral-300 hover:text-white'
+                                : 'text-slate-500 hover:bg-slate-100'
+                        )}
+                    ><AltArrowRight size={20} /></button>
                 </div>
-                <div className="grid grid-cols-3 gap-2">{t.monthsShort.map((m, i) => <button key={m} type="button" onClick={() => handleSelectMonth(i)} className={cn("hover:cursor-pointer py-3 rounded-lg text-sm font-semibold transition-colors", currentMonth.getMonth() === i ? "bg-blue-600 text-white" : "hover:bg-blue-50 text-slate-600")}>{m}</button>)}</div>
+                <div className="grid grid-cols-3 gap-2">{t.monthsShort.map((m, i) => <button key={m} type="button" onClick={() => handleSelectMonth(i)} className={cn("py-3 rounded-lg text-sm font-semibold transition-colors hover:cursor-pointer", currentMonth.getMonth() === i ? "bg-blue-600 text-white" : darkMode ? "text-neutral-50 hover:bg-neutral-300 hover:text-white" : "text-slate-600 hover:bg-blue-50")}>{m}</button>)}</div>
             </div>
         )
 
@@ -393,11 +509,29 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
             return (
                 <div className="w-[300px] p-3">
                     <div className="flex justify-between items-center mb-4 px-2">
-                        <button type="button" onClick={() => setYearPage(p => p - 1)} className="p-1 hover:bg-slate-100 rounded text-slate-500"><AltArrowLeft size={20} /></button>
-                        <span className="font-bold text-slate-800">{years[0]} - {years[11]}</span>
-                        <button type="button" onClick={() => setYearPage(p => p + 1)} className="p-1 hover:bg-slate-100 rounded text-slate-500"><AltArrowRight size={20} /></button>
+                        <button
+                            type="button"
+                            onClick={() => setYearPage(p => p - 1)}
+                            className={cn(
+                                'rounded p-1',
+                                darkMode
+                                    ? 'text-neutral-100 hover:bg-neutral-300 hover:text-white'
+                                    : 'text-slate-500 hover:bg-slate-100'
+                            )}
+                        ><AltArrowLeft size={20} /></button>
+                        <span className={cn('font-bold', darkMode ? 'text-neutral-50' : 'text-slate-800')}>{years[0]} - {years[11]}</span>
+                        <button
+                            type="button"
+                            onClick={() => setYearPage(p => p + 1)}
+                            className={cn(
+                                'rounded p-1',
+                                darkMode
+                                    ? 'text-neutral-100 hover:bg-neutral-300 hover:text-white'
+                                    : 'text-slate-500 hover:bg-slate-100'
+                            )}
+                        ><AltArrowRight size={20} /></button>
                     </div>
-                    <div className="grid grid-cols-3 gap-2">{years.map(y => <button key={y} type="button" onClick={() => handleSelectYear(y)} className={cn("hover:cursor-pointer py-3 rounded-lg text-sm font-semibold transition-colors", currentMonth.getFullYear() === y ? "bg-blue-600 text-white" : "hover:bg-blue-50 text-slate-600")}>{y}</button>)}</div>
+                    <div className="grid grid-cols-3 gap-2">{years.map(y => <button key={y} type="button" onClick={() => handleSelectYear(y)} className={cn("py-3 rounded-lg text-sm font-semibold transition-colors hover:cursor-pointer", currentMonth.getFullYear() === y ? "bg-blue-600 text-white" : darkMode ? "text-neutral-50 hover:bg-neutral-300 hover:text-white" : "text-slate-600 hover:bg-blue-50")}>{y}</button>)}</div>
                 </div>
             )
         }
@@ -406,11 +540,23 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
             <div
                 onClick={toggleOpen}
                 className={cn(
-                    "cursor-pointer flex items-center justify-center p-1 rounded-md transition-colors",
-                    disabled ? "pointer-events-none opacity-50" : "hover:bg-slate-100 active:bg-slate-200"
+                    'flex cursor-pointer items-center justify-center rounded-md p-1 transition-colors',
+                    disabled
+                        ? 'pointer-events-none opacity-50'
+                        : darkMode
+                            ? 'hover:bg-neutral-300 active:bg-neutral-200'
+                            : 'hover:bg-slate-100 active:bg-slate-200'
                 )}
             >
-                <Calendar weight='Linear' size={20} className="text-slate-400" />
+                <Calendar
+                    weight='Linear'
+                    size={20}
+                    className={cn(
+                        darkMode
+                            ? (isOpen || isInputFocused ? 'text-white' : 'text-neutral-100')
+                            : 'text-slate-400'
+                    )}
+                />
             </div>
         )
 
@@ -427,6 +573,7 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
                         disabled={disabled}
                         required={required}
                         error={error}
+                        darkMode={darkMode}
                         maxLength={type === 'date' ? 10 : undefined}
                         onFocus={handleInputFocus}
                         onBlur={handleInputBlur}
@@ -439,11 +586,14 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
                 {isOpen && (
                     <div
                         className={cn(
-                            "absolute top-[calc(100%+4px)] z-[100] bg-white rounded-xl shadow-xl border border-slate-200",
-                            "flex flex-col md:flex-row overflow-hidden animate-in fade-in zoom-in-95 duration-200",
-                            dropdownAlign === 'right' && "right-0 origin-top-right",
-                            dropdownAlign === 'left' && "left-0 origin-top-left",
-                            dropdownAlign === 'center' && "left-1/2 -translate-x-1/2 origin-top"
+                            'absolute top-[calc(100%+4px)] z-[100] rounded-xl border shadow-xl',
+                            'flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200 md:flex-row',
+                            darkMode
+                                ? 'border-neutral-200 bg-[#1F2025]'
+                                : 'border-slate-200 bg-white',
+                            dropdownAlign === 'right' && 'right-0 origin-top-right',
+                            dropdownAlign === 'left' && 'left-0 origin-top-left',
+                            dropdownAlign === 'center' && 'left-1/2 -translate-x-1/2 origin-top'
                         )}
                         style={{ width: 'max-content' }}
                         onMouseDown={(e) => e.stopPropagation()}
@@ -452,7 +602,10 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
                             <>
                                 {renderCalendarView(currentMonth, true, type !== 'range')}
                                 {type === 'range' && (
-                                    <div className="hidden md:block border-l border-slate-100">
+                                    <div className={cn(
+                                        'hidden border-l md:block',
+                                        darkMode ? 'border-neutral-200' : 'border-slate-100'
+                                    )}>
                                         {renderCalendarView(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1), false, true)}
                                     </div>
                                 )}
