@@ -95,6 +95,11 @@ select {
     --color-blue-900: #1C398E;
     --color-blue-950: #162456;
 
+    /*Neutral */
+    --color-neutral-100: #77787A;
+    --color-neutral-200: #3E4042;
+    --color-neutral-300: #25272B;
+
     /*Typography*/
     --text-h1: 48px;
     --text-h1--line-height: 56px;

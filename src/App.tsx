@@ -159,6 +159,7 @@ export default function App() {
   const [buttonVariant, setButtonVariant] = useState<(typeof BUTTON_VARIANTS)[number]>('primary')
   const [buttonColor, setButtonColor] = useState<(typeof BUTTON_COLORS)[number]>('blue')
   const [buttonSize, setButtonSize] = useState<(typeof FIELD_SIZES)[number]>('base')
+  const [buttonDarkMode, setButtonDarkMode] = useState(false)
   const [buttonLoading, setButtonLoading] = useState(false)
   const [buttonDisabled, setButtonDisabled] = useState(false)
   const [tagVariant, setTagVariant] = useState<(typeof TAG_VARIANTS)[number]>('blue')
@@ -242,6 +243,7 @@ export default function App() {
               options={FIELD_SIZES}
               onChange={(value) => setButtonSize(value as (typeof FIELD_SIZES)[number])}
             />
+            <ControlCheckbox label="Button dark mode" checked={buttonDarkMode} onChange={setButtonDarkMode} />
             <ControlCheckbox label="Button loading" checked={buttonLoading} onChange={setButtonLoading} />
             <ControlCheckbox label="Button disabled" checked={buttonDisabled} onChange={setButtonDisabled} />
             <ControlSelect
@@ -259,11 +261,12 @@ export default function App() {
             <ControlCheckbox label="Tag rounded" checked={tagRounded} onChange={setTagRounded} />
           </div>
 
-          <div className="demo-row demo-wrap">
+          <div className={buttonDarkMode ? 'demo-row demo-wrap demo-dark-preview' : 'demo-row demo-wrap'}>
             <MciButton
               color={buttonColor}
               variant={buttonVariant}
               size={buttonSize}
+              darkMode={buttonDarkMode}
               loading={buttonLoading}
               disabled={buttonDisabled}
             >

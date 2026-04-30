@@ -8,6 +8,7 @@ export type ButtonProps = {
     size?: 'sm' | 'md' | 'base'
     variant?: 'primary' | 'secondary' | 'outline' | 'danger' | 'tertiary'
     color?: 'blue' | 'yellow'
+    darkMode?: boolean
     loading?: boolean
     disabled?: boolean
     onClick?: () => void
