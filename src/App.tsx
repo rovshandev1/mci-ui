@@ -409,7 +409,7 @@ export default function App() {
                 darkMode={appDarkMode}
               />
 
-              <MciCollapse title="MciCollapse">
+              <MciCollapse title="MciCollapse" darkMode={appDarkMode}>
                 <div className="demo-note">Collapsible content ishlayapti.</div>
               </MciCollapse>
 

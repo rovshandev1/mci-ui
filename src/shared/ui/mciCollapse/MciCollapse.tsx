@@ -8,6 +8,7 @@ export default function MciCollapse({
                                         children,
                                         defaultOpen = false,
                                         icon,
+                                        darkMode = false,
                                         className,
                                         contentClassName,
                                     }: CollapseProps) {
@@ -19,28 +20,65 @@ export default function MciCollapse({
         if (contentRef.current) {
             setContentHeight(isOpen ? contentRef.current.scrollHeight : 0)
         }
-    }, [isOpen])
+    }, [isOpen, children])
+
+    const rootClasses = darkMode
+        ? 'border-neutral-200 bg-neutral-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]'
+        : 'border-slate-200 bg-white'
+
+    const triggerClasses = darkMode
+        ? [
+            'bg-neutral-300/70 hover:bg-neutral-200/80',
+            isOpen
+                ? 'border-b border-neutral-200 shadow-[inset_0_-1px_0_rgba(255,255,255,0.02)]'
+                : 'border-b border-transparent',
+          ]
+        : [
+            'hover:bg-slate-50',
+            isOpen ? 'border-b border-slate-200' : 'border-b border-transparent',
+          ]
+
+    const titleClasses = darkMode
+        ? 'text-neutral-50 group-hover:text-white'
+        : 'text-black'
+
+    const iconClasses = darkMode ? 'text-neutral-100' : 'text-slate-500'
+
+    const arrowClasses = darkMode
+        ? 'text-neutral-100 group-hover:text-neutral-50'
+        : 'text-slate-400'
+
+    const contentWrapperClasses = darkMode
+        ? 'bg-[#22242A]'
+        : 'bg-white'
 
     return (
-        <div className={cn('overflow-hidden rounded-xl border border-slate-200', className)}>
+        <div
+            className={cn(
+                'overflow-hidden rounded-xl border',
+                rootClasses,
+                className
+            )}
+        >
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(
-                    'flex w-full items-center justify-between p-5 transition-all duration-300 hover:cursor-pointer',
-                    isOpen ? 'border-b border-slate-200' : 'border-b border-transparent'
+                    'group flex w-full items-center justify-between p-5 transition-all duration-300 hover:cursor-pointer',
+                    triggerClasses
                 )}
             >
                 <div className="flex items-center gap-2">
-                    {icon && <span className="shrink-0">{icon}</span>}
+                    {icon && <span className={cn('shrink-0', iconClasses)}>{icon}</span>}
 
-                    <div className={cn('text-base font-medium text-black')}>
+                    <div className={cn('text-base font-medium transition-colors duration-300', titleClasses)}>
                         {title}
                     </div>
                 </div>
 
                 <AltArrowDown weight='Linear' size={20}
                               className={cn(
-                                  'shrink-0 transition-transform duration-300 text-slate-400',
+                                  'shrink-0 transition-all duration-300',
+                                  arrowClasses,
                                   isOpen && 'rotate-180'
                               )}
                 />
@@ -49,12 +87,20 @@ export default function MciCollapse({
             <div
                 className={cn(
                     'overflow-hidden transition-all duration-300 ease-out',
+                    contentWrapperClasses
                 )}
                 style={{
                     height: `${contentHeight}px`,
                 }}
             >
-                <div ref={contentRef} className={cn('p-5', contentClassName)}>
+                <div
+                    ref={contentRef}
+                    className={cn(
+                        'p-5',
+                        darkMode && 'text-neutral-100',
+                        contentClassName
+                    )}
+                >
                     {children}
                 </div>
             </div>

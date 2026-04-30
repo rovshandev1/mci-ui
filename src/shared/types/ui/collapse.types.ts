@@ -5,6 +5,7 @@ export type CollapseProps = {
     children: ReactNode
     defaultOpen?: boolean
     icon?: ReactNode
+    darkMode?: boolean
     className?: string
     contentClassName?: string
 }

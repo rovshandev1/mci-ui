@@ -28,7 +28,7 @@ export default function MciTooltip({
 
          <div
             className={cn(
-               'absolute z-50 rounded-md bg-slate-400 px-2 py-1 text-xs whitespace-nowrap text-white shadow-md',
+               'absolute z-50 rounded-md bg-slate-800 px-2 py-1 text-xs whitespace-nowrap text-white shadow-md',
                'scale-95 opacity-0 transition-all group-hover:scale-100 group-hover:opacity-100',
                'duration-200 ease-out group-hover:delay-200',
                TOOLTIP_POSITION_CLASSES[position],
@@ -40,7 +40,7 @@ export default function MciTooltip({
 
             <span
                className={cn(
-                  'absolute h-2 w-2 rotate-45 bg-slate-400',
+                  'absolute h-2 w-2 rotate-45 bg-slate-800',
                   TOOLTIP_ARROW_CLASSES[position]
                )}
             />
