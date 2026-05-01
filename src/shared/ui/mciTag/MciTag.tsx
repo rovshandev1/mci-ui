@@ -15,7 +15,7 @@ const iconSizes = {
 
 const variants = {
     success: 'bg-green-50 text-green-600',
-    warning: 'bg-orange-50 text-orange-600',
+    warning: 'bg-yellow-50 text-yellow-600',
     error: 'bg-red-50 text-red-600',
     gray: 'bg-slate-200 text-slate-700',
     blue: 'bg-blue-50 text-blue-600',
@@ -23,7 +23,7 @@ const variants = {
 
 const darkVariants = {
     success: 'bg-green-950 text-green-400',
-    warning: 'bg-orange-900 text-orange-400',
+    warning: 'bg-yellow-900 text-yellow-400',
     error: 'bg-red-950 text-red-400',
     gray: 'bg-neutral-200 text-neutral-50',
     blue: 'bg-blue-900 text-blue-400',

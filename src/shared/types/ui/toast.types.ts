@@ -8,5 +8,6 @@ export interface ToastProps {
     type?: ToastType
     duration?: number
     action?: ReactNode
+    darkMode?: boolean
     onClose?: () => void
 }

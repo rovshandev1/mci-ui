@@ -292,7 +292,13 @@ export default function App() {
             <MciButton
               color="blue"
               darkMode={effectiveButtonDarkMode}
-              onClick={() => MciToast.success('Saved', 'Component muvaffaqiyatli ishga tushdi')}
+              onClick={() =>
+                MciToast.success({
+                  title: 'Saved',
+                  description: 'Component muvaffaqiyatli ishga tushdi',
+                  darkMode: appDarkMode,
+                })
+              }
             >
               Toast Success
             </MciButton>
