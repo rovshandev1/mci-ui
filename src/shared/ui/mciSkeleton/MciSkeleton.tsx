@@ -6,11 +6,13 @@ export default function MciSkeleton({
    variant = 'default',
    width = '100%',
    height = '1rem',
+   darkMode = false,
 }: SkeletonProps) {
    return (
       <div
          className={cn(
-            'relative overflow-hidden bg-slate-200',
+            'relative overflow-hidden',
+            darkMode ? 'bg-slate-700' : 'bg-slate-200',
             'rounded-lg',
             variant === 'circle' && 'rounded-full',
             variant === 'rounded' && 'rounded-md',
@@ -21,7 +23,7 @@ export default function MciSkeleton({
             height: typeof height === 'number' ? `${height}px` : height,
          }}
       >
-         <div className="shimmer-mask absolute inset-0" />
+         <div className={darkMode ? 'shimmer-mask-dark absolute inset-0' : 'shimmer-mask absolute inset-0'} />
       </div>
    )
 }

@@ -3,4 +3,5 @@ export type SkeletonProps = {
     height?: string | number
     className?: string
     variant?: 'default' | 'circle' | 'rounded'
+    darkMode?: boolean
 }

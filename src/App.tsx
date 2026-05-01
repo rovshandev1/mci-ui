@@ -441,9 +441,10 @@ export default function App() {
                       variant={skeletonVariant}
                       width={skeletonVariant === 'circle' ? 40 : '100%'}
                       height={skeletonVariant === 'circle' ? 40 : 20}
+                      darkMode={appDarkMode}
                   />
-                  <MciSkeleton variant="rounded" height={20} />
-                  <MciSkeleton variant="circle" width={40} height={40} />
+                  <MciSkeleton variant="rounded" height={20} darkMode={appDarkMode} />
+                  <MciSkeleton variant="circle" width={40} height={40} darkMode={appDarkMode} />
                 </div>
 
                 <div className="demo-loader-box">

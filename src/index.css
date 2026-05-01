@@ -238,3 +238,14 @@ select {
     animation: smooth-shimmer 1.8s ease-in-out infinite;
     will-change: transform;
 }
+
+.shimmer-mask-dark {
+    background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.08) 50%,
+            transparent 100%
+    );
+    animation: smooth-shimmer 1.8s ease-in-out infinite;
+    will-change: transform;
+}
