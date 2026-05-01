@@ -14,4 +14,5 @@ export interface DrawerProps {
     closeOnOverlayClick?: boolean
     closeOnEscape?: boolean
     width?: string | number
+    darkMode?: boolean
 }

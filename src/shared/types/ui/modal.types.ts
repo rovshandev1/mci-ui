@@ -11,6 +11,7 @@ export interface ModalProps {
     handleClickOutside?: boolean
     showCloseIcon?: boolean
     showHeader?: boolean
+    darkMode?: boolean
     overlayClassName?: string
     containerClassName?: string
     bodyClassName?: string

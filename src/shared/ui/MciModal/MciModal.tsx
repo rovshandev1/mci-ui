@@ -1,93 +1,120 @@
 import CloseIcon from '../../../assets/icons/close.svg?react'
-import { useEffect, useRef } from 'react'
-import { cn, useClickOutside, useEscapeKey } from '../../lib/utils'
+import { useCallback, useEffect, useRef } from 'react'
+import { cn } from '../../lib/utils'
 import type { ModalProps } from '../../types/ui/modal.types'
 
 export default function MciModal({
-                                     show,
-                                     setShow,
-                                     title,
-                                     description,
-                                     Header,
-                                     Body,
-                                     footer,
-                                     handleClickOutside = false,
-
-                                     showCloseIcon = true,
-                                     showHeader = true,
-
-                                     overlayClassName,
-                                     containerClassName,
-                                     bodyClassName,
-                                     footerClassName,
-                                 }: ModalProps) {
+    show,
+    setShow,
+    title,
+    description,
+    Header,
+    Body,
+    footer,
+    handleClickOutside = false,
+    showCloseIcon = true,
+    showHeader = true,
+    darkMode = false,
+    overlayClassName,
+    containerClassName,
+    bodyClassName,
+    footerClassName,
+}: ModalProps) {
     const modalRef = useRef<HTMLDivElement>(null!)
 
-    const { handleEscape } = useEscapeKey(() => setShow(false))
-    useEffect(() => {
-        if (show) {
-            document.addEventListener('keydown', handleEscape)
-            document.body.style.overflow = 'hidden'
-        } else {
-            document.body.style.overflow = 'unset'
-        }
-        return () => document.removeEventListener('keydown', handleEscape)
-    }, [show, handleEscape])
-
-    const { handleClick } = useClickOutside(modalRef, () => {
-        if (handleClickOutside) setShow(false)
-    })
+    const handleClose = useCallback(() => setShow(false), [setShow])
 
     useEffect(() => {
-        if (show && handleClickOutside) {
-            document.addEventListener('mousedown', handleClick)
+        if (!show) return
+        const onKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') handleClose()
         }
-        return () => document.removeEventListener('mousedown', handleClick)
-    }, [show, handleClick, handleClickOutside])
+        document.addEventListener('keydown', onKeyDown)
+        return () => document.removeEventListener('keydown', onKeyDown)
+    }, [show, handleClose])
 
-    const shouldRenderHeaderContent = Boolean(Header || title || description)
-    const shouldRenderHeader = showHeader && shouldRenderHeaderContent
+    useEffect(() => {
+        if (show) document.body.style.overflow = 'hidden'
+        return () => { document.body.style.overflow = 'unset' }
+    }, [show])
+
+    const shouldRenderHeader = showHeader && Boolean(Header || title || description)
 
     return (
         <div
             className={cn(
-                'bg-black/40 fixed inset-0 z-50 flex justify-center transition-all duration-500 ease-in-out',
+                'fixed inset-0 z-50 flex justify-center bg-black/40',
                 'items-end sm:items-center',
-                show ? 'opacity-100' : 'pointer-events-none opacity-0',
+                'transition-opacity duration-300',
+                show ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none',
                 overlayClassName
             )}
+            onClick={handleClickOutside ? handleClose : undefined}
+            aria-hidden="true"
         >
             <div
                 ref={modalRef}
+                onClick={(e) => e.stopPropagation()}
+                role="dialog"
+                aria-modal="true"
+                aria-hidden={!show}
+                aria-labelledby={title ? 'modal-title' : undefined}
                 className={cn(
-                    'relative bg-white w-full',
-                    'sm:max-w-[720px]',
+                    'relative flex flex-col w-full outline-none',
+                    darkMode ? 'bg-black' : 'bg-white',
                     'rounded-t-2xl sm:rounded-2xl',
-                    'transition-all duration-500 ease-out',
+                    'sm:max-w-[720px]',
+                    'transition-[transform,opacity] duration-300 ease-out',
                     show ? 'scale-100 opacity-100' : 'scale-95 opacity-0',
                     containerClassName
                 )}
             >
                 {shouldRenderHeader && (
-                    <div className="border-b border-slate-200 flex items-start justify-between p-4 sm:p-6 mb-4">
+                    <div
+                        className={cn(
+                            'flex items-start justify-between border-b shrink-0 p-4 sm:p-6',
+                            darkMode ? 'border-neutral-700' : 'border-slate-200'
+                        )}
+                    >
                         {Header || (
-                            <div className="block">
-                                <h2 className="text-h3 font-semibold text-black">{title}</h2>
-
+                            <div className="block pr-3">
+                                {title && (
+                                    <h2
+                                        id="modal-title"
+                                        className={cn(
+                                            'text-h3 font-semibold',
+                                            darkMode ? 'text-slate-50' : 'text-black'
+                                        )}
+                                    >
+                                        {title}
+                                    </h2>
+                                )}
                                 {description && (
-                                    <p className="text-base text-slate-base font-normal mt-2">{description}</p>
+                                    <p
+                                        className={cn(
+                                            'text-base font-normal mt-2',
+                                            darkMode ? 'text-neutral-400' : 'text-slate-base'
+                                        )}
+                                    >
+                                        {description}
+                                    </p>
                                 )}
                             </div>
                         )}
 
                         {showCloseIcon && (
                             <button
-                                onClick={() => setShow(false)}
-                                className="bg-slate-100 rounded-xl w-12 h-12 hover:cursor-pointer text-black transition flex items-center justify-center group"
-                                aria-label="Close modal"
                                 type="button"
+                                onClick={handleClose}
+                                aria-label="Close modal"
+                                className={cn(
+                                    'rounded-xl w-11 h-11 sm:w-12 sm:h-12',
+                                    'flex items-center justify-center shrink-0',
+                                    'hover:cursor-pointer transition group active:scale-95',
+                                    darkMode ? 'bg-neutral-800 text-slate-50' : 'bg-slate-100 text-black'
+                                )}
                             >
-                                <CloseIcon className="h-6 w-6 transition-transform duration-300 group-hover:rotate-180" />
+                                <CloseIcon className="h-5 w-5 sm:h-6 sm:w-6 transition-transform duration-300 group-hover:rotate-180" />
                             </button>
                         )}
                     </div>
@@ -96,9 +123,9 @@ export default function MciModal({
                 {Body && (
                     <div
                         className={cn(
-                            'scrollbar-thin scrollbar-thumb-slate-200 overflow-y-auto',
+                            'flex-1 min-h-0 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200',
                             'max-h-[70dvh] sm:max-h-96',
-                            'px-4 sm:px-6 mb-2',
+                            'p-4 sm:p-6',
                             bodyClassName
                         )}
                     >
@@ -109,7 +136,8 @@ export default function MciModal({
                 {footer && (
                     <div
                         className={cn(
-                            'flex items-center justify-end gap-3 border-t border-slate-200',
+                            'shrink-0 flex items-center justify-end gap-3 border-t',
+                            darkMode ? 'border-neutral-700' : 'border-slate-200',
                             'p-4 sm:p-6',
                             footerClassName
                         )}

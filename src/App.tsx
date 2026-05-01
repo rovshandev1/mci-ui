@@ -494,6 +494,7 @@ export default function App() {
                 show={modalOpen}
                 setShow={setModalOpen}
                 title="Demo Modal"
+                darkMode={appDarkMode}
                 Body={<div className="demo-note">Modal kontenti.</div>}
                 footer={<MciButton color="blue" darkMode={effectiveButtonDarkMode} onClick={() => setModalOpen(false)}>Close</MciButton>}
             />
@@ -502,6 +503,7 @@ export default function App() {
                 isOpen={drawerOpen}
                 onClose={() => setDrawerOpen(false)}
                 title="Demo Drawer"
+                darkMode={appDarkMode}
                 footer={<MciButton color="blue" darkMode={effectiveButtonDarkMode} onClick={() => setDrawerOpen(false)}>Yopish</MciButton>}
             >
               <div className="demo-stack">

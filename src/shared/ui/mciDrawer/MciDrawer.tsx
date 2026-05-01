@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useCallback, useMemo } from 'react'
-import { cn, useClickOutside, useEscapeKey } from '../../lib/utils'
+import React, {useEffect, useRef, useCallback, useMemo} from 'react'
+import {cn, useClickOutside, useEscapeKey} from '../../lib/utils'
 import CloseIcon from '../../../assets/icons/close.svg?react'
-import type { DrawerProps } from '../../types/ui/drawer.types'
+import type {DrawerProps} from '../../types/ui/drawer.types'
 
 export default function MciDrawer({
                                       isOpen,
@@ -17,6 +17,7 @@ export default function MciDrawer({
                                       closeOnOverlayClick = true,
                                       closeOnEscape = true,
                                       width = 572,
+                                      darkMode = false,
                                   }: DrawerProps) {
     const drawerRef = useRef<HTMLDivElement>(null)
     const previousActiveElement = useRef<HTMLElement | null>(null)
@@ -87,7 +88,7 @@ export default function MciDrawer({
                 tabIndex={-1}
                 style={drawerStyle}
                 className={cn(
-                    'fixed z-50 flex flex-col bg-white outline-none min-h-0',
+                    `fixed z-50 flex flex-col ${darkMode ? 'bg-black' : 'bg-white'}  outline-none min-h-0`,
                     'transition-[transform,opacity,visibility] duration-300 ease-in-out',
                     isOpen ? 'opacity-100 visible pointer-events-auto shadow-2xl' : 'opacity-0 invisible pointer-events-none shadow-none',
 
@@ -107,19 +108,20 @@ export default function MciDrawer({
                 aria-labelledby={title ? 'drawer-title' : undefined}
             >
                 {hasHeader && (
-                    <div className="flex items-start justify-between border-b border-slate-200 shrink-0 px-4 py-4 sm:p-6">
+                    <div
+                        className={`flex items-start justify-between border-b ${darkMode ? 'border-neutral-200' : 'border-slate-200'}  shrink-0 px-4 py-4 sm:p-6`}>
                         {(title || description) && (
                             <div className="block pr-3">
                                 {title && (
                                     <h2
                                         id="drawer-title"
-                                        className="font-semibold text-black text-xl leading-tight sm:text-h3"
+                                        className={`font-semibold ${darkMode ? 'text-slate-50' : 'text-black'} text-xl leading-tight sm:text-h3`}
                                     >
                                         {title}
                                     </h2>
                                 )}
                                 {description && (
-                                    <p className="text-sm sm:text-base text-slate-base font-normal mt-2">
+                                    <p className={`text-sm sm:text-base ${darkMode ? 'text-neutral-50' : 'text-slate-base'} font-normal mt-2`}>
                                         {description}
                                     </p>
                                 )}
@@ -130,9 +132,10 @@ export default function MciDrawer({
                             <button
                                 type="button"
                                 onClick={handleClose}
-                                className="bg-slate-100 rounded-xl w-11 h-11 sm:w-12 sm:h-12 hover:cursor-pointer text-black transition flex items-center justify-center group active:scale-95"
+                                className={`${darkMode ? 'bg-neutral-300 text-slate-50' : 'bg-slate-100 text-black'} rounded-xl w-11 h-11 sm:w-12 sm:h-12 hover:cursor-pointer transition flex items-center justify-center group active:scale-95`}
                             >
-                                <CloseIcon className="h-5 w-5 sm:h-6 sm:w-6 transition-transform duration-300 group-hover:rotate-180" />
+                                <CloseIcon
+                                    className="h-5 w-5 sm:h-6 sm:w-6 transition-transform duration-300 group-hover:rotate-180"/>
                             </button>
                         )}
                     </div>
@@ -148,7 +151,8 @@ export default function MciDrawer({
                 </div>
 
                 {footer && (
-                    <div className="shrink-0 flex items-center justify-end border-t border-slate-200 px-4 py-4 sm:p-6 gap-3 [&>*]:w-fit [&>*]:shrink-0 [&>*]:whitespace-nowrap">
+                    <div
+                        className={`shrink-0 flex items-center justify-end border-t ${darkMode ? 'border-neutral-200' : 'border-slate-200'} px-4 py-4 sm:p-6 gap-3 [&>*]:w-fit [&>*]:shrink-0 [&>*]:whitespace-nowrap`}>
                         {footer}
                     </div>
                 )}
