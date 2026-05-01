@@ -5,12 +5,28 @@ import type { MciBreadcrumbProps } from '../../types/ui/breadcrumb.types'
 export default function MciBreadcrumb({
                                           items,
                                           variant = 'blue',
+                                          darkMode = false,
                                           className,
                                       }: MciBreadcrumbProps) {
     const isBlue = variant === 'blue'
 
-    const hoverColor = isBlue ? 'hover:text-blue-600' : 'hover:text-yellow-500'
-    const activeColor = isBlue ? 'text-blue-600' : 'text-yellow-500'
+    const hoverColor = darkMode
+        ? isBlue
+            ? 'hover:text-blue-400'
+            : 'hover:text-yellow-400'
+        : isBlue
+            ? 'hover:text-blue-600'
+            : 'hover:text-yellow-500'
+
+    const activeColor = darkMode
+        ? isBlue
+            ? 'text-blue-400'
+            : 'text-yellow-400'
+        : isBlue
+            ? 'text-blue-600'
+            : 'text-yellow-500'
+
+    const inactiveColor = darkMode ? 'text-neutral-50' : 'text-slate-500'
 
     return (
         <nav className={cn('flex items-center', className)} aria-label="Breadcrumb">
@@ -34,7 +50,8 @@ export default function MciBreadcrumb({
                                     }
                                 }}
                                 className={cn(
-                                    'flex items-center gap-x-2 transition-all text-sm font-normal text-slate-500',
+                                    'flex items-center gap-x-2 transition-all text-sm font-normal',
+                                    inactiveColor,
                                     hoverColor
                                 )}
                             >
@@ -43,7 +60,7 @@ export default function MciBreadcrumb({
                             </a>
                         )}
 
-                        {!isLast && <span className="mx-2 flex items-center"><AltArrowRight weight='Linear' size={20} className='text-slate-500'/></span>}
+                        {!isLast && <span className="mx-2 flex items-center"><AltArrowRight weight='Linear' size={20} className={inactiveColor}/></span>}
                     </div>
                 )
             })}

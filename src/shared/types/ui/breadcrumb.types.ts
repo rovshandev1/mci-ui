@@ -12,5 +12,6 @@ export type Variant = 'blue' | 'yellow'
 export type MciBreadcrumbProps = {
     items: BreadcrumbItem[]
     variant?: Variant
+    darkMode?: boolean
     className?: string
 }
