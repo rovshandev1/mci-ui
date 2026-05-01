@@ -26,4 +26,5 @@ export interface MciUploadProps {
     showFileTypeIcon?: boolean
     customValidator?: (file: File) => string | null
     variant?: 'yellow' | 'blue'
+    darkMode?: boolean
 }

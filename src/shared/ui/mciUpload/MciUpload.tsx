@@ -27,7 +27,6 @@ const UPLOAD_THEME = {
         iconWrap: 'text-blue-600',
         title: 'text-blue-600',
         hint: 'text-slate-500',
-        progress: 'bg-blue-600/30',
         progressFill: 'bg-blue-600',
         fileIconImg: 'bg-blue-50 text-blue-600',
         fileIconDoc: 'bg-green-50 text-green-600',
@@ -39,10 +38,34 @@ const UPLOAD_THEME = {
         iconWrap: 'text-yellow-700',
         title: 'text-yellow-700',
         hint: 'text-slate-500',
-        progress: 'bg-yellow-600/25',
         progressFill: 'bg-yellow-600',
         fileIconImg: 'bg-blue-50 text-blue-600',
         fileIconDoc: 'bg-green-50 text-green-600',
+    },
+} as const
+
+const UPLOAD_THEME_DARK = {
+    blue: {
+        dropBorder: 'border-blue-800 hover:border-blue-700',
+        dropBg: 'bg-blue-950/40 hover:bg-blue-950/60',
+        dropActive: 'border-blue-500 bg-blue-950/60',
+        iconWrap: 'text-blue-400',
+        title: 'text-blue-400',
+        hint: 'text-slate-400',
+        progressFill: 'bg-blue-500',
+        fileIconImg: 'bg-blue-950 text-blue-400',
+        fileIconDoc: 'bg-green-950 text-green-400',
+    },
+    yellow: {
+        dropBorder: 'border-yellow-800 hover:border-yellow-700',
+        dropBg: 'bg-yellow-950/40 hover:bg-yellow-950/60',
+        dropActive: 'border-yellow-600 bg-yellow-950/60',
+        iconWrap: 'text-yellow-400',
+        title: 'text-yellow-400',
+        hint: 'text-slate-400',
+        progressFill: 'bg-yellow-500',
+        fileIconImg: 'bg-blue-950 text-blue-400',
+        fileIconDoc: 'bg-green-950 text-green-400',
     },
 } as const
 
@@ -63,6 +86,7 @@ const MciUpload: React.FC<MciUploadProps> = ({
                                                  showFileTypeIcon = true,
                                                  variant = 'yellow',
                                                  customValidator,
+                                                 darkMode = false,
                                              }) => {
     const [files, setFiles] = useState<FileInfo[]>([])
     const [isDragging, setIsDragging] = useState(false)
@@ -71,7 +95,7 @@ const MciUpload: React.FC<MciUploadProps> = ({
 
     const t = uploadLanguages[locale]
 
-    const theme = useMemo(() => UPLOAD_THEME[variant], [variant])
+    const theme = useMemo(() => darkMode ? UPLOAD_THEME_DARK[variant] : UPLOAD_THEME[variant], [variant, darkMode])
     const secureAccept = useMemo(() => buildSecureAccept(accept), [accept])
     const allowedFormatsHint = useMemo(() => getAllowedFormatsHint(accept), [accept])
 
@@ -272,7 +296,7 @@ const MciUpload: React.FC<MciUploadProps> = ({
                 <label
                     className={cn(
                         'mb-2 block text-base font-medium',
-                        error ? 'text-red-600' : 'text-slate-700'
+                        error ? 'text-red-600' : darkMode ? 'text-slate-300' : 'text-slate-700'
                     )}
                 >
                     {label}
@@ -287,7 +311,7 @@ const MciUpload: React.FC<MciUploadProps> = ({
                     theme.dropBg,
                     isDragging && theme.dropActive,
                     disabled && 'cursor-not-allowed opacity-60',
-                    error && 'border-red-600 bg-red-50/30'
+                    error && (darkMode ? 'border-red-500 bg-red-950/30' : 'border-red-600 bg-red-50/30')
                 )}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
@@ -320,7 +344,7 @@ const MciUpload: React.FC<MciUploadProps> = ({
             {files.length > 0 && (
                 <div className="mt-4 space-y-3">
                     <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-slate-700">
+                        <span className={cn('text-sm font-medium', darkMode ? 'text-slate-300' : 'text-slate-700')}>
                             {t.selectedFiles} ({files.length})
                         </span>
 
@@ -346,8 +370,9 @@ const MciUpload: React.FC<MciUploadProps> = ({
                                 <div
                                     key={fileInfo.id}
                                     className={cn(
-                                        'flex items-center justify-between rounded-2xl border border-slate-200 p-4',
-                                        fileInfo.status === 'error' && 'border-red-600'
+                                        'flex items-center justify-between rounded-2xl border p-4',
+                                        darkMode ? 'border-neutral-700' : 'border-slate-200',
+                                        fileInfo.status === 'error' && (darkMode ? 'border-red-500' : 'border-red-600')
                                     )}
                                 >
                                     <div className="flex min-w-0 items-center gap-4">
@@ -371,11 +396,11 @@ const MciUpload: React.FC<MciUploadProps> = ({
                                         </div>
 
                                         <div className="min-w-0">
-                                            <p className="truncate text-lg font-semibold text-primary">
+                                            <p className={cn('truncate text-lg font-semibold', darkMode ? 'text-slate-100' : 'text-primary')}>
                                                 {fileInfo.file.name}
                                             </p>
 
-                                            <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-slate-500">
+                                            <div className={cn('mt-1 flex flex-wrap items-center gap-2 text-sm', darkMode ? 'text-slate-400' : 'text-slate-500')}>
                                                 <span>{formatFileSize(fileInfo.file.size)}</span>
 
                                                 {fileInfo.status === 'uploading' && (
@@ -397,7 +422,7 @@ const MciUpload: React.FC<MciUploadProps> = ({
                                             </div>
 
                                             {fileInfo.status === 'uploading' && (
-                                                <div className={cn('mt-2 h-1.5 w-full rounded-full bg-slate-200')}>
+                                                <div className={cn('mt-2 h-1.5 w-full rounded-full', darkMode ? 'bg-neutral-700' : 'bg-slate-200')}>
                                                     <div
                                                         className={cn(
                                                             'h-1.5 rounded-full transition-all duration-300',
@@ -424,7 +449,7 @@ const MciUpload: React.FC<MciUploadProps> = ({
                                                 if (!previewDisabled) openPreview(fileInfo)
                                             }}
                                             disabled={previewDisabled}
-                                            className="rounded-xl p-2 hover:bg-slate-100 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className={cn('rounded-xl p-2 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed', darkMode ? 'hover:bg-neutral-800' : 'hover:bg-slate-100')}
                                             title={t.preview}
                                         >
                                             <Eye size={20} className="text-slate-400" />
@@ -437,7 +462,7 @@ const MciUpload: React.FC<MciUploadProps> = ({
                                                 handleRemoveFile(fileInfo.id)
                                             }}
                                             disabled={disabled || isUploading}
-                                            className="rounded-xl p-2 text-slate-base hover:bg-slate-100 disabled:opacity-50 hover:cursor-pointer"
+                                            className={cn('rounded-xl p-2 disabled:opacity-50 hover:cursor-pointer', darkMode ? 'text-slate-400 hover:bg-neutral-800' : 'text-slate-base hover:bg-slate-100')}
                                             title={t.remove}
                                         >
                                             <CloseIcon className="h-6 w-6" />

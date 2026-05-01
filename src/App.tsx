@@ -487,6 +487,7 @@ export default function App() {
                   showPreview
                   locale="uz"
                   variant={uploadVariant}
+                  darkMode={appDarkMode}
               />
             </div>
 
