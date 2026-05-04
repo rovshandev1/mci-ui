@@ -39,7 +39,8 @@ const MciCheck = memo(function MciCheck({
                                             variant = 'yellow',
                                             darkMode = false,
                                             name,
-                                            value
+                                            value,
+                                            ...rest
                                         }: MciCheckProps) {
     const [internalChecked, setInternalChecked] = useState(false);
     const isRadio = type === 'radio';
@@ -172,6 +173,7 @@ const MciCheck = memo(function MciCheck({
                 )}
             >
                 <input
+                    {...rest}
                     type={type}
                     checked={checked}
                     onChange={handleChange}

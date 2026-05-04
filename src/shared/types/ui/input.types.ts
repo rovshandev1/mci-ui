@@ -1,8 +1,7 @@
-import type { ChangeEvent, ReactNode } from 'react'
+import type { InputHTMLAttributes, ReactNode } from 'react'
 
-export type InputProps = {
+export type InputProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'size' | 'className'> & {
     label?: string
-    placeholder?: string
     type?: 'text' | 'email' | 'password' | 'number' | 'tel'
     icon?: ReactNode
     rightIcon?: ReactNode
@@ -10,18 +9,7 @@ export type InputProps = {
     size?: 'sm' | 'md' | 'base'
     darkMode?: boolean
     error?: string
-    disabled?: boolean
-    required?: boolean
-    value?: string
-    onChange?: (e: ChangeEvent<HTMLInputElement>) => void
-    onFocus?: () => void
-    onBlur?: () => void
-    className?: string
-    name?: string
-    readOnly?: boolean
-    maxLength?: number
     onClear?: () => void
     showClearButton?: boolean
-    step?: string | number
-    autoComplete?: string
+    className?: string
 }

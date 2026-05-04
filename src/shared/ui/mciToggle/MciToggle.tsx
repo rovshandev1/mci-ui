@@ -27,6 +27,7 @@ export default function MciToggle({
                                       label,
                                       supportText,
                                       className,
+                                      ...rest
                                   }: ToggleProps) {
     const handleToggle = () => {
         if (disabled) return
@@ -43,8 +44,10 @@ export default function MciToggle({
             )}
         >
             <button
+                {...rest}
                 type="button"
                 disabled={disabled}
+                onClick={handleToggle}
                 className={cn(
                     'relative h-6 w-11 rounded-xl transition-all duration-300 outline-none',
                     disabled ? 'cursor-not-allowed' : 'cursor-pointer',
@@ -62,7 +65,6 @@ export default function MciToggle({
                     darkMode && !disabled && variant === 'yellow' && 'focus-visible:ring-2 focus-visible:ring-yellow-300/40',
                     disabled && (darkMode ? 'bg-neutral-200/60' : 'bg-slate-100')
                 )}
-                onClick={handleToggle}
             >
         <span
             className={cn(

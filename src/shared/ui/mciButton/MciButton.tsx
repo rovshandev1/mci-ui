@@ -55,9 +55,9 @@ export default function MciButton({
                                       darkMode = false,
                                       loading = false,
                                       disabled = false,
-                                      onClick,
                                       className,
                                       type = 'button',
+                                      ...rest
                                   }: ButtonProps) {
     const content = children ?? text
 
@@ -83,8 +83,8 @@ export default function MciButton({
 
     return (
         <button
+            {...rest}
             type={type}
-            onClick={onClick}
             disabled={isDisabled}
             className={cn(
                 'inline-flex w-fit shrink-0 items-center justify-center whitespace-nowrap text-center font-medium transition-all duration-200 cursor-pointer',

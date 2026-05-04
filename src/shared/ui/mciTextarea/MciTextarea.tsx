@@ -16,6 +16,7 @@ const MciTextarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             className,
             rows = 4,
             name,
+            ...rest
         },
         ref
     ) => {
@@ -53,6 +54,7 @@ const MciTextarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 
                 {/* MciTextarea */}
                 <textarea
+                    {...rest}
                     ref={ref}
                     name={name}
                     rows={rows}

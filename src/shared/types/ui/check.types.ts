@@ -1,17 +1,11 @@
-import type { ChangeEvent } from 'react'
+import type { InputHTMLAttributes } from 'react'
 
-export type MciCheckProps = {
+export type MciCheckProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'className'> & {
     type?: 'checkbox' | 'radio'
     label?: string
     supportText?: string
-    checked?: boolean
-    onChange?: (e: ChangeEvent<HTMLInputElement>) => void
     error?: string
-    disabled?: boolean
-    required?: boolean
-    className?: string
     variant?: 'blue' | 'yellow'
     darkMode?: boolean
-    name?: string
-    value?: string
+    className?: string
 }

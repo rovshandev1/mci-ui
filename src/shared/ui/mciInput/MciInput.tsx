@@ -34,7 +34,8 @@ const MciInput = forwardRef<HTMLInputElement, InputProps>(
             onClear,
             showClearButton = false,
             step,
-            autoComplete = 'off'
+            autoComplete = 'off',
+            ...rest
         },
         ref
     ) => {
@@ -66,14 +67,14 @@ const MciInput = forwardRef<HTMLInputElement, InputProps>(
             return count
         }, [showClear, isPassword, rightIcon, icon, iconPosition])
 
-        const handleFocus = () => {
+        const handleFocus: React.FocusEventHandler<HTMLInputElement> = (e) => {
             setIsFocused(true)
-            onFocus?.()
+            onFocus?.(e)
         }
 
-        const handleBlur = () => {
+        const handleBlur: React.FocusEventHandler<HTMLInputElement> = (e) => {
             setIsFocused(false)
-            onBlur?.()
+            onBlur?.(e)
         }
 
         const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -136,6 +137,7 @@ const MciInput = forwardRef<HTMLInputElement, InputProps>(
 
                 <div className="relative flex items-center">
                     <input
+                        {...rest}
                         ref={ref}
                         name={name}
                         type={isPassword && showPassword ? 'text' : type}

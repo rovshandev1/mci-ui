@@ -1,7 +1,6 @@
-import type { ReactNode } from 'react'
+import type { ButtonHTMLAttributes, ReactNode } from 'react'
 
-export type ButtonProps = {
-    children?: ReactNode
+export type ButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'color'> & {
     text?: string
     icon?: ReactNode
     iconPosition?: 'left' | 'right'
@@ -10,8 +9,4 @@ export type ButtonProps = {
     color?: 'blue' | 'yellow'
     darkMode?: boolean
     loading?: boolean
-    disabled?: boolean
-    onClick?: () => void
-    className?: string
-    type?: 'button' | 'submit' | 'reset'
 }

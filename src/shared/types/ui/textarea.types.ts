@@ -1,13 +1,9 @@
-export type TextareaProps = {
+import type { TextareaHTMLAttributes } from 'react'
+
+export type TextareaProps = Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'onChange' | 'className'> & {
     label?: string
-    placeholder?: string
     darkMode?: boolean
-    value?: string
     onChange?: (value: string) => void
-    required?: boolean
-    disabled?: boolean
     error?: string
     className?: string
-    rows?: number
-    name?: string
 }
