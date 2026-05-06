@@ -11,6 +11,7 @@ export interface DrawerProps {
     showCloseButton?: boolean
     drawerClassName?: string
     contentClassName?: string
+    footerClassName?: string
     closeOnOverlayClick?: boolean
     closeOnEscape?: boolean
     width?: string | number

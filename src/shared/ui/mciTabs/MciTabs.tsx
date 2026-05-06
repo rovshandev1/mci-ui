@@ -37,13 +37,16 @@ export default function MciTabs({
     const [activeTab, setActiveTab] = useState(defaultTab || tabs[0]?.id)
     const [indicatorStyle, setIndicatorStyle] = useState<React.CSSProperties>({})
     const tabsRef = useRef<(HTMLButtonElement | null)[]>([])
+    const tabListRef = useRef<HTMLDivElement>(null)
 
     const updateIndicator = useCallback(() => {
         requestAnimationFrame(() => {
-            const activeIndex = tabs.findIndex((tab) => tab?.id === activeTab)
-            const activeTabElement = tabsRef.current[activeIndex]
+            requestAnimationFrame(() => {
+                const activeIndex = tabs.findIndex((tab) => tab?.id === activeTab)
+                const activeTabElement = tabsRef.current[activeIndex]
 
-            if (activeTabElement) {
+                if (!activeTabElement) return
+
                 const { offsetLeft, offsetTop, offsetWidth, offsetHeight } = activeTabElement
                 setIndicatorStyle({
                     left: `${offsetLeft}px`,
@@ -52,7 +55,7 @@ export default function MciTabs({
                     height: `${offsetHeight}px`,
                     transition: 'all 0.35s cubic-bezier(0.25, 1, 0.5, 1)',
                 })
-            }
+            })
         })
     }, [activeTab, tabs])
 
@@ -66,6 +69,22 @@ export default function MciTabs({
 
         return () => window.removeEventListener('resize', updateIndicator)
     }, [position, updateIndicator])
+
+    useEffect(() => {
+        const tabListElement = tabListRef.current
+        if (!tabListElement || typeof ResizeObserver === 'undefined') return
+
+        const resizeObserver = new ResizeObserver(() => {
+            updateIndicator()
+        })
+
+        resizeObserver.observe(tabListElement)
+        tabsRef.current.forEach((tab) => {
+            if (tab) resizeObserver.observe(tab)
+        })
+
+        return () => resizeObserver.disconnect()
+    }, [tabs, updateIndicator])
 
     useEffect(() => {
         tabsRef.current = tabsRef.current.slice(0, tabs.length)
@@ -90,6 +109,7 @@ export default function MciTabs({
                     )}
                 >
                     <div
+                        ref={tabListRef}
                         className={cn(
                             'relative flex rounded-xl p-1',
                             darkMode ? 'bg-neutral-300' : 'bg-slate-100',

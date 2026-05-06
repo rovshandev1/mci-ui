@@ -14,6 +14,7 @@ export default function MciDrawer({
                                       showCloseButton = true,
                                       drawerClassName,
                                       contentClassName,
+                                      footerClassName,
                                       closeOnOverlayClick = true,
                                       closeOnEscape = true,
                                       width = 572,
@@ -152,7 +153,11 @@ export default function MciDrawer({
 
                 {footer && (
                     <div
-                        className={`shrink-0 flex items-center justify-end border-t ${darkMode ? 'border-neutral-200' : 'border-slate-200'} px-4 py-4 sm:p-6 gap-3 [&>*]:w-fit [&>*]:shrink-0 [&>*]:whitespace-nowrap`}>
+                        className={cn(
+                            'shrink-0 flex items-center justify-end border-t px-4 py-4 sm:p-6 gap-3 [&>*]:w-fit [&>*]:shrink-0 [&>*]:whitespace-nowrap',
+                            darkMode ? 'border-neutral-200' : 'border-slate-200',
+                            footerClassName
+                        )}>
                         {footer}
                     </div>
                 )}

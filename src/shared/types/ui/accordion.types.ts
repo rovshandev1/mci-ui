@@ -4,5 +4,6 @@ export type AccordionProps = {
     children: ReactNode
     defaultValue?: boolean
     icon?: ReactNode
+    darkMode?: boolean
     className?: string
 }

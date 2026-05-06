@@ -420,12 +420,12 @@ export default function App() {
                   <div className="demo-note">Collapsible content ishlayapti.</div>
                 </MciCollapse>
 
-                <MciAccordion icon={<Ufo3 weight="Linear" size={30} />}>
+                <MciAccordion icon={<Ufo3 weight="Linear" size={30} />} darkMode={appDarkMode}>
                   <MciAccordion.Title className="flex w-full items-center justify-between px-1">
                     <p>MciAccordion</p>
-                    <div className="flex items-center gap-3 text-extra-small font-normal text-slate-700">
+                    <div className={`flex items-center gap-3 text-extra-small font-normal ${appDarkMode ? 'text-neutral-100' : 'text-slate-700'}`}>
                       <p>John Doe</p>
-                      <span className="h-6 w-px bg-slate-200"></span>
+                      <span className={`h-6 w-px ${appDarkMode ? 'bg-neutral-200' : 'bg-slate-200'}`}></span>
                       <p>{new Date().toLocaleDateString()}</p>
                     </div>
                   </MciAccordion.Title>
