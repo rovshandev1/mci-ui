@@ -106,7 +106,7 @@ const MciUpload: React.FC<MciUploadProps> = ({
                                                  showPreview = true,
                                                  locale = 'uz',
                                                  showFileTypeIcon = true,
-                                                 variant = 'yellow',
+                                                 variant = 'orange',
                                                  customValidator,
                                                  darkMode = false,
                                              }) => {

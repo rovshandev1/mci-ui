@@ -53,19 +53,19 @@ const DEMO_ROWS: DemoRow[] = [
   { id: 8, name: 'Shahnoza Raximova', role: 'Manager', status: 'Blocked', age: 28, city: 'Qarshi', email: 'shahnoza@mail.com', createdAt: '2024-12-08' },
 ]
 
-const BREADCRUMB_VARIANTS = ['blue', 'yellow', 'orange'] as const
+const BREADCRUMB_VARIANTS = ['orange', 'blue', 'yellow'] as const
 const BUTTON_VARIANTS = ['primary', 'secondary', 'outline', 'danger', 'tertiary'] as const
-const BUTTON_COLORS = ['blue', 'yellow', 'orange'] as const
+const BUTTON_COLORS = ['orange', 'blue', 'yellow'] as const
 const FIELD_SIZES = ['sm', 'md', 'base'] as const
 const TAG_VARIANTS = ['success', 'warning', 'error', 'gray', 'blue'] as const
 const TAG_SIZES = ['sm', 'md', 'lg'] as const
-const TONE_VARIANTS = ['blue', 'yellow', 'orange'] as const
+const TONE_VARIANTS = ['orange', 'blue', 'yellow'] as const
 const SKELETON_VARIANTS = ['default', 'rounded', 'circle'] as const
-const PAGINATION_VARIANTS = ['blue', 'yellow', 'orange'] as const
+const PAGINATION_VARIANTS = ['orange', 'blue', 'yellow'] as const
 const PAGINATION_SIZES = ['medium', 'large'] as const
 const PER_PAGE_OPTIONS = ['5', '10', '15'] as const
-const UPLOAD_VARIANTS = ['yellow', 'blue', 'orange'] as const
-const DRAWER_VARIANTS = ['blue', 'yellow', 'orange'] as const
+const UPLOAD_VARIANTS = ['orange', 'yellow', 'blue'] as const
+const DRAWER_VARIANTS = ['orange', 'blue', 'yellow'] as const
 
 function ControlSelect({
                          label,
@@ -136,9 +136,9 @@ export default function App() {
   const [enabled, setEnabled] = useState(true)
   const [showLoader, setShowLoader] = useState(false)
 
-  const [breadcrumbVariant, setBreadcrumbVariant] = useState<(typeof BREADCRUMB_VARIANTS)[number]>('blue')
+  const [breadcrumbVariant, setBreadcrumbVariant] = useState<(typeof BREADCRUMB_VARIANTS)[number]>('orange')
   const [buttonVariant, setButtonVariant] = useState<(typeof BUTTON_VARIANTS)[number]>('primary')
-  const [buttonColor, setButtonColor] = useState<(typeof BUTTON_COLORS)[number]>('blue')
+  const [buttonColor, setButtonColor] = useState<(typeof BUTTON_COLORS)[number]>('orange')
   const [buttonSize, setButtonSize] = useState<(typeof FIELD_SIZES)[number]>('base')
   const [buttonLoading, setButtonLoading] = useState(false)
   const [buttonDisabled, setButtonDisabled] = useState(false)
@@ -146,11 +146,11 @@ export default function App() {
   const [tagSize, setTagSize] = useState<(typeof TAG_SIZES)[number]>('md')
   const [tagRounded, setTagRounded] = useState(false)
   const [fieldSize, setFieldSize] = useState<(typeof FIELD_SIZES)[number]>('base')
-  const [toneVariant, setToneVariant] = useState<(typeof TONE_VARIANTS)[number]>('blue')
+  const [toneVariant, setToneVariant] = useState<(typeof TONE_VARIANTS)[number]>('orange')
   const [skeletonVariant, setSkeletonVariant] = useState<(typeof SKELETON_VARIANTS)[number]>('default')
-  const [uploadVariant, setUploadVariant] = useState<(typeof UPLOAD_VARIANTS)[number]>('yellow')
-  const [drawerVariant, setDrawerVariant] = useState<(typeof DRAWER_VARIANTS)[number]>('blue')
-  const [paginationVariant, setPaginationVariant] = useState<(typeof PAGINATION_VARIANTS)[number]>('yellow')
+  const [uploadVariant, setUploadVariant] = useState<(typeof UPLOAD_VARIANTS)[number]>('orange')
+  const [drawerVariant, setDrawerVariant] = useState<(typeof DRAWER_VARIANTS)[number]>('orange')
+  const [paginationVariant, setPaginationVariant] = useState<(typeof PAGINATION_VARIANTS)[number]>('orange')
   const [paginationSize, setPaginationSize] = useState<(typeof PAGINATION_SIZES)[number]>('large')
 
   const [page, setPage] = useState(1)
@@ -171,7 +171,7 @@ export default function App() {
   }, [page, perPage])
 
   const demoColumns = useMemo<MciTableColumn<DemoRow>[]>(() => [
-    { key: 'id', title: 'ID', width: 72, sortable: true, align: 'right' },
+    { key: 'id', title: 'ID', sortable: true, align: 'right' },
     { key: 'name', title: 'Name', sortable: true },
     { key: 'role', title: 'Role', sortable: true },
     {
@@ -220,7 +220,7 @@ export default function App() {
               />
               <MciButton
                   variant={appDarkMode ? 'secondary' : 'outline'}
-                  color="blue"
+                  color="orange"
                   darkMode={appDarkMode}
                   onClick={() => setAppDarkMode((prev) => !prev)}
               >
@@ -293,7 +293,7 @@ export default function App() {
                 <span className="demo-link">Hover me</span>
               </MciTooltip>
               <MciButton
-                  color="blue"
+                  color="orange"
                   darkMode={effectiveButtonDarkMode}
                   onClick={() =>
                       MciToast.success({
@@ -456,7 +456,7 @@ export default function App() {
 
                 <MciButton
                     variant="secondary"
-                    color="blue"
+                    color="orange"
                     darkMode={effectiveButtonDarkMode}
                     onClick={() => setShowLoader((s) => !s)}
                 >
@@ -483,7 +483,7 @@ export default function App() {
             </div>
 
             <div className="demo-row demo-wrap">
-              <MciButton color="blue" darkMode={effectiveButtonDarkMode} onClick={() => setModalOpen(true)}>Open Modal</MciButton>
+              <MciButton color="orange" darkMode={effectiveButtonDarkMode} onClick={() => setModalOpen(true)}>Open Modal</MciButton>
               <MciButton variant="tertiary" darkMode={effectiveButtonDarkMode} onClick={() => setDrawerOpen(true)}>Open Drawer</MciButton>
             </div>
 
@@ -505,7 +505,7 @@ export default function App() {
                 title="Demo Modal"
                 darkMode={appDarkMode}
                 Body={<div className="demo-note">Modal kontenti.</div>}
-                footer={<MciButton color="blue" darkMode={effectiveButtonDarkMode} onClick={() => setModalOpen(false)}>Close</MciButton>}
+                footer={<MciButton color="orange" darkMode={effectiveButtonDarkMode} onClick={() => setModalOpen(false)}>Close</MciButton>}
             />
 
             <MciDrawer
@@ -546,7 +546,7 @@ export default function App() {
           <Section title="Table + Column Settings + Pagination">
             <div className="demo-controls-grid">
               <ControlSelect
-                  label="Pagination variant"
+                  label="Table variant"
                   value={paginationVariant}
                   options={PAGINATION_VARIANTS}
                   onChange={(value) => setPaginationVariant(value as (typeof PAGINATION_VARIANTS)[number])}
@@ -584,6 +584,7 @@ export default function App() {
                   minVisible={5}
                   locale="uz"
                   darkMode={appDarkMode}
+                  variant={paginationVariant}
               />
             </div>
 
@@ -592,6 +593,7 @@ export default function App() {
                 data={pagedRows}
                 noDataText="No data"
                 darkMode={appDarkMode}
+                variant={paginationVariant}
                 rowSelection={{
                   selectedRowKeys,
                   onChange: setSelectedRowKeys,

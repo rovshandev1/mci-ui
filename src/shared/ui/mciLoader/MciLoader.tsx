@@ -8,7 +8,7 @@ export default function MciLoader({
                                       iconClassName,
                                       isLoading = false,
                                       isFullPage = true,
-                                      variant = 'yellow'
+                                      variant = 'orange'
                                   }: MciLoaderProps) {
     if (!isLoading) return null
 

@@ -25,7 +25,7 @@ const BREADCRUMB_THEME = {
 
 export default function MciBreadcrumb({
                                           items,
-                                          variant = 'blue',
+                                          variant = 'orange',
                                           darkMode = false,
                                           className,
                                       }: MciBreadcrumbProps) {

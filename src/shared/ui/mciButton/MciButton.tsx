@@ -61,7 +61,7 @@ export default function MciButton({
                                       iconPosition = 'left',
                                       size = 'base',
                                       variant = 'primary',
-                                      color = 'yellow',
+                                      color = 'orange',
                                       darkMode = false,
                                       loading = false,
                                       disabled = false,

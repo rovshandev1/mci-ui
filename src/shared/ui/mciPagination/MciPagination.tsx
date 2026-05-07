@@ -51,7 +51,7 @@ export default function MciPagination({
                                           siblingCount = 1,
                                           perPageOptions = [10, 30, 50, 100],
                                           showPerPage = true,
-                                          variant = 'yellow',
+                                          variant = 'orange',
                                           size = 'large',
                                           darkMode = false,
                                           paginationClassName

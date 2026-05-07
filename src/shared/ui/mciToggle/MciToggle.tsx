@@ -29,7 +29,7 @@ export default function MciToggle({
                                       checked = false,
                                       onChange,
                                       disabled = false,
-                                      variant = 'yellow',
+                                      variant = 'orange',
                                       darkMode = false,
                                       label,
                                       supportText,

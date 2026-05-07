@@ -46,7 +46,7 @@ const MciCheck = memo(function MciCheck({
                                             disabled = false,
                                             required = false,
                                             className,
-                                            variant = 'yellow',
+                                            variant = 'orange',
                                             darkMode = false,
                                             name,
                                             value,

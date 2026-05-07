@@ -34,7 +34,7 @@ export default function MciDrawer({
                                       closeOnEscape = true,
                                       width = 572,
                                       darkMode = false,
-                                      variant = 'blue',
+                                      variant = 'orange',
                                   }: DrawerProps) {
     const drawerRef = useRef<HTMLDivElement>(null)
     const previousActiveElement = useRef<HTMLElement | null>(null)

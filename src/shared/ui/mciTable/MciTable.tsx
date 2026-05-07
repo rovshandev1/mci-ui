@@ -19,6 +19,7 @@ export default function MciTable<T extends Record<string, unknown>>({
                                                                         headerClassName,
                                                                         bodyClassName,
                                                                         darkMode = false,
+                                                                        variant = 'orange',
                                                                         rowKey = 'id' as keyof T,
                                                                         rowSelection,
                                                                     }: MciTableProps<T>) {
@@ -141,7 +142,7 @@ export default function MciTable<T extends Record<string, unknown>>({
                                         <MciCheck
                                             checked={isAllSelected}
                                             onChange={handleSelectAll}
-                                            variant="yellow"
+                                            variant={variant}
                                             darkMode={darkMode}
                                             disabled={loading || displayData.length === 0}
                                         />
@@ -227,7 +228,7 @@ export default function MciTable<T extends Record<string, unknown>>({
                                                     <MciCheck
                                                         checked={isSelected}
                                                         disabled={isDisabled}
-                                                        variant="yellow"
+                                                        variant={variant}
                                                         darkMode={darkMode}
                                                         onChange={(e) => handleSelectRow(row, e.target.checked)}
                                                     />

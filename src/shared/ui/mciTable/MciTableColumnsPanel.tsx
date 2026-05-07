@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { TransferVertical } from '@solar-icons/react'
 import { cn, useClickOutside } from '../../lib/utils'
 import { MciCheck } from '../../../index.ts'
-import type { ColumnKey, MciTableColumn, MciTablePanelLocale } from '../../types/mci-table.types.ts'
+import type { ColumnKey, MciTableColumn, MciTablePanelLocale, MciTableVariant } from '../../types/mci-table.types.ts'
 
 type DropPosition = 'before' | 'after'
 
@@ -32,6 +32,35 @@ const PANEL_TRANSLATIONS: Record<
     },
 }
 
+const PANEL_THEME: Record<
+    MciTableVariant,
+    {
+        dropIndicator: string
+        darkDropIndicator: string
+        close: string
+        darkClose: string
+    }
+> = {
+    blue: {
+        dropIndicator: 'bg-blue-300',
+        darkDropIndicator: 'bg-blue-500',
+        close: 'hover:bg-blue-50 hover:text-blue-600 focus-visible:ring-2 focus-visible:ring-[rgba(21,93,252,0.25)]',
+        darkClose: 'hover:bg-blue-500/20 hover:text-blue-400 focus-visible:ring-2 focus-visible:ring-[rgba(21,93,252,0.25)]',
+    },
+    yellow: {
+        dropIndicator: 'bg-yellow-400',
+        darkDropIndicator: 'bg-yellow-500',
+        close: 'hover:bg-yellow-50 hover:text-yellow-600 focus-visible:ring-2 focus-visible:ring-yellow-200',
+        darkClose: 'hover:bg-yellow-500/20 hover:text-yellow-300 focus-visible:ring-2 focus-visible:ring-yellow-300/40',
+    },
+    orange: {
+        dropIndicator: 'bg-orange-400',
+        darkDropIndicator: 'bg-orange-600',
+        close: 'hover:bg-orange-50 hover:text-orange-600 focus-visible:ring-2 focus-visible:ring-[rgba(227,98,12,0.25)]',
+        darkClose: 'hover:bg-orange-600/20 hover:text-orange-400 focus-visible:ring-2 focus-visible:ring-[rgba(227,98,12,0.25)]',
+    },
+}
+
 type Props<T extends Record<string, unknown>> = {
     open: boolean
     onClose: () => void
@@ -44,6 +73,7 @@ type Props<T extends Record<string, unknown>> = {
     minVisible?: number
     locale?: MciTablePanelLocale
     darkMode?: boolean
+    variant?: MciTableVariant
 }
 
 export default function MciTableColumnsPanel<T extends Record<string, unknown>>({
@@ -57,10 +87,12 @@ export default function MciTableColumnsPanel<T extends Record<string, unknown>>(
                                                                                     minVisible = 5,
                                                                                     locale = 'ru',
                                                                                     darkMode = false,
+                                                                                    variant = 'orange',
                                                                                 }: Props<T>) {
     const ref = useRef<HTMLDivElement>(null)
     const { handleClick } = useClickOutside(ref, onClose)
     const t = PANEL_TRANSLATIONS[locale]
+    const theme = PANEL_THEME[variant]
 
     useEffect(() => {
         if (!open) return
@@ -175,8 +207,8 @@ export default function MciTableColumnsPanel<T extends Record<string, unknown>>(
                     className={cn(
                         'rounded-lg px-2 py-1',
                         darkMode
-                            ? 'text-neutral-100 hover:bg-neutral-300'
-                            : 'text-slate-500 hover:bg-slate-100'
+                            ? cn('text-neutral-100 hover:bg-neutral-300', theme.darkClose)
+                            : cn('text-slate-500 hover:bg-slate-100', theme.close)
                     )}
                     aria-label={t.close}
                 >
@@ -213,7 +245,7 @@ export default function MciTableColumnsPanel<T extends Record<string, unknown>>(
                                 <div
                                     className={cn(
                                         'pointer-events-none absolute left-2 right-2 z-10 h-0.5 rounded-full',
-                                        darkMode ? 'bg-blue-500' : 'bg-blue-300',
+                                        darkMode ? theme.darkDropIndicator : theme.dropIndicator,
                                         dropPosition === 'before' ? 'top-0' : 'bottom-0'
                                     )}
                                 />
@@ -264,7 +296,7 @@ export default function MciTableColumnsPanel<T extends Record<string, unknown>>(
                                         checked={checked}
                                         disabled={isLocked}
                                         onChange={() => safeToggle(col.key, isLocked)}
-                                        variant="blue"
+                                        variant={variant}
                                         darkMode={darkMode}
                                     />
                                 </div>
