@@ -238,6 +238,7 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
                         onClick={handleToggle}
                         className={cn(
                             'flex w-full items-center border font-normal transition-all duration-300 ease-in-out',
+                            disabled ? 'cursor-not-allowed' : 'cursor-pointer',
                             size === 'base' ? 'rounded-xl' : 'rounded-lg',
                             currentSize.container,
                             icon && iconPosition === 'left' ? currentSize.iconPaddingLeft : currentSize.padding,

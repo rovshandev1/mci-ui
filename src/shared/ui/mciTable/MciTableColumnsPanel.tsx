@@ -205,7 +205,7 @@ export default function MciTableColumnsPanel<T extends Record<string, unknown>>(
                     type="button"
                     onClick={onClose}
                     className={cn(
-                        'rounded-lg px-2 py-1',
+                        'cursor-pointer rounded-lg px-2 py-1',
                         darkMode
                             ? cn('text-neutral-100 hover:bg-neutral-300', theme.darkClose)
                             : cn('text-slate-500 hover:bg-slate-100', theme.close)
@@ -272,6 +272,7 @@ export default function MciTableColumnsPanel<T extends Record<string, unknown>>(
                                     'group flex items-center py-2 px-1 gap-4',
                                     'rounded-md box-border overflow-visible',
                                     'transition-[background,transform] duration-150',
+                                    !isDragging && 'cursor-grab',
                                     !isDragging && !isOver && (darkMode ? 'hover:bg-neutral-300/60' : 'hover:bg-slate-50'),
                                     isOver && !isDragging && (darkMode ? 'bg-neutral-300/60' : 'bg-slate-50'),
                                     isDragging && (darkMode ? 'bg-neutral-300 opacity-100 scale-[0.99] cursor-grabbing' : 'bg-slate-50 opacity-100 scale-[0.99] cursor-grabbing')

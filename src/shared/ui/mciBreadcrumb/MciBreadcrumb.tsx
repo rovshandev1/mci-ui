@@ -56,7 +56,7 @@ export default function MciBreadcrumb({
                                     }
                                 }}
                                 className={cn(
-                                    'flex items-center gap-x-2 transition-all text-sm font-normal',
+                                    'flex cursor-pointer items-center gap-x-2 transition-all text-sm font-normal',
                                     inactiveColor,
                                     hoverColor
                                 )}

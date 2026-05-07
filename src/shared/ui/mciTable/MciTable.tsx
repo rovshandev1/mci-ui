@@ -7,6 +7,13 @@ import type {MciTableColumn, MciTableProps, MciTableSort} from '../../types/mci-
 import MciTableClamp2 from './MciTableClamp2'
 import {normalizeColWidth, sortRows} from './mci-table.utils'
 
+const isActionColumn = <T extends Record<string, unknown>>(col: MciTableColumn<T>) => {
+    const key = String(col.key).toLowerCase()
+    const title = col.title.toLowerCase()
+
+    return key === 'action' || key === 'actions' || key.includes('action') || title === 'action' || title === 'actions' || title.includes('action')
+}
+
 export default function MciTable<T extends Record<string, unknown>>({
                                                                         columns,
                                                                         data = [],
@@ -106,7 +113,7 @@ export default function MciTable<T extends Record<string, unknown>>({
         <colgroup>
             {rowSelection && <col style={{width: 48}}/>}
             {columns.map((col) => (
-                <col key={col.key} style={{width: normalizeColWidth(col.width) ?? 'auto'}}/>
+                <col key={col.key} style={{width: normalizeColWidth(col.width) ?? (isActionColumn(col) ? '1%' : 'auto')}}/>
             ))}
         </colgroup>
     )
@@ -158,6 +165,7 @@ export default function MciTable<T extends Record<string, unknown>>({
                                         'px-4 py-3 text-left text-sm font-medium transition-colors',
                                         darkMode ? 'text-neutral-50' : 'text-slate-700',
                                         'whitespace-nowrap overflow-hidden text-ellipsis',
+                                        isActionColumn(col) && 'w-px',
                                         col.align === 'center' && 'text-center',
                                         col.align === 'right' && 'text-right',
                                         col.sortable && (darkMode ? 'cursor-pointer hover:bg-neutral-200' : 'cursor-pointer hover:bg-slate-200'),
@@ -246,9 +254,10 @@ export default function MciTable<T extends Record<string, unknown>>({
                                                 <td
                                                     key={col.key}
                                                     className={cn(
-                                                        'align-top px-4 py-3 text-sm font-normal',
+                                                        'align-top px-4 py-3 text-sm font-normal overflow-visible',
                                                         darkMode ? 'text-neutral-50' : 'text-black',
                                                         'min-w-0 whitespace-normal',
+                                                        isActionColumn(col) && 'w-px whitespace-nowrap',
                                                         col.align === 'center' && 'text-center',
                                                         col.align === 'right' && 'text-right',
                                                         bodyClassName,

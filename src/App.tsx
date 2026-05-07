@@ -171,7 +171,7 @@ export default function App() {
   }, [page, perPage])
 
   const demoColumns = useMemo<MciTableColumn<DemoRow>[]>(() => [
-    { key: 'id', title: 'ID', sortable: true, align: 'right' },
+    { key: 'id', title: 'ID', sortable: true },
     { key: 'name', title: 'Name', sortable: true },
     { key: 'role', title: 'Role', sortable: true },
     {
@@ -185,7 +185,7 @@ export default function App() {
         return <MciTag variant="error" size="sm" darkMode={appDarkMode}>Blocked</MciTag>
       },
     },
-    { key: 'age', title: 'Age', sortable: true, align: 'right' },
+    { key: 'age', title: 'Age', sortable: true },
     { key: 'city', title: 'City', sortable: true },
     { key: 'email', title: 'Email' },
     { key: 'createdAt', title: 'Created', sortable: true },

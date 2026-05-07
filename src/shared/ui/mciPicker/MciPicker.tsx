@@ -348,7 +348,7 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
                                         onClick={() => changeYear(-1)}
                                         type="button"
                                         className={cn(
-                                            'rounded p-1 transition-colors',
+                                            'cursor-pointer rounded p-1 transition-colors',
                                             darkMode
                                                 ? 'text-neutral-100 hover:bg-neutral-300 hover:text-white'
                                                 : 'text-slate-500 hover:bg-slate-100'
@@ -358,7 +358,7 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
                                         onClick={() => changeMonth(-1)}
                                         type="button"
                                         className={cn(
-                                            'rounded p-1 transition-colors',
+                                            'cursor-pointer rounded p-1 transition-colors',
                                             darkMode
                                                 ? 'text-neutral-100 hover:bg-neutral-300 hover:text-white'
                                                 : 'text-slate-500 hover:bg-slate-100'
@@ -399,7 +399,7 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
                                         onClick={() => changeMonth(1)}
                                         type="button"
                                         className={cn(
-                                            'rounded p-1 transition-colors',
+                                            'cursor-pointer rounded p-1 transition-colors',
                                             darkMode
                                                 ? 'text-neutral-100 hover:bg-neutral-300 hover:text-white'
                                                 : 'text-slate-500 hover:bg-slate-100'
@@ -409,7 +409,7 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
                                         onClick={() => changeYear(1)}
                                         type="button"
                                         className={cn(
-                                            'rounded p-1 transition-colors',
+                                            'cursor-pointer rounded p-1 transition-colors',
                                             darkMode
                                                 ? 'text-neutral-100 hover:bg-neutral-300 hover:text-white'
                                                 : 'text-slate-500 hover:bg-slate-100'
@@ -481,7 +481,7 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
                         type="button"
                         onClick={() => changeYear(-1)}
                         className={cn(
-                            'rounded p-1',
+                            'cursor-pointer rounded p-1',
                             darkMode
                                 ? 'text-neutral-100 hover:bg-neutral-300 hover:text-white'
                                 : 'text-slate-500 hover:bg-slate-100'
@@ -492,7 +492,7 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
                         type="button"
                         onClick={() => changeYear(1)}
                         className={cn(
-                            'rounded p-1',
+                            'cursor-pointer rounded p-1',
                             darkMode
                                 ? 'text-neutral-100 hover:bg-neutral-300 hover:text-white'
                                 : 'text-slate-500 hover:bg-slate-100'
@@ -513,7 +513,7 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
                             type="button"
                             onClick={() => setYearPage(p => p - 1)}
                             className={cn(
-                                'rounded p-1',
+                                'cursor-pointer rounded p-1',
                                 darkMode
                                     ? 'text-neutral-100 hover:bg-neutral-300 hover:text-white'
                                     : 'text-slate-500 hover:bg-slate-100'
@@ -524,7 +524,7 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
                             type="button"
                             onClick={() => setYearPage(p => p + 1)}
                             className={cn(
-                                'rounded p-1',
+                                'cursor-pointer rounded p-1',
                                 darkMode
                                     ? 'text-neutral-100 hover:bg-neutral-300 hover:text-white'
                                     : 'text-slate-500 hover:bg-slate-100'

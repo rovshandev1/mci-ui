@@ -47,6 +47,7 @@ export default function MciModal({
                 'items-end sm:items-center',
                 'transition-opacity duration-300',
                 show ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none',
+                handleClickOutside && 'cursor-pointer',
                 overlayClassName
             )}
             onClick={handleClickOutside ? handleClose : undefined}
@@ -61,6 +62,7 @@ export default function MciModal({
                 aria-labelledby={title ? 'modal-title' : undefined}
                 className={cn(
                     'relative flex flex-col w-full outline-none',
+                    'cursor-default',
                     darkMode ? 'bg-black' : 'bg-white',
                     'rounded-t-2xl sm:rounded-2xl',
                     'sm:max-w-[720px]',

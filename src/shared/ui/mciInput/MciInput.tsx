@@ -198,13 +198,12 @@ const MciInput = forwardRef<HTMLInputElement, InputProps>(
                                     type="button"
                                     onClick={handleClearClick}
                                     className={cn(
-                                        'flex items-center justify-center',
+                                        'flex cursor-pointer items-center justify-center',
                                         sizes[size].iconWrapper,
                                         darkMode
                                             ? 'text-neutral-100 hover:text-white'
                                             : 'text-slate-base hover:text-black'
                                     )}
-                                    style={{cursor: 'pointer'}}
                                 >
                                     <span className={cn('flex items-center justify-center', sizes[size].icon)}>
                                         <CloseIcon className={cn('h-full w-full')}/>
@@ -253,13 +252,13 @@ const MciInput = forwardRef<HTMLInputElement, InputProps>(
                                         type="button"
                                         onClick={togglePassword}
                                         className={cn(
-                                            'flex items-center justify-center',
+                                            'flex cursor-pointer items-center justify-center',
                                             sizes[size].iconWrapper,
                                             iconColor
                                         )}
                                     >
                                         <span
-                                            className={cn('flex items-center justify-center cursor-pointer', sizes[size].icon)}
+                                            className={cn('flex items-center justify-center', sizes[size].icon)}
                                         >
                                             {showPassword ? (
                                                 <EyeClosed weight='Linear' className={cn('h-full w-full')}/>

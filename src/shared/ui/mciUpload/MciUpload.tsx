@@ -375,7 +375,7 @@ const MciUpload: React.FC<MciUploadProps> = ({
                                 type="button"
                                 onClick={handleClearAll}
                                 disabled={disabled || isUploading}
-                                className="text-sm font-medium text-red-600 disabled:opacity-50"
+                                className="cursor-pointer text-sm font-medium text-red-600 disabled:cursor-not-allowed disabled:opacity-50"
                             >
                                 {t.clearAll}
                             </button>
@@ -484,7 +484,7 @@ const MciUpload: React.FC<MciUploadProps> = ({
                                                 handleRemoveFile(fileInfo.id)
                                             }}
                                             disabled={disabled || isUploading}
-                                            className={cn('rounded-xl p-2 disabled:opacity-50 hover:cursor-pointer', darkMode ? 'text-slate-400 hover:bg-neutral-800' : 'text-slate-base hover:bg-slate-100')}
+                                            className={cn('rounded-xl p-2 hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50', darkMode ? 'text-slate-400 hover:bg-neutral-800' : 'text-slate-base hover:bg-slate-100')}
                                             title={t.remove}
                                         >
                                             <CloseIcon className="h-6 w-6" />
