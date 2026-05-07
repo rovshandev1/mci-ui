@@ -7,7 +7,7 @@ export interface PaginationProps {
     siblingCount?: number
     perPageOptions?: number[]
     showPerPage?: boolean
-    variant?: 'yellow' | 'blue'
+    variant?: 'yellow' | 'blue' | 'orange'
     size?: 'medium' | 'large'
     darkMode?: boolean
     paginationClassName?: string

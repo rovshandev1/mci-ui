@@ -2,30 +2,36 @@ import {AltArrowRight} from '@solar-icons/react'
 import {cn} from '../../lib/utils'
 import type { MciBreadcrumbProps } from '../../types/ui/breadcrumb.types'
 
+const BREADCRUMB_THEME = {
+    blue: {
+        hover: 'hover:text-blue-600',
+        active: 'text-blue-600',
+        darkHover: 'hover:text-blue-400',
+        darkActive: 'text-blue-400',
+    },
+    yellow: {
+        hover: 'hover:text-yellow-500',
+        active: 'text-yellow-500',
+        darkHover: 'hover:text-yellow-400',
+        darkActive: 'text-yellow-400',
+    },
+    orange: {
+        hover: 'hover:text-orange-600',
+        active: 'text-orange-600',
+        darkHover: 'hover:text-orange-400',
+        darkActive: 'text-orange-400',
+    },
+} as const
+
 export default function MciBreadcrumb({
                                           items,
                                           variant = 'blue',
                                           darkMode = false,
                                           className,
                                       }: MciBreadcrumbProps) {
-    const isBlue = variant === 'blue'
-
-    const hoverColor = darkMode
-        ? isBlue
-            ? 'hover:text-blue-400'
-            : 'hover:text-yellow-400'
-        : isBlue
-            ? 'hover:text-blue-600'
-            : 'hover:text-yellow-500'
-
-    const activeColor = darkMode
-        ? isBlue
-            ? 'text-blue-400'
-            : 'text-yellow-400'
-        : isBlue
-            ? 'text-blue-600'
-            : 'text-yellow-500'
-
+    const theme = BREADCRUMB_THEME[variant]
+    const hoverColor = darkMode ? theme.darkHover : theme.hover
+    const activeColor = darkMode ? theme.darkActive : theme.active
     const inactiveColor = darkMode ? 'text-neutral-50' : 'text-slate-500'
 
     return (

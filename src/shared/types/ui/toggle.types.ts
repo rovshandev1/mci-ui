@@ -3,7 +3,7 @@ import type { ButtonHTMLAttributes } from 'react'
 export type ToggleProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick' | 'type' | 'className' | 'onChange'> & {
     checked?: boolean
     onChange?: (checked: boolean) => void
-    variant?: 'blue' | 'yellow'
+    variant?: 'blue' | 'yellow' | 'orange'
     darkMode?: boolean
     label?: string
     supportText?: string

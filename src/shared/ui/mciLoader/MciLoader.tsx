@@ -28,7 +28,11 @@ export default function MciLoader({
                 className={cn(
                     "animate-spin",
                     !iconClassName &&
-                    (variant === 'blue' ? "text-blue-600" : "text-yellow-500"),
+                    (variant === 'blue'
+                        ? "text-blue-600"
+                        : variant === 'orange'
+                            ? "text-orange-600"
+                            : "text-yellow-500"),
                     iconClassName
                 )}
                 style={{ fill: 'currentColor', stroke: 'currentColor' }}

@@ -4,5 +4,5 @@ export interface MciLoaderProps {
     iconClassName?: string
     isLoading?: boolean
     isFullPage?: boolean
-    variant?: 'yellow' | 'blue'
+    variant?: 'yellow' | 'blue' | 'orange'
 }

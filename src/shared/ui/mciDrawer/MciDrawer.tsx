@@ -3,6 +3,21 @@ import {cn, useClickOutside, useEscapeKey} from '../../lib/utils'
 import CloseIcon from '../../../assets/icons/close.svg?react'
 import type {DrawerProps} from '../../types/ui/drawer.types'
 
+const DRAWER_VARIANTS = {
+    blue: {
+        close: 'hover:bg-blue-100 hover:text-blue-600 focus-visible:ring-2 focus-visible:ring-[rgba(21,93,252,0.25)]',
+        darkClose: 'hover:bg-blue-500/20 hover:text-blue-400 focus-visible:ring-2 focus-visible:ring-[rgba(21,93,252,0.25)]',
+    },
+    yellow: {
+        close: 'hover:bg-yellow-100 hover:text-yellow-600 focus-visible:ring-2 focus-visible:ring-yellow-200',
+        darkClose: 'hover:bg-yellow-500/20 hover:text-yellow-400 focus-visible:ring-2 focus-visible:ring-yellow-300/40',
+    },
+    orange: {
+        close: 'hover:bg-orange-100 hover:text-orange-600 focus-visible:ring-2 focus-visible:ring-[rgba(227,98,12,0.25)]',
+        darkClose: 'hover:bg-orange-600/20 hover:text-orange-400 focus-visible:ring-2 focus-visible:ring-[rgba(227,98,12,0.25)]',
+    },
+} as const
+
 export default function MciDrawer({
                                       isOpen,
                                       onClose,
@@ -19,9 +34,11 @@ export default function MciDrawer({
                                       closeOnEscape = true,
                                       width = 572,
                                       darkMode = false,
+                                      variant = 'blue',
                                   }: DrawerProps) {
     const drawerRef = useRef<HTMLDivElement>(null)
     const previousActiveElement = useRef<HTMLElement | null>(null)
+    const theme = DRAWER_VARIANTS[variant]
 
     const handleClose = useCallback(() => onClose(), [onClose])
 
@@ -133,7 +150,11 @@ export default function MciDrawer({
                             <button
                                 type="button"
                                 onClick={handleClose}
-                                className={`${darkMode ? 'bg-neutral-300 text-slate-50' : 'bg-slate-100 text-black'} rounded-xl w-11 h-11 sm:w-12 sm:h-12 hover:cursor-pointer transition flex items-center justify-center group active:scale-95`}
+                                className={cn(
+                                    darkMode ? 'bg-neutral-300 text-slate-50' : 'bg-slate-100 text-black',
+                                    darkMode ? theme.darkClose : theme.close,
+                                    'rounded-xl w-11 h-11 sm:w-12 sm:h-12 hover:cursor-pointer transition flex items-center justify-center group active:scale-95'
+                                )}
                             >
                                 <CloseIcon
                                     className="h-5 w-5 sm:h-6 sm:w-6 transition-transform duration-300 group-hover:rotate-180"/>

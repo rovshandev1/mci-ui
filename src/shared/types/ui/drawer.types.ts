@@ -16,4 +16,5 @@ export interface DrawerProps {
     closeOnEscape?: boolean
     width?: string | number
     darkMode?: boolean
+    variant?: 'blue' | 'yellow' | 'orange'
 }

@@ -23,6 +23,16 @@ const STYLE_MAP = {
         darkBorder: 'border-yellow-500',
         darkBg: 'bg-yellow-500',
         darkHover: 'hover:border-yellow-500 hover:bg-yellow-500',
+    },
+    orange: {
+        border: 'border-orange-600',
+        bg: 'bg-orange-600',
+        hover: 'hover:border-orange-600 hover:bg-orange-100',
+        focus: 'peer-focus-visible:ring-2 peer-focus-visible:ring-[rgba(227,98,12,0.25)]',
+        darkFocus: 'peer-focus-visible:ring-2 peer-focus-visible:ring-[rgba(227,98,12,0.25)]',
+        darkBorder: 'border-orange-600',
+        darkBg: 'bg-orange-600',
+        darkHover: 'hover:border-orange-600 hover:bg-orange-600',
     }
 } as const;
 

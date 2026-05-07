@@ -53,18 +53,19 @@ const DEMO_ROWS: DemoRow[] = [
   { id: 8, name: 'Shahnoza Raximova', role: 'Manager', status: 'Blocked', age: 28, city: 'Qarshi', email: 'shahnoza@mail.com', createdAt: '2024-12-08' },
 ]
 
-const BREADCRUMB_VARIANTS = ['blue', 'yellow'] as const
+const BREADCRUMB_VARIANTS = ['blue', 'yellow', 'orange'] as const
 const BUTTON_VARIANTS = ['primary', 'secondary', 'outline', 'danger', 'tertiary'] as const
 const BUTTON_COLORS = ['blue', 'yellow', 'orange'] as const
 const FIELD_SIZES = ['sm', 'md', 'base'] as const
 const TAG_VARIANTS = ['success', 'warning', 'error', 'gray', 'blue'] as const
 const TAG_SIZES = ['sm', 'md', 'lg'] as const
-const TONE_VARIANTS = ['blue', 'yellow'] as const
+const TONE_VARIANTS = ['blue', 'yellow', 'orange'] as const
 const SKELETON_VARIANTS = ['default', 'rounded', 'circle'] as const
-const PAGINATION_VARIANTS = ['blue', 'yellow'] as const
+const PAGINATION_VARIANTS = ['blue', 'yellow', 'orange'] as const
 const PAGINATION_SIZES = ['medium', 'large'] as const
 const PER_PAGE_OPTIONS = ['5', '10', '15'] as const
-const UPLOAD_VARIANTS = ['yellow', 'blue'] as const
+const UPLOAD_VARIANTS = ['yellow', 'blue', 'orange'] as const
+const DRAWER_VARIANTS = ['blue', 'yellow', 'orange'] as const
 
 function ControlSelect({
                          label,
@@ -148,6 +149,7 @@ export default function App() {
   const [toneVariant, setToneVariant] = useState<(typeof TONE_VARIANTS)[number]>('blue')
   const [skeletonVariant, setSkeletonVariant] = useState<(typeof SKELETON_VARIANTS)[number]>('default')
   const [uploadVariant, setUploadVariant] = useState<(typeof UPLOAD_VARIANTS)[number]>('yellow')
+  const [drawerVariant, setDrawerVariant] = useState<(typeof DRAWER_VARIANTS)[number]>('blue')
   const [paginationVariant, setPaginationVariant] = useState<(typeof PAGINATION_VARIANTS)[number]>('yellow')
   const [paginationSize, setPaginationSize] = useState<(typeof PAGINATION_SIZES)[number]>('large')
 
@@ -472,6 +474,12 @@ export default function App() {
                   options={UPLOAD_VARIANTS}
                   onChange={(value) => setUploadVariant(value as (typeof UPLOAD_VARIANTS)[number])}
               />
+              <ControlSelect
+                  label="Drawer variant"
+                  value={drawerVariant}
+                  options={DRAWER_VARIANTS}
+                  onChange={(value) => setDrawerVariant(value as (typeof DRAWER_VARIANTS)[number])}
+              />
             </div>
 
             <div className="demo-row demo-wrap">
@@ -505,7 +513,8 @@ export default function App() {
                 onClose={() => setDrawerOpen(false)}
                 title="Demo Drawer"
                 darkMode={appDarkMode}
-                footer={<MciButton color="blue" darkMode={effectiveButtonDarkMode} onClick={() => setDrawerOpen(false)}>Yopish</MciButton>}
+                variant={drawerVariant}
+                footer={<MciButton color={drawerVariant} darkMode={effectiveButtonDarkMode} onClick={() => setDrawerOpen(false)}>Yopish</MciButton>}
             >
               <div className="demo-stack">
                 <p className="demo-note">Drawer ichida istalgan form/ma'lumot joylashtirish mumkin.</p>

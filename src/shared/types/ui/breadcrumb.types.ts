@@ -7,7 +7,7 @@ export type BreadcrumbItem = {
     icon?: ReactNode
 }
 
-export type Variant = 'blue' | 'yellow'
+export type Variant = 'blue' | 'yellow' | 'orange'
 
 export type MciBreadcrumbProps = {
     items: BreadcrumbItem[]

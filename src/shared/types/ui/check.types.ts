@@ -5,7 +5,7 @@ export type MciCheckProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'type' |
     label?: string
     supportText?: string
     error?: string
-    variant?: 'blue' | 'yellow'
+    variant?: 'blue' | 'yellow' | 'orange'
     darkMode?: boolean
     className?: string
 }
