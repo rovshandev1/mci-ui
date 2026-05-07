@@ -11,13 +11,18 @@ const BUTTON_SIZES = {
 const BUTTON_COLOR_VARIANTS = {
     blue: {
         primary: 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 focus:ring-2 focus:ring-[rgba(21,93,252,0.25)]',
-        secondary: 'bg-blue-100 text-blue-600 hover:bg-blue-200 active:bg-blue-200 active:border active:border-blue-600 focus:ring-2 focus:ring-[rgba(21,93,252,0.25)]',
+        secondary: 'border border-transparent bg-blue-100 text-blue-600 hover:bg-blue-200 active:border-blue-600 active:bg-blue-200 focus:ring-2 focus:ring-[rgba(21,93,252,0.25)]',
         outline: 'border border-blue-600 text-blue-600 hover:border-blue-700 hover:text-blue-700 active:border-blue-800 active:text-blue-800 focus:ring-2 focus:ring-blue-200',
     },
     yellow: {
         primary: 'bg-yellow-500 text-white hover:bg-yellow-600 active:bg-yellow-700 focus:ring-2 focus:ring-yellow-300',
-        secondary: 'bg-yellow-50 text-yellow-500 hover:bg-yellow-100 active:bg-yellow-100 active:border active:border-yellow-500 focus:ring-2 focus:ring-yellow-200',
+        secondary: 'border border-transparent bg-yellow-50 text-yellow-500 hover:bg-yellow-100 active:border-yellow-500 active:bg-yellow-100 focus:ring-2 focus:ring-yellow-200',
         outline: 'border border-yellow-500 text-yellow-500 hover:border-yellow-600 hover:text-yellow-600 active:border-yellow-700 active:text-yellow-700 focus:ring-2 focus:ring-yellow-200',
+    },
+    orange: {
+        primary: 'bg-orange-600 text-white hover:bg-orange-700 active:bg-orange-800 focus:bg-orange-600 focus:ring-2 focus:ring-[rgba(227,98,12,0.25)]',
+        secondary: 'border border-transparent bg-orange-100 text-orange-600 hover:bg-orange-200 active:border-orange-600 active:bg-orange-200 focus:bg-orange-100 focus:ring-2 focus:ring-[rgba(227,98,12,0.25)]',
+        outline: 'border border-orange-600 bg-white text-orange-600 hover:border-orange-700 hover:text-orange-700 active:border-orange-800 active:text-orange-800 focus:border-orange-600 focus:bg-white focus:ring-2 focus:ring-[rgba(227,98,12,0.25)]',
     },
 } as const
 
@@ -31,6 +36,11 @@ const BUTTON_DARK_COLOR_VARIANTS = {
         primary: 'bg-yellow-400 text-slate-950 hover:bg-yellow-300 active:bg-yellow-200 focus:ring-2 focus:ring-yellow-300/40',
         secondary: 'border border-slate-700 bg-slate-800 text-yellow-300 hover:bg-slate-700 active:bg-slate-600 focus:ring-2 focus:ring-yellow-300/30',
         outline: 'border border-yellow-400 text-yellow-300 hover:bg-yellow-500/10 hover:border-yellow-300 hover:text-yellow-200 active:bg-yellow-500/20 active:border-yellow-200 focus:ring-2 focus:ring-yellow-300/30',
+    },
+    orange: {
+        primary: 'bg-orange-500 text-black hover:bg-orange-400 active:bg-orange-300 focus:bg-orange-600 focus:ring-2 focus:ring-[rgba(227,98,12,0.25)]',
+        secondary: 'border border-slate-700 bg-slate-800 text-orange-300 hover:bg-slate-700 active:border-orange-600 active:bg-slate-600 focus:bg-slate-800 focus:ring-2 focus:ring-[rgba(227,98,12,0.25)]',
+        outline: 'border border-orange-500 text-orange-300 hover:bg-orange-500/10 hover:border-orange-400 hover:text-orange-200 active:bg-orange-500/20 active:border-orange-300 focus:border-orange-500 focus:ring-2 focus:ring-[rgba(227,98,12,0.25)]',
     },
 } as const
 

@@ -57,17 +57,17 @@ select {
     --color-red-950: #460809;
 
     /* Orange */
-    --color-orange-50: #FFF7ED;
-    --color-orange-100: #FFEDD4;
-    --color-orange-200: #FFD6A8;
-    --color-orange-300: #FFB86A;
-    --color-orange-400: #FF8904;
-    --color-orange-500: #FF6900;
-    --color-orange-600: #F54A00;
-    --color-orange-700: #CA3500;
-    --color-orange-800: #9F2D00;
-    --color-orange-900: #7E2A0C;
-    --color-orange-950: #441306;
+    --color-orange-50: #FFF6F1;
+    --color-orange-100: #FFEBDF;
+    --color-orange-200: #FFD8C0;
+    --color-orange-300: #FFCAAB;
+    --color-orange-400: #F7AB87;
+    --color-orange-500: #EB9369;
+    --color-orange-600: #E3620C;
+    --color-orange-700: #D25800;
+    --color-orange-800: #CC5200;
+    --color-orange-900: #A24405;
+    --color-orange-950: #562F1C;
 
     /* Green */
     --color-green-50: #EFFDF5;

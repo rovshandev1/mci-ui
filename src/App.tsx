@@ -55,7 +55,7 @@ const DEMO_ROWS: DemoRow[] = [
 
 const BREADCRUMB_VARIANTS = ['blue', 'yellow'] as const
 const BUTTON_VARIANTS = ['primary', 'secondary', 'outline', 'danger', 'tertiary'] as const
-const BUTTON_COLORS = ['blue', 'yellow'] as const
+const BUTTON_COLORS = ['blue', 'yellow', 'orange'] as const
 const FIELD_SIZES = ['sm', 'md', 'base'] as const
 const TAG_VARIANTS = ['success', 'warning', 'error', 'gray', 'blue'] as const
 const TAG_SIZES = ['sm', 'md', 'lg'] as const
