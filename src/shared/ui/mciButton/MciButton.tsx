@@ -10,9 +10,9 @@ const BUTTON_SIZES = {
 
 const BUTTON_COLOR_VARIANTS = {
     blue: {
-        primary: 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 focus:ring-2 focus:ring-[rgba(21,93,252,0.25)]',
-        secondary: 'border border-transparent bg-blue-100 text-blue-600 hover:bg-blue-200 active:border-blue-600 active:bg-blue-200 focus:ring-2 focus:ring-[rgba(21,93,252,0.25)]',
-        outline: 'border border-blue-600 text-blue-600 hover:border-blue-700 hover:text-blue-700 active:border-blue-800 active:text-blue-800 focus:ring-2 focus:ring-blue-200',
+        primary: 'bg-blue-600 text-white hover:bg-blue-700 hover:text-white active:bg-blue-800 focus:bg-blue-600 focus:ring-2 focus:ring-[rgba(21,93,252,0.25)]',
+        secondary: 'border border-transparent bg-blue-100 text-blue-600 hover:bg-blue-200 hover:text-blue-600 active:border-blue-600 active:bg-blue-200 active:text-blue-600 focus:bg-blue-100 focus:text-blue-600 focus:ring-2 focus:ring-[rgba(21,93,252,0.25)]',
+        outline: 'border border-blue-600 bg-white text-blue-600 hover:border-blue-700 hover:text-blue-700 active:border-blue-800 active:text-blue-800 focus:border-blue-600 focus:text-blue-600 focus:ring-2 focus:ring-[rgba(21,93,252,0.25)]',
     },
     yellow: {
         primary: 'bg-yellow-500 text-white hover:bg-yellow-600 active:bg-yellow-700 focus:ring-2 focus:ring-yellow-300',
