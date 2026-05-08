@@ -45,8 +45,8 @@ const BUTTON_DARK_COLOR_VARIANTS = {
 } as const
 
 const BUTTON_FIXED_VARIANTS = {
-    danger: 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 focus:ring-2 focus:shadow-red',
-    tertiary: 'bg-slate-100 text-black hover:bg-slate-200 active:bg-slate-300 focus:ring-2 focus:shadow-slate',
+    danger: 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 focus:bg-red-600 focus:ring-2 focus:ring-[rgba(231,0,11,0.25)]',
+    tertiary: 'bg-slate-100 text-black hover:bg-slate-200 active:bg-slate-100 focus:bg-slate-100 focus:ring-2 focus:ring-slate-200',
 } as const
 
 const BUTTON_DARK_FIXED_VARIANTS = {
