@@ -8,12 +8,18 @@ export type Tab = {
     disabled?: boolean
 }
 
+export type TabsVariant = 'filled' | 'outlined'
+
+export type TabsColor = 'blue' | 'yellow' | 'orange'
+
+export type TabsPosition = 'top' | 'bottom' | 'left' | 'right'
+
 export type TabsProps = {
     tabs: Tab[]
-    variant?: 'filled' | 'outlined'
-    color?: 'blue' | 'yellow' | 'orange'
+    variant?: TabsVariant
+    color?: TabsColor
     defaultTab?: string
-    position?: 'top' | 'bottom' | 'left' | 'right'
+    position?: TabsPosition
     darkMode?: boolean
     className?: string
     tabListClassName?: string
