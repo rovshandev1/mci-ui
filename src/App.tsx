@@ -30,6 +30,7 @@ import {
   type MciTableColumn,
   type RangeValue,
 } from './index.ts'
+import { TabsVariant } from './shared/types/ui/tabs.types.ts'
 
 type DemoRow = {
   id: number
@@ -163,6 +164,7 @@ export default function App() {
   const [drawerVariant, setDrawerVariant] = useState<(typeof DRAWER_VARIANTS)[number]>('orange')
   const [paginationVariant, setPaginationVariant] = useState<(typeof PAGINATION_VARIANTS)[number]>('orange')
   const [paginationSize, setPaginationSize] = useState<(typeof PAGINATION_SIZES)[number]>('large')
+  const [tabsVariant, setTabsVariant] = useState<TabsVariant>('filled')  
 
   const [page, setPage] = useState(1)
   const [perPage, setPerPage] = useState(5)
@@ -565,8 +567,16 @@ export default function App() {
           </Section>
 
           <Section title="Tabs" description="Navigation patternlari uchun oddiy tabs composition.">
+            <ControlSelect
+                  label="Tabs variant"
+                  value={tabsVariant}
+                  options={['filled', 'outlined']}
+                  onChange={(value) => setTabsVariant(value as TabsVariant)}
+              />
             <MciTabs
                 darkMode={appDarkMode}
+                className='mt-4'
+                variant={tabsVariant}
                 tabs={[
                   {
                     id: 'profile',
