@@ -109,10 +109,21 @@ function ControlCheckbox({
   )
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+                   title,
+                   description,
+                   children,
+                 }: {
+  title: string
+  description?: string
+  children: React.ReactNode
+}) {
   return (
       <section className="demo-section">
-        <h2 className="demo-section-title">{title}</h2>
+        <div className="demo-section-head">
+          <h2 className="demo-section-title">{title}</h2>
+          {description && <p className="demo-section-description">{description}</p>}
+        </div>
         {children}
       </section>
   )
@@ -160,6 +171,7 @@ export default function App() {
   const effectiveButtonDarkMode = appDarkMode
 
   const totalPages = Math.max(1, Math.ceil(DEMO_ROWS.length / perPage))
+  const selectedCount = selectedRowKeys.length
 
   useEffect(() => {
     if (page > totalPages) setPage(totalPages)
@@ -208,7 +220,7 @@ export default function App() {
       <div className={appDarkMode ? 'demo-root demo-root-dark' : 'demo-root'}>
         <div className="demo-shell">
           <header className="demo-header">
-            <div className="demo-header-top">
+            <div className="demo-header-bar">
               <MciBreadcrumb
                   variant={breadcrumbVariant}
                   darkMode={appDarkMode}
@@ -227,7 +239,37 @@ export default function App() {
                 {appDarkMode ? 'Light demo' : 'Dark demo'}
               </MciButton>
             </div>
-            <div className="demo-top-gap">
+
+            <div className="demo-hero">
+              <div className="demo-hero-copy">
+                <p className="demo-eyebrow">mci-ui playground</p>
+                <h1 className="demo-title">Component examples</h1>
+                <p className="demo-subtitle">
+                  Interaktiv demo: variant, size, dark mode va real table workflow holatlarini bir sahifada tekshirish uchun.
+                </p>
+              </div>
+
+              <div className="demo-summary-grid">
+                <div className="demo-summary-item">
+                  <span>Theme</span>
+                  <strong>{buttonColor}</strong>
+                </div>
+                <div className="demo-summary-item">
+                  <span>Mode</span>
+                  <strong>{appDarkMode ? 'Dark' : 'Light'}</strong>
+                </div>
+                <div className="demo-summary-item">
+                  <span>Rows</span>
+                  <strong>{DEMO_ROWS.length}</strong>
+                </div>
+                <div className="demo-summary-item">
+                  <span>Selected</span>
+                  <strong>{selectedCount}</strong>
+                </div>
+              </div>
+            </div>
+
+            <div className="demo-header-controls">
               <ControlSelect
                   label="Breadcrumb variant"
                   value={breadcrumbVariant}
@@ -235,10 +277,9 @@ export default function App() {
                   onChange={(value) => setBreadcrumbVariant(value as (typeof BREADCRUMB_VARIANTS)[number])}
               />
             </div>
-            <p className="demo-note">Bu sahifa barcha componentlarni real ishlatib ko'rish uchun demo UI.</p>
           </header>
 
-          <Section title="Buttons, Tag, Tooltip, Toast">
+          <Section title="Buttons, Tag, Tooltip, Toast" description="Action, feedback va compact status componentlarini bir joyda sinab ko'ring.">
             <div className="demo-controls-grid">
               <ControlSelect
                   label="Button variant"
@@ -308,7 +349,7 @@ export default function App() {
             </div>
           </Section>
 
-          <Section title="Inputs">
+          <Section title="Inputs" description="Form field componentlari: input, select, date picker, phone, identity va textarea.">
             <div className="demo-controls-grid">
               <ControlSelect
                   label="Field size"
@@ -383,7 +424,7 @@ export default function App() {
             </div>
           </Section>
 
-          <Section title="Check, Toggle, Collapse, Skeleton, Loader">
+          <Section title="Check, Toggle, Collapse, Skeleton, Loader" description="Stateful controls va loading/skeleton holatlari uchun umumiy tone preview.">
             <div className="demo-controls-grid">
               <ControlSelect
                   label="Tone variant"
@@ -466,7 +507,7 @@ export default function App() {
             </div>
           </Section>
 
-          <Section title="Modal, Drawer, Upload">
+          <Section title="Modal, Drawer, Upload" description="Overlay, drawer va file upload flowlarini real interaction bilan tekshirish.">
             <div className="demo-controls-grid">
               <ControlSelect
                   label="Upload variant"
@@ -523,7 +564,7 @@ export default function App() {
             </MciDrawer>
           </Section>
 
-          <Section title="Tabs">
+          <Section title="Tabs" description="Navigation patternlari uchun oddiy tabs composition.">
             <MciTabs
                 darkMode={appDarkMode}
                 tabs={[
@@ -543,7 +584,7 @@ export default function App() {
             />
           </Section>
 
-          <Section title="Table + Column Settings + Pagination">
+          <Section title="Table + Column Settings + Pagination" description="Sortable table, column visibility/order settings va pagination birgalikda ishlashi.">
             <div className="demo-controls-grid">
               <ControlSelect
                   label="Table variant"
