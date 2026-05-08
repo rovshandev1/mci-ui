@@ -437,10 +437,10 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
                                         (isStart && type === 'range' && isEnd)
                                             ? (darkMode ? 'rounded-full bg-blue-500' : 'rounded-full bg-blue-50')
                                             : (isStart && type === 'range')
-                                                ? (darkMode ? 'rounded-l-full bg-gradient-to-r from-transparent to-blue-500/15' : 'rounded-l-full bg-gradient-to-r from-transparent to-blue-50')
+                                                ? (darkMode ? 'rounded-l-full bg-linear-to-r from-transparent to-blue-500/15' : 'rounded-l-full bg-linear-to-r from-transparent to-blue-50')
                                                 : '',
                                         (isEnd && type === 'range')
-                                            ? (darkMode ? 'rounded-r-full bg-gradient-to-l from-transparent to-blue-500/15' : 'rounded-r-full bg-gradient-to-l from-transparent to-blue-50')
+                                            ? (darkMode ? 'rounded-r-full bg-linear-to-l from-transparent to-blue-500/15' : 'rounded-r-full bg-linear-to-l from-transparent to-blue-50')
                                             : ''
                                     )}
                                 >
@@ -586,7 +586,7 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
                 {isOpen && (
                     <div
                         className={cn(
-                            'absolute top-[calc(100%+4px)] z-[100] rounded-xl border shadow-xl',
+                            'absolute top-[calc(100%+4px)] z-100 rounded-xl border shadow-xl',
                             'flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200 md:flex-row',
                             darkMode
                                 ? 'border-neutral-200 bg-[#1F2025]'
