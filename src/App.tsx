@@ -567,6 +567,7 @@ export default function App() {
           <Section title="Tabs" description="Navigation patternlari uchun oddiy tabs composition.">
             <MciTabs
                 darkMode={appDarkMode}
+                variant='outlined'
                 tabs={[
                   {
                     id: 'profile',
