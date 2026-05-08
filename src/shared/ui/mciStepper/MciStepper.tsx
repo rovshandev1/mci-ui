@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { type CSSProperties, useMemo } from 'react'
 import { StepperColors, StepperProps } from '../../types/ui/stepper.types'
 import { cn } from '../../lib/utils'
 
@@ -6,51 +6,35 @@ type ColorConfig = {
    bg: { dark: string; light: string }
    text: { dark: string; light: string }
    ring: { dark: string; light: string }
+   line: { dark: string; light: string }
 }
 
+const createColorConfig = (
+   bg: ColorConfig['bg'],
+   text: ColorConfig['text'],
+   ring: ColorConfig['ring'],
+   line: ColorConfig['line']
+): ColorConfig => ({ bg, text, ring, line })
+
 const COLOR_MAP: Record<StepperColors, ColorConfig> = {
-   orange: {
-      bg: {
-         dark: 'bg-orange-500',
-         light: 'bg-orange-600',
-      },
-      text: {
-         dark: 'text-orange-500',
-         light: 'text-orange-600',
-      },
-      ring: {
-         dark: 'ring-orange-500',
-         light: 'ring-orange-600',
-      },
-   },
-   blue: {
-      bg: {
-         dark: 'bg-blue-400',
-         light: 'bg-blue-600',
-      },
-      text: {
-         dark: 'text-blue-400',
-         light: 'text-blue-600',
-      },
-      ring: {
-         dark: 'ring-blue-400',
-         light: 'ring-blue-600',
-      },
-   },
-   yellow: {
-      bg: {
-         dark: 'bg-yellow-400',
-         light: 'bg-yellow-500',
-      },
-      text: {
-         dark: 'text-yellow-400',
-         light: 'text-yellow-500',
-      },
-      ring: {
-         dark: 'ring-yellow-400',
-         light: 'ring-yellow-500',
-      },
-   },
+   orange: createColorConfig(
+      { dark: 'bg-orange-500', light: 'bg-orange-600' },
+      { dark: 'text-orange-500', light: 'text-orange-600' },
+      { dark: 'ring-orange-500', light: 'ring-orange-600' },
+      { dark: '#EB9369', light: '#E3620C' }
+   ),
+   blue: createColorConfig(
+      { dark: 'bg-blue-400', light: 'bg-blue-600' },
+      { dark: 'text-blue-400', light: 'text-blue-600' },
+      { dark: 'ring-blue-400', light: 'ring-blue-600' },
+      { dark: '#51A2FF', light: '#155DFC' }
+   ),
+   yellow: createColorConfig(
+      { dark: 'bg-yellow-400', light: 'bg-yellow-500' },
+      { dark: 'text-yellow-400', light: 'text-yellow-500' },
+      { dark: 'ring-yellow-400', light: 'ring-yellow-500' },
+      { dark: '#FCC800', light: '#EFB100' }
+   ),
 }
 
 const MciStepper = ({ steps, activeStep, color = 'orange', darkMode, className }: StepperProps) => {
@@ -65,7 +49,7 @@ const MciStepper = ({ steps, activeStep, color = 'orange', darkMode, className }
       return ((activeIndex + 1) / n) * 100
    }, [activeIndex, steps.length])
 
-   const { bg, text, ring } = COLOR_MAP[color]
+   const { bg, text, ring, line } = COLOR_MAP[color]
 
    return (
       <div
@@ -149,18 +133,28 @@ const MciStepper = ({ steps, activeStep, color = 'orange', darkMode, className }
                      {!isLast && (
                         <div className="mr-4 ml-4 min-w-0 flex-1">
                            <div className="relative h-px w-full overflow-hidden rounded">
-                              <div
-                                 className={cn(
-                                    'absolute inset-0',
-                                    darkMode ? 'bg-slate-200/20' : 'bg-slate-200'
-                                 )}
-                              />
-                              {(isDone || isActive) && (
+                              {!isActive && (
+                                 <div
+                                    className={cn(
+                                       'absolute inset-0',
+                                       darkMode ? 'bg-slate-200/20' : 'bg-slate-200'
+                                    )}
+                                 />
+                              )}
+                              {isDone && (
                                  <div
                                     className={cn(
                                        'absolute inset-0',
                                        darkMode ? bg.dark : bg.light
                                     )}
+                                 />
+                              )}
+                              {isActive && (
+                                 <div
+                                    className="mci-stepper-line-flow absolute inset-0"
+                                    style={{
+                                       '--mci-stepper-line-color': darkMode ? line.dark : line.light,
+                                    } as CSSProperties}
                                  />
                               )}
                            </div>

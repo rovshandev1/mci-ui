@@ -178,6 +178,15 @@ select {
     }
 }
 
+@keyframes mci-stepper-line-flow {
+    from {
+        background-position: 0 0;
+    }
+    to {
+        background-position: 28px 0;
+    }
+}
+
 @layer utilities {
     /*shadow*/
     .shadow-red {
@@ -196,6 +205,16 @@ select {
     }
 }
 
+
+.mci-stepper-line-flow {
+    background-image: repeating-linear-gradient(
+            90deg,
+            var(--mci-stepper-line-color, transparent) 0 10px,
+            transparent 10px 18px
+    );
+    background-size: 28px 100%;
+    animation: mci-stepper-line-flow 0.8s linear infinite;
+}
 
 .shimmer-mask {
     background: linear-gradient(
