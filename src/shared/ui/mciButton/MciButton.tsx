@@ -81,15 +81,11 @@ export default function MciButton({
 
     const isDisabled = disabled || loading
 
-    const disabledClasses = isDisabled
+    const stateClasses = isDisabled
         ? variant === 'outline'
-            ? darkMode
-                ? 'border-neutral-200 bg-transparent text-neutral-100 cursor-not-allowed hover:bg-transparent hover:border-neutral-200 hover:text-neutral-100 active:border-neutral-200 active:text-neutral-100 active:bg-transparent focus:bg-transparent focus:ring-0'
-                : 'border-slate-200 bg-white text-slate-400 cursor-not-allowed hover:bg-transparent hover:border-slate-200 hover:text-slate-400 active:border-slate-200 active:text-slate-400 active:bg-transparent focus:bg-transparent focus:ring-0'
-            : darkMode
-                ? 'bg-neutral-200 text-neutral-100 cursor-not-allowed focus:ring-0'
-                : 'border-neutral-200 text-neutral-100 cursor-not-allowed focus:ring-0'
-        : ''
+            ? 'border border-slate-200 bg-transparent text-slate-400 cursor-not-allowed hover:border-slate-200 hover:bg-transparent hover:text-slate-400 active:border-slate-200 active:bg-transparent active:text-slate-400 focus:border-slate-200 focus:bg-transparent focus:text-slate-400 focus:ring-0 focus:shadow-none'
+            : 'bg-slate-200 text-slate-400 cursor-not-allowed hover:bg-slate-200 hover:text-slate-400 active:bg-slate-200 active:text-slate-400 focus:bg-slate-200 focus:text-slate-400 focus:ring-0 focus:shadow-none'
+        : baseVariant
 
     return (
         <button
@@ -99,9 +95,7 @@ export default function MciButton({
             className={cn(
                 'inline-flex w-fit shrink-0 items-center justify-center whitespace-nowrap text-center font-medium transition-all duration-200 cursor-pointer',
                 BUTTON_SIZES[size],
-                baseVariant,
-                !isDisabled && baseVariant,
-                disabledClasses,
+                stateClasses,
                 className
             )}
         >
