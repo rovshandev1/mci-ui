@@ -11,6 +11,7 @@ import {
    MciInput,
    MciLoader,
    MciModal,
+   MciNoteCard,
    MciPagination,
    MciPhone,
    MciPicker,
@@ -33,6 +34,7 @@ import {
 import { TabsColor, TabsVariant } from './shared/types/ui/tabs.types.ts'
 import MciStepper from './shared/ui/mciStepper/MciStepper.tsx'
 import { Step, StepperColors } from './shared/types/ui/stepper.types.ts'
+import { NoteItem } from './shared/types/ui/note.types.ts'
 
 type DemoRow = {
    id: number
@@ -157,6 +159,31 @@ const TABS_DATA = [
       content: <div className="demo-note">Settings tab content</div>,
    },
 ]
+
+const NOTES: NoteItem[] = [
+   {
+      id: 1,
+      ticketId: 169,
+      employeeId: 516,
+      employeeFirstName: 'John',
+      employeeLastName: 'Doe',
+      note: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.',
+      isPublic: true,
+      createdDate: '2026-05-10T16:20:08.15256',
+      lastModifiedDate: '2026-05-10T16:20:08.15256',
+   },
+   {
+      id: 2,
+      ticketId: 169,
+      note: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod. Quisquam, quod. Quisquam, quod. Quisquam, quod. Quisquam, quod. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod. Quisquam, quod. Quisquam, quod. Quisquam, quod. Quisquam, quod. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod. Quisquam, quod. Quisquam, quod. Quisquam, quod. Quisquam, quod.',
+      employeeId: 516,
+      isPublic: false,
+      createdDate: '2026-04-28T11:43:08.232018',
+      createdBy: 'j.doe',
+      lastModifiedDate: '2026-04-28T11:43:08.232018',
+   },
+]
+
 const STEPS: Step[] = [
    { key: 1, label: 'Step 1', value: 'Step 1 value' },
    { key: 2, label: 'Step 2', value: 'Step 2 value' },
@@ -272,6 +299,8 @@ export default function App() {
    const [tabsColor, setTabsColor] = useState<TabsColor>('orange')
    const [stepperColor, setStepperColor] = useState<StepperColors>('orange')
    const [stepperIndex, setStepperIndex] = useState<number>(2)
+
+   const [activeNoteEditId, setActiveNoteEditId] = useState<number | null>(null)
 
    const [page, setPage] = useState(1)
    const [perPage, setPerPage] = useState(5)
@@ -933,6 +962,20 @@ export default function App() {
                   color={stepperColor}
                   className="mt-4"
                />
+            </Section>
+
+            <Section title="Notes">
+               <div className="space-y-2">
+                  {NOTES.map((note, index) => (
+                     <MciNoteCard
+                        key={note.id}
+                        note={note}
+                        canManage={index === 0}
+                        activeEditId={activeNoteEditId}
+                        onEditStart={setActiveNoteEditId}
+                     />
+                  ))}
+               </div>
             </Section>
          </div>
       </div>
