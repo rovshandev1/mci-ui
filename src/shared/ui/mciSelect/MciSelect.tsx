@@ -28,6 +28,7 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
             size = 'base',
             darkMode = false,
             error,
+            dropdownPosition = 'bottom',
             disabled = false,
             required = false,
             value,
@@ -337,6 +338,7 @@ const MciSelect = forwardRef<HTMLDivElement, SelectProps>(
                             role="listbox"
                             className={cn(
                                 'absolute z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-lg border p-1 shadow-md',
+                                dropdownPosition === 'top' && 'bottom-[calc(100%+4px)]',
                                 darkMode
                                     ? 'border-neutral-200 bg-[#1F2025] text-neutral-50'
                                     : 'border-slate-200 bg-white text-black',

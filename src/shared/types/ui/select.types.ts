@@ -7,6 +7,7 @@ export type Option = {
 
 export type SelectProps = {
     label?: string
+    dropdownPosition?: 'top' | 'bottom'
     placeholder?: string
     options: Option[]
     icon?: ReactNode
