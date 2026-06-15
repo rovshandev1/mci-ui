@@ -26,7 +26,7 @@ const MciNoteCard = ({
    subtitle?: string
    activeEditId?: number | null
    onEditStart?: (id: number | null) => void
-   locale: 'uz' | 'ru'
+   locale?: 'uz' | 'ru'
 }) => {
    const [isEditing, setIsEditing] = useState(false)
    const [editingText, setEditingText] = useState(note.note)
