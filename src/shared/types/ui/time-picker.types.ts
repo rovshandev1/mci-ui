@@ -1,10 +1,14 @@
 export type MciTimePickerValue = string | null
-export type MciTimePickerMode = 'time' | 'minute'
+export type MciTimePickerMode = 'time' | 'duration'
+export type MciTimePickerVariant = 'blue' | 'yellow' | 'orange'
+export type MciTimePickerLocale = 'uz' | 'ru' | 'en'
 
 export interface MciTimePickerProps {
     value?: MciTimePickerValue
     onChange?: (value: MciTimePickerValue) => void
     mode?: MciTimePickerMode
+    variant?: MciTimePickerVariant
+    locale?: MciTimePickerLocale
     placeholder?: string
     label?: string
     darkMode?: boolean

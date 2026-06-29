@@ -135,6 +135,8 @@ const BREADCRUMB_VARIANTS = ['orange', 'blue', 'yellow'] as const
 const BUTTON_VARIANTS = ['primary', 'secondary', 'outline', 'danger', 'tertiary'] as const
 const BUTTON_COLORS = ['orange', 'blue', 'yellow'] as const
 const FIELD_SIZES = ['sm', 'md', 'base'] as const
+const TIME_PICKER_VARIANTS = ['orange', 'blue', 'yellow'] as const
+const TIME_PICKER_LOCALES = ['uz', 'ru', 'en'] as const
 const TAG_VARIANTS = ['success', 'warning', 'error', 'gray', 'blue'] as const
 const TAG_SIZES = ['sm', 'md', 'lg'] as const
 const TONE_VARIANTS = ['orange', 'blue', 'yellow'] as const
@@ -272,7 +274,7 @@ export default function App() {
    const [selectValue, setSelectValue] = useState<string | number>('new')
    const [dateValue, setDateValue] = useState<DateValue>(null)
    const [timeValue, setTimeValue] = useState<string | null>(null)
-   const [minuteValue, setMinuteValue] = useState<string | null>(null)
+   const [durationValue, setDurationValue] = useState<string | null>(null)
    const [rangeValue, setRangeValue] = useState<RangeValue>([null, null])
 
    const [checked, setChecked] = useState(false)
@@ -290,6 +292,10 @@ export default function App() {
    const [tagSize, setTagSize] = useState<(typeof TAG_SIZES)[number]>('md')
    const [tagRounded, setTagRounded] = useState(false)
    const [fieldSize, setFieldSize] = useState<(typeof FIELD_SIZES)[number]>('base')
+   const [timePickerVariant, setTimePickerVariant] =
+      useState<(typeof TIME_PICKER_VARIANTS)[number]>('orange')
+   const [timePickerLocale, setTimePickerLocale] =
+      useState<(typeof TIME_PICKER_LOCALES)[number]>('uz')
    const [toneVariant, setToneVariant] = useState<(typeof TONE_VARIANTS)[number]>('orange')
    const [skeletonVariant, setSkeletonVariant] =
       useState<(typeof SKELETON_VARIANTS)[number]>('default')
@@ -549,6 +555,22 @@ export default function App() {
                      options={FIELD_SIZES}
                      onChange={(value) => setFieldSize(value as (typeof FIELD_SIZES)[number])}
                   />
+                  <ControlSelect
+                     label="Time picker variant"
+                     value={timePickerVariant}
+                     options={TIME_PICKER_VARIANTS}
+                     onChange={(value) =>
+                        setTimePickerVariant(value as (typeof TIME_PICKER_VARIANTS)[number])
+                     }
+                  />
+                  <ControlSelect
+                     label="Time picker locale"
+                     value={timePickerLocale}
+                     options={TIME_PICKER_LOCALES}
+                     onChange={(value) =>
+                        setTimePickerLocale(value as (typeof TIME_PICKER_LOCALES)[number])
+                     }
+                  />
                </div>
 
                <div className="demo-grid-2">
@@ -611,11 +633,13 @@ export default function App() {
                   />
 
                   <MciTimePicker
-                     label="MciTimePicker Minute"
-                     mode="minute"
+                     label="MciTimePicker Duration"
+                     mode="duration"
+                     variant={timePickerVariant}
+                     locale={timePickerLocale}
                      darkMode={appDarkMode}
-                     value={minuteValue}
-                     onChange={setMinuteValue}
+                     value={durationValue}
+                     onChange={setDurationValue}
                   />
 
                   <MciPicker
