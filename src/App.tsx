@@ -22,6 +22,7 @@ import {
    MciTabs,
    MciTag,
    MciTextarea,
+   MciTimePicker,
    MciToast,
    MciToggle,
    MciTooltip,
@@ -270,6 +271,8 @@ export default function App() {
    const [identityValue, setIdentityValue] = useState('')
    const [selectValue, setSelectValue] = useState<string | number>('new')
    const [dateValue, setDateValue] = useState<DateValue>(null)
+   const [timeValue, setTimeValue] = useState<string | null>(null)
+   const [minuteValue, setMinuteValue] = useState<string | null>(null)
    const [rangeValue, setRangeValue] = useState<RangeValue>([null, null])
 
    const [checked, setChecked] = useState(false)
@@ -598,6 +601,21 @@ export default function App() {
                      darkMode={appDarkMode}
                      value={dateValue}
                      onChange={(val) => setDateValue(val as DateValue)}
+                  />
+
+                  <MciTimePicker
+                     label="MciTimePicker"
+                     darkMode={appDarkMode}
+                     value={timeValue}
+                     onChange={setTimeValue}
+                  />
+
+                  <MciTimePicker
+                     label="MciTimePicker Minute"
+                     mode="minute"
+                     darkMode={appDarkMode}
+                     value={minuteValue}
+                     onChange={setMinuteValue}
                   />
 
                   <MciPicker

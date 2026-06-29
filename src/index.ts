@@ -8,6 +8,7 @@ export { default as MciAccordion } from './shared/ui/mciAccordion/MciAccordion.t
 export { default as MciDrawer } from './shared/ui/mciDrawer/MciDrawer.tsx'
 export { default as MciInput } from './shared/ui/mciInput/MciInput.tsx'
 export { default as MciPicker } from './shared/ui/mciPicker/MciPicker.tsx'
+export { default as MciTimePicker } from './shared/ui/mciTimePicker/MciTimePicker.tsx'
 export { default as MciSelect } from './shared/ui/mciSelect/MciSelect.tsx'
 export { default as MciTable } from './shared/ui/mciTable/MciTable.tsx'
 export { default as MciUpload } from './shared/ui/mciUpload/MciUpload.tsx'
