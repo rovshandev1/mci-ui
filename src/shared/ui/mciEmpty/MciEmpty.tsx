@@ -17,7 +17,9 @@ const EMPTY_TRANSLATIONS: Record<MciEmptyLocale, { title: string; description: s
 
 export default function MciEmpty({
                                      className,
+                                     image,
                                      imageClassName,
+                                     imageSrc,
                                      locale = 'uz',
                                      title,
                                      description,
@@ -27,11 +29,15 @@ export default function MciEmpty({
 
     return (
         <div className={cn('flex flex-col items-center justify-center text-center', className)}>
-            <img
-                src={emptyImage}
-                alt=""
-                className={cn('mb-4 h-auto w-40 shrink-0', imageClassName)}
-            />
+            {image ? (
+                <div className={cn('mb-4 shrink-0', imageClassName)}>{image}</div>
+            ) : (
+                <img
+                    src={imageSrc ?? emptyImage}
+                    alt=""
+                    className={cn('mb-4 h-auto w-40 shrink-0', imageClassName)}
+                />
+            )}
             <h4 className="text-h4 font-semibold text-black">{title ?? t.title}</h4>
 
             {resolvedDescription && (
