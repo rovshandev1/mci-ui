@@ -10,7 +10,7 @@ export default function MciTableClamp2({ children, title }: Clamp2Props) {
 
     if (typeof children !== 'string' && typeof children !== 'number') {
         return (
-            <div className="-m-1 inline-flex w-fit max-w-full items-start overflow-visible p-1 align-top">
+            <div className="-m-1 inline-flex w-fit max-w-full items-center overflow-visible p-1 align-middle">
                 {children}
             </div>
         )

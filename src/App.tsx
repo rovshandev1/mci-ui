@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
 import { Home, Settings, Ufo3, User } from '@solar-icons/react'
+import { useEffect, useMemo, useState } from 'react'
 import {
    MciAccordion,
    MciBreadcrumb,
@@ -33,10 +33,10 @@ import {
    type MciTableColumn,
    type RangeValue,
 } from './index.ts'
+import { NoteItem } from './shared/types/ui/note.types.ts'
+import { Step, StepperColors } from './shared/types/ui/stepper.types.ts'
 import { TabsColor, TabsVariant } from './shared/types/ui/tabs.types.ts'
 import MciStepper from './shared/ui/mciStepper/MciStepper.tsx'
-import { Step, StepperColors } from './shared/types/ui/stepper.types.ts'
-import { NoteItem } from './shared/types/ui/note.types.ts'
 
 type DemoRow = {
    id: number
@@ -334,7 +334,7 @@ export default function App() {
 
    const demoColumns = useMemo<MciTableColumn<DemoRow>[]>(
       () => [
-         { key: 'id', title: 'ID', sortable: true },
+         { key: 'id', title: 'ID', sortable: true, width: 70 },
          { key: 'name', title: 'Name', sortable: true },
          { key: 'role', title: 'Role', sortable: true },
          {
