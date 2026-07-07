@@ -42,7 +42,7 @@ export default function MciTag({
    return (
       <span
          className={cn(
-            'inline-flex animate-[fadeIn_0.3s_ease-out] items-center text-extra-small font-medium',
+            'inline-flex max-w-full animate-[fadeIn_0.3s_ease-out] items-center overflow-hidden whitespace-nowrap text-extra-small font-medium',
             rounded ? 'rounded-full' : 'rounded-lg',
             sizes[size],
             darkMode ? darkVariants[variant] : variants[variant],
@@ -51,13 +51,13 @@ export default function MciTag({
          )}
       >
          {icon && iconPosition === 'left' && (
-            <span className={`flex items-center ${cn(iconSizes[size])}`}>{icon}</span>
+            <span className={`flex shrink-0 items-center ${cn(iconSizes[size])}`}>{icon}</span>
          )}
 
-         <span>{children}</span>
+         <span className="min-w-0 truncate">{children}</span>
 
          {icon && iconPosition === 'right' && (
-            <span className={`flex items-center ${cn(iconSizes[size])}`}>{icon}</span>
+            <span className={`flex shrink-0 items-center ${cn(iconSizes[size])}`}>{icon}</span>
          )}
       </span>
    )
