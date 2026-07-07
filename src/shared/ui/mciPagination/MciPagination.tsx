@@ -58,9 +58,11 @@ export default function MciPagination({
                                       }: PaginationProps) {
     const safeTotalItems = Number.isFinite(totalItems) && totalItems > 0 ? totalItems : 0
     const safePerPage = Number.isFinite(perPage) && perPage > 0 ? perPage : 10
-    const safeCurrentPage = Math.max(1, Number.isFinite(currentPage) ? currentPage : 1)
-
-    const totalPages = Math.ceil(safeTotalItems / safePerPage)
+    const totalPages = Math.max(1, Math.ceil(safeTotalItems / safePerPage))
+    const rawCurrentPage = Number.isFinite(currentPage) ? currentPage : 1
+    const safeCurrentPage = Math.min(Math.max(1, rawCurrentPage), totalPages)
+    const shouldShowPerPage = showPerPage && typeof onPerPageChange === 'function'
+    const shouldShowNavigation = totalPages > 1
 
     const pages = useMemo(() => {
         return createPageRange(safeCurrentPage, siblingCount, totalPages)
@@ -73,14 +75,14 @@ export default function MciPagination({
     const disabledClass = darkMode ? theme.darkDisabled : theme.disabled
     const arrowClass = darkMode ? theme.darkArrow : theme.arrow
 
-    if (totalPages <= 1 || safeTotalItems === 0) return null
+    if (safeTotalItems === 0 || (!shouldShowPerPage && !shouldShowNavigation)) return null
 
     return (
         <div className={cn(
             'flex items-center justify-between gap-4 w-full',
             paginationClassName
         )}>
-            {showPerPage && onPerPageChange && (
+            {shouldShowPerPage && (
                 <div className="flex items-center gap-2">
                     <span
                         className={cn(
@@ -91,7 +93,7 @@ export default function MciPagination({
                     <div className="relative">
                         <select
                             value={safePerPage}
-                            onChange={(e) => onPerPageChange(Number(e.target.value))}
+                            onChange={(e) => onPerPageChange?.(Number(e.target.value))}
                             className={cn(
                                 'appearance-none rounded-lg border pl-3 pr-8 text-base font-medium focus:outline-none cursor-pointer',
                                 darkMode
@@ -120,77 +122,79 @@ export default function MciPagination({
                 </div>
             )}
 
-            <nav aria-label="Пагинация" className="flex items-center gap-1 shrink-0 whitespace-nowrap">
-                <button
-                    onClick={() => onPageChange(safeCurrentPage - 1)}
-                    disabled={safeCurrentPage === 1}
-                    aria-label="Предыдущая страница"
-                    className={cn(
-                        'flex items-center justify-center rounded-lg border transition-all min-w-10',
-                        darkMode ? 'bg-neutral-300 border-neutral-200' : 'bg-slate-100',
-                        sizeClasses,
-                        safeCurrentPage === 1
-                            ? cn('cursor-not-allowed opacity-50', disabledClass)
-                            : cn('hover:cursor-pointer', arrowClass, darkMode ? 'hover:bg-neutral-200' : 'border-slate-200')
-                    )}
-                >
-                    <AltArrowLeft weight="Linear" size={20}/>
-                </button>
+            {shouldShowNavigation && (
+                <nav aria-label="Пагинация" className="flex items-center gap-1 shrink-0 whitespace-nowrap">
+                    <button
+                        onClick={() => onPageChange(safeCurrentPage - 1)}
+                        disabled={safeCurrentPage === 1}
+                        aria-label="Предыдущая страница"
+                        className={cn(
+                            'flex items-center justify-center rounded-lg border transition-all min-w-10',
+                            darkMode ? 'bg-neutral-300 border-neutral-200' : 'bg-slate-100',
+                            sizeClasses,
+                            safeCurrentPage === 1
+                                ? cn('cursor-not-allowed opacity-50', disabledClass)
+                                : cn('hover:cursor-pointer', arrowClass, darkMode ? 'hover:bg-neutral-200' : 'border-slate-200')
+                        )}
+                    >
+                        <AltArrowLeft weight="Linear" size={20}/>
+                    </button>
 
-                <div className="flex items-center gap-1">
-                    {pages.map((page, idx) => {
-                        if (page === '...') {
+                    <div className="flex items-center gap-1">
+                        {pages.map((page, idx) => {
+                            if (page === '...') {
+                                return (
+                                    <span
+                                        key={idx}
+                                        className={cn(
+                                            'flex items-center justify-center font-medium min-w-10',
+                                            darkMode ? 'text-neutral-50' : 'text-black',
+                                            sizeClasses
+                                        )}
+                                        aria-hidden="true"
+                                    >
+                      <MenuDots weight='Bold' size={20}/>
+                    </span>
+                                )
+                            }
+
+                            const isActive = page === safeCurrentPage
+
                             return (
-                                <span
+                                <button
                                     key={idx}
+                                    onClick={() => onPageChange(page as number)}
+                                    aria-label={`Страница ${page}${isActive ? ', текущая' : ''}`}
+                                    aria-current={isActive ? 'page' : undefined}
                                     className={cn(
-                                        'flex items-center justify-center font-medium min-w-10',
-                                        darkMode ? 'text-neutral-50' : 'text-black',
-                                        sizeClasses
+                                        'flex items-center justify-center rounded-lg border font-medium transition-all hover:cursor-pointer min-w-10 px-2',
+                                        sizeClasses,
+                                        isActive ? activeClass : inactiveClass
                                     )}
-                                    aria-hidden="true"
                                 >
-                  <MenuDots weight='Bold' size={20}/>
-                </span>
+                                    {page}
+                                </button>
                             )
-                        }
+                        })}
+                    </div>
 
-                        const isActive = page === safeCurrentPage
-
-                        return (
-                            <button
-                                key={idx}
-                                onClick={() => onPageChange(page as number)}
-                                aria-label={`Страница ${page}${isActive ? ', текущая' : ''}`}
-                                aria-current={isActive ? 'page' : undefined}
-                                className={cn(
-                                    'flex items-center justify-center rounded-lg border font-medium transition-all hover:cursor-pointer min-w-10 px-2',
-                                    sizeClasses,
-                                    isActive ? activeClass : inactiveClass
-                                )}
-                            >
-                                {page}
-                            </button>
-                        )
-                    })}
-                </div>
-
-                <button
-                    onClick={() => onPageChange(safeCurrentPage + 1)}
-                    disabled={safeCurrentPage === totalPages}
-                    aria-label="Следующая страница"
-                    className={cn(
-                        'flex items-center justify-center rounded-lg border transition-all min-w-10',
-                        darkMode ? 'bg-neutral-300 border-neutral-200' : 'bg-slate-100',
-                        sizeClasses,
-                        safeCurrentPage === totalPages
-                            ? cn('cursor-not-allowed opacity-50', disabledClass)
-                            : cn('hover:cursor-pointer', arrowClass, darkMode ? 'hover:bg-neutral-200' : 'border-slate-200')
-                    )}
-                >
-                    <AltArrowRight size={20} weight="Linear"/>
-                </button>
-            </nav>
+                    <button
+                        onClick={() => onPageChange(safeCurrentPage + 1)}
+                        disabled={safeCurrentPage === totalPages}
+                        aria-label="Следующая страница"
+                        className={cn(
+                            'flex items-center justify-center rounded-lg border transition-all min-w-10',
+                            darkMode ? 'bg-neutral-300 border-neutral-200' : 'bg-slate-100',
+                            sizeClasses,
+                            safeCurrentPage === totalPages
+                                ? cn('cursor-not-allowed opacity-50', disabledClass)
+                                : cn('hover:cursor-pointer', arrowClass, darkMode ? 'hover:bg-neutral-200' : 'border-slate-200')
+                        )}
+                    >
+                        <AltArrowRight size={20} weight="Linear"/>
+                    </button>
+                </nav>
+            )}
         </div>
     )
 }
