@@ -7,6 +7,7 @@ import {
    MciCheck,
    MciCollapse,
    MciDrawer,
+   MciEmpty,
    MciIdentityInput,
    MciInput,
    MciLoader,
@@ -137,6 +138,7 @@ const BUTTON_COLORS = ['orange', 'blue', 'yellow'] as const
 const FIELD_SIZES = ['sm', 'md', 'base'] as const
 const TIME_PICKER_VARIANTS = ['orange', 'blue', 'yellow'] as const
 const TIME_PICKER_LOCALES = ['uz', 'ru', 'en'] as const
+const EMPTY_LOCALES = ['uz', 'ru'] as const
 const TAG_VARIANTS = ['success', 'warning', 'error', 'gray', 'blue'] as const
 const TAG_SIZES = ['sm', 'md', 'lg'] as const
 const TONE_VARIANTS = ['orange', 'blue', 'yellow'] as const
@@ -296,6 +298,7 @@ export default function App() {
       useState<(typeof TIME_PICKER_VARIANTS)[number]>('orange')
    const [timePickerLocale, setTimePickerLocale] =
       useState<(typeof TIME_PICKER_LOCALES)[number]>('uz')
+   const [emptyLocale, setEmptyLocale] = useState<(typeof EMPTY_LOCALES)[number]>('uz')
    const [toneVariant, setToneVariant] = useState<(typeof TONE_VARIANTS)[number]>('orange')
    const [skeletonVariant, setSkeletonVariant] =
       useState<(typeof SKELETON_VARIANTS)[number]>('default')
@@ -761,6 +764,19 @@ export default function App() {
                      </MciButton>
                   </div>
                </div>
+            </Section>
+
+            <Section title="Empty">
+               <div className="demo-controls-row">
+                  <ControlSelect
+                     label="Empty locale"
+                     value={emptyLocale}
+                     options={EMPTY_LOCALES}
+                     onChange={(value) => setEmptyLocale(value as (typeof EMPTY_LOCALES)[number])}
+                  />
+               </div>
+
+               <MciEmpty locale={emptyLocale} />
             </Section>
 
             <Section

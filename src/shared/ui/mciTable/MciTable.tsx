@@ -1,8 +1,7 @@
-import {ConfoundedSquare} from '@solar-icons/react'
 import {SortVertical, SortFromBottomToTop, SortFromTopToBottom} from '@solar-icons/react'
 import {useMemo, useState, useEffect, useCallback} from 'react'
 import {cn} from '../../lib/utils'
-import {MciSkeleton, MciCheck} from '../../../index.ts'
+import {MciSkeleton, MciCheck, MciEmpty} from '../../../index.ts'
 import type {MciTableColumn, MciTableProps, MciTableSort} from '../../types/mci-table.types.ts'
 import MciTableClamp2 from './MciTableClamp2'
 import {normalizeColWidth, sortRows} from './mci-table.utils'
@@ -213,13 +212,7 @@ export default function MciTable<T extends Record<string, unknown>>({
                         ) : displayData.length === 0 ? (
                             <tr>
                                 <td colSpan={columns.length + (rowSelection ? 1 : 0)} className="py-20">
-                                    <div className="flex flex-col items-center justify-center">
-                                        <div className="relative mb-4">
-                                            <ConfoundedSquare weight="Bold" size={64}
-                                                              className={cn('animate-float', darkMode ? 'text-neutral-100' : 'text-slate-400')}/>
-                                        </div>
-                                        <p className={cn('text-sm font-medium', darkMode ? 'text-neutral-100' : 'text-slate-400')}>{noDataText}</p>
-                                    </div>
+                                    <MciEmpty title={noDataText || undefined}/>
                                 </td>
                             </tr>
                         ) : (

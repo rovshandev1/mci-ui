@@ -78,8 +78,13 @@ const formatDuration = (
     days: number,
     hours: number,
     minutes: number,
-    locale: MciTimePickerLocale
+    locale: MciTimePickerLocale,
+    durationFormat: MciTimePickerProps['durationFormat'] = 'text'
 ) => {
+    if (durationFormat === 'dot') {
+        return `${padTimePart(days)}.${padTimePart(hours)}.${padTimePart(minutes)}`
+    }
+
     const { units } = TIME_PICKER_LOCALES[locale]
     return `${padTimePart(days)} ${units.day} ${padTimePart(hours)} ${units.hour} ${padTimePart(minutes)} ${units.minute}`
 }
@@ -89,9 +94,10 @@ const formatPickerValue = (
     days: number,
     hours: number,
     minutes: number,
-    locale: MciTimePickerLocale
+    locale: MciTimePickerLocale,
+    durationFormat: MciTimePickerProps['durationFormat'] = 'text'
 ) => {
-    if (mode === 'duration') return formatDuration(days, hours, minutes, locale)
+    if (mode === 'duration') return formatDuration(days, hours, minutes, locale, durationFormat)
     return formatTime(hours, minutes)
 }
 
@@ -100,10 +106,11 @@ const getPickerValue = (
     days: number,
     hours: number,
     minutes: number,
-    locale: MciTimePickerLocale
+    locale: MciTimePickerLocale,
+    durationFormat: MciTimePickerProps['durationFormat'] = 'text'
 ) => {
     if (mode === 'duration' && days === 0 && hours === 0 && minutes === 0) return null
-    return formatPickerValue(mode, days, hours, minutes, locale)
+    return formatPickerValue(mode, days, hours, minutes, locale, durationFormat)
 }
 
 const getPickerDisplayValue = (
@@ -111,9 +118,10 @@ const getPickerDisplayValue = (
     days: number,
     hours: number,
     minutes: number,
-    locale: MciTimePickerLocale
+    locale: MciTimePickerLocale,
+    durationFormat: MciTimePickerProps['durationFormat'] = 'text'
 ) => {
-    return getPickerValue(mode, days, hours, minutes, locale) ?? ''
+    return getPickerValue(mode, days, hours, minutes, locale, durationFormat) ?? ''
 }
 
 const parseTime = (value: MciTimePickerValue | undefined, mode: MciTimePickerMode) => {
@@ -151,10 +159,19 @@ const parseTime = (value: MciTimePickerValue | undefined, mode: MciTimePickerMod
 const formatManualTimeInput = (
     value: string,
     mode: MciTimePickerMode,
-    locale: MciTimePickerLocale
+    locale: MciTimePickerLocale,
+    durationFormat: MciTimePickerProps['durationFormat'] = 'text'
 ) => {
     const numbers = value.replace(/\D/g, '').slice(0, mode === 'duration' ? 6 : 4)
     if (mode === 'duration') {
+        if (durationFormat === 'dot') {
+            if (numbers.length > 4) {
+                return `${numbers.slice(0, 2)}.${numbers.slice(2, 4)}.${numbers.slice(4)}`
+            }
+            if (numbers.length > 2) return `${numbers.slice(0, 2)}.${numbers.slice(2)}`
+            return numbers
+        }
+
         const { units } = TIME_PICKER_LOCALES[locale]
         if (numbers.length > 4) {
             return `${numbers.slice(0, 2)} ${units.day} ${numbers.slice(2, 4)} ${units.hour} ${numbers.slice(4)}`
@@ -172,6 +189,7 @@ const MciTimePicker = forwardRef<HTMLDivElement, MciTimePickerProps>(
             value,
             onChange,
             mode = 'time',
+            durationFormat = 'text',
             variant = 'orange',
             locale = 'en',
             placeholder,
@@ -240,11 +258,12 @@ const MciTimePicker = forwardRef<HTMLDivElement, MciTimePickerProps>(
                           currentTime.days,
                           currentTime.hours,
                           currentTime.minutes,
-                          locale
+                          locale,
+                          durationFormat
                       )
                     : ''
             )
-        }, [currentTime, locale, mode])
+        }, [currentTime, durationFormat, locale, mode])
 
         const toggleOpen = useCallback(
             (e: MouseEvent) => {
@@ -268,12 +287,13 @@ const MciTimePicker = forwardRef<HTMLDivElement, MciTimePickerProps>(
                               currentTime.days,
                               currentTime.hours,
                               currentTime.minutes,
-                              locale
+                              locale,
+                              durationFormat
                           )
                         : ''
                 )
             }
-        }, [currentTime, isInputFocused, isOpen, locale, mode])
+        }, [currentTime, durationFormat, isInputFocused, isOpen, locale, mode])
 
         useEffect(() => {
             if (isOpen && align === 'auto' && containerRef.current) {
@@ -318,7 +338,8 @@ const MciTimePicker = forwardRef<HTMLDivElement, MciTimePickerProps>(
                     parsedTime.days,
                     parsedTime.hours,
                     parsedTime.minutes,
-                    locale
+                    locale,
+                    durationFormat
                 )
                 commitValue(formatted)
                 setDisplayValue(formatted ?? '')
@@ -332,7 +353,8 @@ const MciTimePicker = forwardRef<HTMLDivElement, MciTimePickerProps>(
                           currentTime.days,
                           currentTime.hours,
                           currentTime.minutes,
-                          locale
+                          locale,
+                          durationFormat
                       )
                     : ''
             )
@@ -341,7 +363,7 @@ const MciTimePicker = forwardRef<HTMLDivElement, MciTimePickerProps>(
         const handleManualInputChange = (e: ChangeEvent<HTMLInputElement>) => {
             if (!allowManualInput) return
 
-            const formatted = formatManualTimeInput(e.target.value, mode, locale)
+            const formatted = formatManualTimeInput(e.target.value, mode, locale, durationFormat)
             const numbersOnly = formatted.replace(/\D/g, '')
 
             if (mode === 'duration') {
@@ -378,7 +400,8 @@ const MciTimePicker = forwardRef<HTMLDivElement, MciTimePickerProps>(
                         parsedTime.days,
                         parsedTime.hours,
                         parsedTime.minutes,
-                        locale
+                        locale,
+                        durationFormat
                     )
                     commitValue(normalized)
                     setDisplayValue(normalized ?? '')
@@ -444,7 +467,8 @@ const MciTimePicker = forwardRef<HTMLDivElement, MciTimePickerProps>(
                 normalizedDays,
                 normalizedHours,
                 normalizedMinutes,
-                locale
+                locale,
+                durationFormat
             )
 
             commitValue(formatted)
