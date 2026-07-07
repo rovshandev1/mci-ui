@@ -52,8 +52,6 @@ export default function MciTable<T extends Record<string, unknown>>({
 }: MciTableProps<T>) {
    const scrollRef = useRef<HTMLDivElement>(null)
    const [localSort, setLocalSort] = useState<MciTableSort<T> | null>(null)
-   const [hasHorizontalOverflow, setHasHorizontalOverflow] = useState(false)
-   const [scrollShadow, setScrollShadow] = useState({ right: false })
 
    const activeSort = externalSort ?? localSort
    const safeData = useMemo(() => (Array.isArray(data) ? data : []), [data])
@@ -86,10 +84,10 @@ export default function MciTable<T extends Record<string, unknown>>({
 
       const updateOverflow = () => {
          const maxScrollLeft = scrollElement.scrollWidth - scrollElement.clientWidth
-         const hasOverflow = maxScrollLeft > 1
+         const showEdgeShadow =
+            maxScrollLeft > 1 && scrollElement.scrollLeft < maxScrollLeft - 1
 
-         setHasHorizontalOverflow(hasOverflow)
-         setScrollShadow({ right: hasOverflow && scrollElement.scrollLeft < maxScrollLeft - 1 })
+         scrollElement.classList.toggle('mci-table-show-edge-shadow', showEdgeShadow)
       }
 
       updateOverflow()
@@ -203,12 +201,10 @@ export default function MciTable<T extends Record<string, unknown>>({
    const rowBorderClass = darkMode ? 'border-neutral-200' : 'border-slate-200'
 
    const getStickyLastColumnClass = (index: number, section: 'header' | 'body') => {
-      if (!hasHorizontalOverflow || index !== columns.length - 1) return undefined
-
-      const showEdgeShadow = scrollShadow.right
+      if (index !== columns.length - 1) return undefined
 
       return cn(
-         'sticky right-0 box-border min-w-[var(--mci-table-sticky-last-min-width)]',
+         'sticky right-0 box-border min-w-[var(--mci-table-sticky-last-min-width)] overflow-visible',
          section === 'header' ? 'z-30' : 'z-20',
          section === 'header'
             ? darkMode
@@ -216,13 +212,13 @@ export default function MciTable<T extends Record<string, unknown>>({
                : 'bg-slate-100'
             : darkMode
               ? 'bg-neutral-300 group-hover:bg-neutral-100/35'
-              : 'bg-white group-hover:bg-slate-50',
-         showEdgeShadow &&
-            (darkMode
-               ? 'shadow-[inset_8px_0_10px_-10px_rgba(0,0,0,0.18)]'
-               : 'shadow-[inset_8px_0_10px_-10px_rgba(15,23,42,0.07)]')
+              : 'bg-white group-hover:bg-slate-50'
       )
    }
+
+   const scrollEdgeShadowClass = darkMode
+      ? '[&.mci-table-show-edge-shadow_th:last-child]:shadow-[-12px_0_28px_-8px_rgba(0,0,0,0.22)] [&.mci-table-show-edge-shadow_td:last-child]:shadow-[-12px_0_28px_-8px_rgba(0,0,0,0.22)]'
+      : '[&.mci-table-show-edge-shadow_th:last-child]:shadow-[-12px_0_28px_-8px_rgba(15,23,42,0.14)] [&.mci-table-show-edge-shadow_td:last-child]:shadow-[-12px_0_28px_-8px_rgba(15,23,42,0.14)]'
 
    const tableFrameClass = cn(
       'overflow-hidden rounded-xl border',
@@ -243,6 +239,7 @@ export default function MciTable<T extends Record<string, unknown>>({
                ref={scrollRef}
                className={cn(
                   'w-full min-w-0 overflow-x-auto',
+                  scrollEdgeShadowClass,
                   '[scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden'
                )}
             >
@@ -282,6 +279,7 @@ export default function MciTable<T extends Record<string, unknown>>({
                                  rowBorderClass,
                                  darkMode ? 'text-neutral-50' : 'text-slate-700',
                                  'overflow-hidden text-ellipsis whitespace-nowrap',
+                                 colIndex === columns.length - 1 && 'overflow-visible',
                                  isActionColumn(col) && 'w-px',
                                  col.align === 'center' && 'text-center',
                                  col.align === 'right' && 'text-right',
