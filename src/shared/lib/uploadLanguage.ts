@@ -4,6 +4,8 @@ export interface UploadLanguage {
     or: string
 
     dropHereTitle: string
+    /** Kompakt upload tugmasi matni */
+    uploadFile: string
 
     fileRequirements: (
         multiple: boolean,
@@ -44,6 +46,7 @@ export const uploadLanguages: Record<string, UploadLanguage> = {
         or: 'yoki',
 
         dropHereTitle: 'Faylni shu yerga yuklang',
+        uploadFile: 'Fayl yuklash',
 
         fileRequirements: (multiple, maxFiles, maxSize, accept) =>
             `${multiple ? `Maksimum ${maxFiles} ta fayl` : '1 ta fayl'} • ${maxSize}MB gacha • ${
@@ -82,6 +85,7 @@ export const uploadLanguages: Record<string, UploadLanguage> = {
         or: 'или',
 
         dropHereTitle: 'Загрузите свой файл сюда',
+        uploadFile: 'Загрузите файл',
 
         fileRequirements: (multiple, maxFiles, maxSize, accept) =>
             `${multiple ? `Максимум ${maxFiles} файлов` : '1 файл'} • До ${maxSize}MB • ${
@@ -120,6 +124,7 @@ export const uploadLanguages: Record<string, UploadLanguage> = {
         or: 'or',
 
         dropHereTitle: 'Upload your file here',
+        uploadFile: 'Upload file',
 
         fileRequirements: (multiple, maxFiles, maxSize, accept) =>
             `${multiple ? `Up to ${maxFiles} files` : '1 file'} • Up to ${maxSize}MB • ${

@@ -484,7 +484,7 @@ const MciTimePicker = forwardRef<HTMLDivElement, MciTimePickerProps>(
             darkMode ? 'text-neutral-100' : 'text-slate-500'
         )
         const pickerStepButtonClass = cn(
-            'h-6 w-full rounded-md text-base font-semibold leading-none transition-colors hover:cursor-pointer',
+            'h-6 w-full cursor-pointer rounded-md text-base font-semibold leading-none transition-colors',
             darkMode ? variantClasses.darkStep : variantClasses.step
         )
         const pickerInputClass = cn(
@@ -493,7 +493,7 @@ const MciTimePicker = forwardRef<HTMLDivElement, MciTimePickerProps>(
             variantClasses.input
         )
         const okButtonClass = cn(
-            'mt-2 h-8 w-full rounded-md text-sm font-semibold transition-colors hover:cursor-pointer focus:ring-2',
+            'mt-2 h-8 w-full cursor-pointer rounded-md text-sm font-semibold transition-colors focus:ring-2',
             darkMode ? variantClasses.darkButton : variantClasses.button
         )
 

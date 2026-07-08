@@ -6,6 +6,7 @@ export type Tab = {
     icon?: ReactNode
     content?: ReactNode
     disabled?: boolean
+    count?: number
 }
 
 export type TabsVariant = 'filled' | 'outlined'

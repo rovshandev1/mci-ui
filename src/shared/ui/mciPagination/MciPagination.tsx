@@ -134,7 +134,7 @@ export default function MciPagination({
                             sizeClasses,
                             safeCurrentPage === 1
                                 ? cn('cursor-not-allowed opacity-50', disabledClass)
-                                : cn('hover:cursor-pointer', arrowClass, darkMode ? 'hover:bg-neutral-200' : 'border-slate-200')
+                                : cn('cursor-pointer', arrowClass, darkMode ? 'hover:bg-neutral-200' : 'border-slate-200')
                         )}
                     >
                         <AltArrowLeft weight="Linear" size={20}/>
@@ -167,7 +167,7 @@ export default function MciPagination({
                                     aria-label={`Страница ${page}${isActive ? ', текущая' : ''}`}
                                     aria-current={isActive ? 'page' : undefined}
                                     className={cn(
-                                        'flex items-center justify-center rounded-lg border font-medium transition-all hover:cursor-pointer min-w-10 px-2',
+                                        'flex cursor-pointer items-center justify-center rounded-lg border font-medium transition-all min-w-10 px-2',
                                         sizeClasses,
                                         isActive ? activeClass : inactiveClass
                                     )}
@@ -188,7 +188,7 @@ export default function MciPagination({
                             sizeClasses,
                             safeCurrentPage === totalPages
                                 ? cn('cursor-not-allowed opacity-50', disabledClass)
-                                : cn('hover:cursor-pointer', arrowClass, darkMode ? 'hover:bg-neutral-200' : 'border-slate-200')
+                                : cn('cursor-pointer', arrowClass, darkMode ? 'hover:bg-neutral-200' : 'border-slate-200')
                         )}
                     >
                         <AltArrowRight size={20} weight="Linear"/>

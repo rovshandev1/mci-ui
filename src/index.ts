@@ -13,6 +13,7 @@ export { default as MciTimePicker } from './shared/ui/mciTimePicker/MciTimePicke
 export { default as MciSelect } from './shared/ui/mciSelect/MciSelect.tsx'
 export { default as MciTable } from './shared/ui/mciTable/MciTable.tsx'
 export { default as MciUpload } from './shared/ui/mciUpload/MciUpload.tsx'
+export { default as MciUploadButton } from './shared/ui/mciUpload/MciUploadButton.tsx'
 export { default as MciModal } from './shared/ui/MciModal/MciModal.tsx'
 export { default as MciPagination } from './shared/ui/mciPagination/MciPagination.tsx'
 export { default as MciSkeleton } from './shared/ui/mciSkeleton/MciSkeleton.tsx'
@@ -33,4 +34,5 @@ export type { MciTableColumn, MciTableProps, ColumnKey } from './shared/types/mc
 export type { Step as MciStep } from './shared/types/ui/stepper.types.ts'
 export type { NoteItem } from './shared/types/ui/note.types.ts'
 export type { MciEmptyLocale, MciEmptyProps } from './shared/types/ui/empty.types.ts'
+export type { FileInfo, MciUploadButtonProps, MciUploadFileValue, MciUploadProps } from './shared/types/ui/upload.types.ts'
 export type * from './shared/types/mci-ui.types.ts'

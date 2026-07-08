@@ -28,6 +28,7 @@ import {
    MciToggle,
    MciTooltip,
    MciUpload,
+   MciUploadButton,
    useTableColumnSettings,
    type DateValue,
    type MciTableColumn,
@@ -161,6 +162,7 @@ const TABS_DATA = [
       id: 'settings',
       label: 'Settings',
       icon: <Settings size={18} />,
+      count: 1,
       content: <div className="demo-note">Settings tab content</div>,
    },
 ]
@@ -828,6 +830,24 @@ export default function App() {
                      locale="uz"
                      variant={uploadVariant}
                      darkMode={appDarkMode}
+                     defaultValue={{
+                        name: '8.png',
+                        url: 'https://picsum.photos/seed/mci-upload-demo/200/200',
+                        size: 100_844,
+                     }}
+                  />
+               </div>
+
+               <div className="demo-top-gap">
+                  <MciUploadButton
+                     locale="ru"
+                     variant={uploadVariant}
+                     darkMode={appDarkMode}
+                     defaultValue={{
+                        name: 'document.pdf',
+                        url: 'https://example.com/document.pdf',
+                        size: 245_760,
+                     }}
                   />
                </div>
 

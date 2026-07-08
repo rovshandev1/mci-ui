@@ -112,7 +112,7 @@ export default function MciModal({
                                 className={cn(
                                     'rounded-xl w-11 h-11 sm:w-12 sm:h-12',
                                     'flex items-center justify-center shrink-0',
-                                    'hover:cursor-pointer transition group active:scale-95',
+                                    'cursor-pointer transition group active:scale-95',
                                     darkMode ? 'bg-neutral-800 text-slate-50' : 'bg-slate-100 text-black'
                                 )}
                             >

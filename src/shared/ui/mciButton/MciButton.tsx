@@ -93,7 +93,9 @@ export default function MciButton({
             type={type}
             disabled={isDisabled}
             className={cn(
-                'inline-flex w-fit shrink-0 items-center justify-center whitespace-nowrap text-center font-medium transition-all duration-200 cursor-pointer',
+                'inline-flex w-fit shrink-0 items-center justify-center whitespace-nowrap text-center font-medium transition-all duration-200',
+                !isDisabled && 'cursor-pointer',
+                isDisabled && 'cursor-not-allowed',
                 BUTTON_SIZES[size],
                 stateClasses,
                 className

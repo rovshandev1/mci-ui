@@ -6,6 +6,8 @@ import {
     VideoFramePlayHorizontal,
 } from '@solar-icons/react'
 
+import type { FileInfo, MciUploadFileValue } from '../../types/ui/upload.types'
+
 export const SECURE_ALLOWED_EXTENSIONS = [
     'pdf',
     'doc',
@@ -250,4 +252,72 @@ export function createPreview(file: File): Promise<string> {
             resolve('')
         }
     })
+}
+
+const IMAGE_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'bmp', 'tiff'])
+
+export function isImageFileName(fileName: string) {
+    return IMAGE_EXTENSIONS.has(getFileExtension(fileName))
+}
+
+export function getFileIconByName(fileName: string) {
+    const ext = getFileExtension(fileName)
+    if (IMAGE_EXTENSIONS.has(ext)) {
+        return <Gallery className="h-5 w-5 text-blue-500" />
+    }
+    if (ext === 'pdf') return <FileText className="h-5 w-5 text-red-500" />
+    if (ext === 'doc' || ext === 'docx') {
+        return <FileText className="h-5 w-5 text-blue-600" />
+    }
+    if (ext === 'xls' || ext === 'xlsx') {
+        return <FileText className="h-5 w-5 text-green-600" />
+    }
+    if (ext === 'ppt' || ext === 'pptx') {
+        return <FileText className="h-5 w-5 text-orange-600" />
+    }
+    return <File className="h-5 w-5 text-gray-500" />
+}
+
+export function normalizeUploadFileValues(
+    value?: MciUploadFileValue | MciUploadFileValue[]
+): MciUploadFileValue[] {
+    if (!value) return []
+    return Array.isArray(value) ? value : [value]
+}
+
+export function createFileInfoFromValue(value: MciUploadFileValue): FileInfo {
+    const id = value.id ?? Math.random().toString(36).slice(2, 11)
+    const preview = isImageFileName(value.name) ? value.url : undefined
+
+    return {
+        id,
+        name: value.name,
+        size: value.size ?? 0,
+        url: value.url,
+        preview,
+        progress: 100,
+        status: 'success',
+        isRemote: true,
+    }
+}
+
+export function fileInfoToUploadValue(fileInfo: FileInfo): MciUploadFileValue {
+    return {
+        id: fileInfo.id,
+        name: fileInfo.name,
+        url: fileInfo.url ?? '',
+        size: fileInfo.size,
+    }
+}
+
+export function createFileInfoFromFile(file: File, preview: string, status: FileInfo['status'], progress: number): FileInfo {
+    return {
+        id: Math.random().toString(36).slice(2, 11),
+        file,
+        name: file.name,
+        size: file.size,
+        preview,
+        progress,
+        status,
+    }
 }

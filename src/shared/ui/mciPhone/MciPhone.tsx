@@ -109,7 +109,7 @@ const MciPhone = forwardRef<HTMLInputElement, PhoneInputProps>(
                         disabled={disabled}
                         placeholder={placeholder}
                         className={cn(
-                            'w-full border font-normal transition-all duration-300 outline-none',
+                            'w-full border font-normal transition-all duration-300 outline-none cursor-text',
                             size === 'base' ? 'rounded-xl' : 'rounded-lg',
                             darkMode
                                 ? 'text-neutral-50 placeholder:text-neutral-100 disabled:cursor-not-allowed disabled:border-neutral-200 disabled:bg-neutral-300 disabled:text-neutral-100/50 disabled:placeholder:text-neutral-100/50'

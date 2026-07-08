@@ -63,7 +63,7 @@ export default function MciCollapse({
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(
-                    'group flex w-full items-center justify-between p-5 transition-all duration-300 hover:cursor-pointer',
+                    'group flex w-full cursor-pointer items-center justify-between p-5 transition-all duration-300',
                     triggerClasses
                 )}
             >

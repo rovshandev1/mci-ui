@@ -499,7 +499,7 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
                         )}
                     ><AltArrowRight size={20} /></button>
                 </div>
-                <div className="grid grid-cols-3 gap-2">{t.monthsShort.map((m, i) => <button key={m} type="button" onClick={() => handleSelectMonth(i)} className={cn("py-3 rounded-lg text-sm font-semibold transition-colors hover:cursor-pointer", currentMonth.getMonth() === i ? "bg-blue-600 text-white" : darkMode ? "text-neutral-50 hover:bg-neutral-300 hover:text-white" : "text-slate-600 hover:bg-blue-50")}>{m}</button>)}</div>
+                <div className="grid grid-cols-3 gap-2">{t.monthsShort.map((m, i) => <button key={m} type="button" onClick={() => handleSelectMonth(i)} className={cn("cursor-pointer py-3 rounded-lg text-sm font-semibold transition-colors", currentMonth.getMonth() === i ? "bg-blue-600 text-white" : darkMode ? "text-neutral-50 hover:bg-neutral-300 hover:text-white" : "text-slate-600 hover:bg-blue-50")}>{m}</button>)}</div>
             </div>
         )
 
@@ -531,7 +531,7 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
                             )}
                         ><AltArrowRight size={20} /></button>
                     </div>
-                    <div className="grid grid-cols-3 gap-2">{years.map(y => <button key={y} type="button" onClick={() => handleSelectYear(y)} className={cn("py-3 rounded-lg text-sm font-semibold transition-colors hover:cursor-pointer", currentMonth.getFullYear() === y ? "bg-blue-600 text-white" : darkMode ? "text-neutral-50 hover:bg-neutral-300 hover:text-white" : "text-slate-600 hover:bg-blue-50")}>{y}</button>)}</div>
+                    <div className="grid grid-cols-3 gap-2">{years.map(y => <button key={y} type="button" onClick={() => handleSelectYear(y)} className={cn("cursor-pointer py-3 rounded-lg text-sm font-semibold transition-colors", currentMonth.getFullYear() === y ? "bg-blue-600 text-white" : darkMode ? "text-neutral-50 hover:bg-neutral-300 hover:text-white" : "text-slate-600 hover:bg-blue-50")}>{y}</button>)}</div>
                 </div>
             )
         }

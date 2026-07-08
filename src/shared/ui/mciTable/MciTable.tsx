@@ -50,7 +50,9 @@ export default function MciTable<T extends Record<string, unknown>>({
    rowKey = 'id' as keyof T,
    rowSelection,
 }: MciTableProps<T>) {
-   const scrollRef = useRef<HTMLDivElement>(null)
+   const headerScrollRef = useRef<HTMLDivElement>(null)
+   const bodyScrollRef = useRef<HTMLDivElement>(null)
+   const isSyncingScrollRef = useRef(false)
    const [localSort, setLocalSort] = useState<MciTableSort<T> | null>(null)
 
    const activeSort = externalSort ?? localSort
@@ -78,40 +80,96 @@ export default function MciTable<T extends Record<string, unknown>>({
       [columns, rowSelection]
    )
 
+   const updateSectionScrollState = useCallback((source?: HTMLDivElement | null) => {
+      const headerScroll = headerScrollRef.current
+      const bodyScroll = bodyScrollRef.current
+      if (!headerScroll && !bodyScroll) return
+
+      const scrollLeft =
+         source?.scrollLeft ?? bodyScroll?.scrollLeft ?? headerScroll?.scrollLeft ?? 0
+
+      const maxScrollLeft = Math.max(
+         headerScroll ? headerScroll.scrollWidth - headerScroll.clientWidth : 0,
+         bodyScroll ? bodyScroll.scrollWidth - bodyScroll.clientWidth : 0
+      )
+
+      const showStickyScrollShadow =
+         maxScrollLeft > 1 && scrollLeft < maxScrollLeft - 1
+
+      for (const element of [headerScroll, bodyScroll]) {
+         if (!element) continue
+         element.classList.toggle('mci-table-sticky-scrolled', showStickyScrollShadow)
+      }
+   }, [])
+
+   const syncScrollPosition = useCallback(
+      (source: HTMLDivElement) => {
+         if (isSyncingScrollRef.current) return
+
+         isSyncingScrollRef.current = true
+         const { scrollLeft } = source
+
+         for (const element of [headerScrollRef.current, bodyScrollRef.current]) {
+            if (!element || element === source) continue
+            element.scrollLeft = scrollLeft
+         }
+
+         updateSectionScrollState(source)
+         requestAnimationFrame(() => {
+            isSyncingScrollRef.current = false
+         })
+      },
+      [updateSectionScrollState]
+   )
+
    useEffect(() => {
-      const scrollElement = scrollRef.current
-      if (!scrollElement) return
+      const headerScroll = headerScrollRef.current
+      const bodyScroll = bodyScrollRef.current
+      if (!headerScroll && !bodyScroll) return
+
+      const onHeaderScroll = () => {
+         if (headerScrollRef.current) syncScrollPosition(headerScrollRef.current)
+      }
+      const onBodyScroll = () => {
+         if (bodyScrollRef.current) syncScrollPosition(bodyScrollRef.current)
+      }
 
       const updateOverflow = () => {
-         const maxScrollLeft = scrollElement.scrollWidth - scrollElement.clientWidth
-         const showEdgeShadow =
-            maxScrollLeft > 1 && scrollElement.scrollLeft < maxScrollLeft - 1
+         const headerScroll = headerScrollRef.current
+         const bodyScroll = bodyScrollRef.current
+         const anchor = bodyScroll ?? headerScroll
+         if (!anchor) return
 
-         scrollElement.classList.toggle('mci-table-show-edge-shadow', showEdgeShadow)
+         const { scrollLeft } = anchor
+         if (headerScroll) headerScroll.scrollLeft = scrollLeft
+         if (bodyScroll) bodyScroll.scrollLeft = scrollLeft
+
+         updateSectionScrollState(anchor)
       }
 
       updateOverflow()
-      scrollElement.addEventListener('scroll', updateOverflow, { passive: true })
+      headerScroll?.addEventListener('scroll', onHeaderScroll, { passive: true })
+      bodyScroll?.addEventListener('scroll', onBodyScroll, { passive: true })
 
       if (typeof ResizeObserver === 'undefined') {
          window.addEventListener('resize', updateOverflow)
          return () => {
             window.removeEventListener('resize', updateOverflow)
-            scrollElement.removeEventListener('scroll', updateOverflow)
+            headerScroll?.removeEventListener('scroll', onHeaderScroll)
+            bodyScroll?.removeEventListener('scroll', onBodyScroll)
          }
       }
 
       const resizeObserver = new ResizeObserver(updateOverflow)
-      resizeObserver.observe(scrollElement)
-      if (scrollElement.firstElementChild) {
-         resizeObserver.observe(scrollElement.firstElementChild)
-      }
+      if (headerScroll) resizeObserver.observe(headerScroll)
+      if (bodyScroll) resizeObserver.observe(bodyScroll)
 
       return () => {
          resizeObserver.disconnect()
-         scrollElement.removeEventListener('scroll', updateOverflow)
+         headerScroll?.removeEventListener('scroll', onHeaderScroll)
+         bodyScroll?.removeEventListener('scroll', onBodyScroll)
       }
-   }, [tableMinWidth, columns.length, displayData.length])
+   }, [tableMinWidth, columns.length, displayData.length, syncScrollPosition, updateSectionScrollState])
 
    const handleSort = useCallback(
       (col: MciTableColumn<T>) => {
@@ -200,12 +258,17 @@ export default function MciTable<T extends Record<string, unknown>>({
 
    const rowBorderClass = darkMode ? 'border-neutral-200' : 'border-slate-200'
 
-   const getStickyLastColumnClass = (index: number, section: 'header' | 'body') => {
+   const getStickyLastColumnClass = (
+      index: number,
+      section: 'header' | 'body',
+      options?: { isLastRow?: boolean }
+   ) => {
       if (index !== columns.length - 1) return undefined
 
       return cn(
-         'sticky right-0 box-border min-w-[var(--mci-table-sticky-last-min-width)] overflow-visible',
-         section === 'header' ? 'z-30' : 'z-20',
+         'sticky right-0 box-border min-w-[var(--mci-table-sticky-last-min-width)] transition-shadow duration-150',
+         section === 'header' ? 'z-30 rounded-tr-xl' : 'z-20',
+         options?.isLastRow && 'rounded-br-xl',
          section === 'header'
             ? darkMode
                ? 'bg-neutral-300'
@@ -216,100 +279,112 @@ export default function MciTable<T extends Record<string, unknown>>({
       )
    }
 
-   const scrollEdgeShadowClass = darkMode
-      ? '[&.mci-table-show-edge-shadow_th:last-child]:shadow-[-12px_0_28px_-8px_rgba(0,0,0,0.22)] [&.mci-table-show-edge-shadow_td:last-child]:shadow-[-12px_0_28px_-8px_rgba(0,0,0,0.22)]'
-      : '[&.mci-table-show-edge-shadow_th:last-child]:shadow-[-12px_0_28px_-8px_rgba(15,23,42,0.14)] [&.mci-table-show-edge-shadow_td:last-child]:shadow-[-12px_0_28px_-8px_rgba(15,23,42,0.14)]'
+   const stickyLastColumnShadowClass =
+      '[&.mci-table-sticky-scrolled_th:last-child]:shadow-md [&.mci-table-sticky-scrolled_td:last-child]:shadow-md'
 
-   const tableFrameClass = cn(
-      'overflow-hidden rounded-xl border',
-      darkMode ? 'border-neutral-200' : 'border-slate-200'
+   const borderClass = darkMode ? 'border-neutral-200' : 'border-slate-200'
+
+   const headerCardClass = cn(
+      'relative z-0 overflow-hidden rounded-xl border',
+      borderClass,
+      darkMode ? 'bg-neutral-300' : 'bg-slate-100'
    )
+
+   const bodyCardClass = cn(
+      'relative z-[1] -mt-px overflow-hidden rounded-xl border',
+      borderClass,
+      darkMode ? 'bg-neutral-300' : 'bg-white'
+   )
+
+   const sectionScrollClass = cn(
+      'w-full min-w-0 overflow-x-auto',
+      stickyLastColumnShadowClass,
+      '[scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden'
+   )
+
+   const tableClass = 'w-full table-fixed border-separate border-spacing-0'
 
    return (
       <div className={cn('relative w-full min-w-0', className)}>
          <div
-            className={tableFrameClass}
             style={
                {
                   '--mci-table-sticky-last-min-width': `${lastColumnMinWidth}px`,
                } as CSSProperties
             }
          >
-            <div
-               ref={scrollRef}
-               className={cn(
-                  'w-full min-w-0 overflow-x-auto',
-                  scrollEdgeShadowClass,
-                  '[scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden'
-               )}
-            >
-               <table
-                  className="w-full table-fixed border-separate border-spacing-0"
-                  style={{ minWidth: tableMinWidth }}
-               >
-                  {renderColGroup()}
-                  <thead className={cn(darkMode ? 'bg-neutral-300' : 'bg-slate-100')}>
-                     <tr>
-                        {rowSelection && (
-                           <th
-                              className={cn(
-                                 'w-12 rounded-tl-xl border-b px-4 py-3 align-middle',
-                                 rowBorderClass,
-                                 headerClassName
+            <div className="flex flex-col gap-0">
+               <div className={headerCardClass}>
+                  <div ref={headerScrollRef} className={sectionScrollClass}>
+                     <table className={tableClass} style={{ minWidth: tableMinWidth }}>
+                        {renderColGroup()}
+                        <thead>
+                           <tr>
+                                 {rowSelection && (
+                                    <th
+                                       className={cn(
+                                          'w-12 px-4 py-3 align-middle',
+                                          headerClassName
+                                       )}
+                                    >
+                                    <div className="flex items-center justify-center">
+                                       <MciCheck
+                                          checked={isAllSelected}
+                                          onChange={handleSelectAll}
+                                          variant={variant}
+                                          darkMode={darkMode}
+                                          disabled={loading || displayData.length === 0}
+                                       />
+                                    </div>
+                                 </th>
                               )}
-                           >
-                              <div className="flex items-center justify-center">
-                                 <MciCheck
-                                    checked={isAllSelected}
-                                    onChange={handleSelectAll}
-                                    variant={variant}
-                                    darkMode={darkMode}
-                                    disabled={loading || displayData.length === 0}
-                                 />
-                              </div>
-                           </th>
-                        )}
 
-                        {columns.map((col, colIndex) => (
-                           <th
-                              key={col.key}
-                              onClick={() => handleSort(col)}
-                              className={cn(
-                                 'border-b px-4 py-3 text-left text-sm font-medium transition-colors align-middle',
-                                 rowBorderClass,
-                                 darkMode ? 'text-neutral-50' : 'text-slate-700',
-                                 'overflow-hidden text-ellipsis whitespace-nowrap',
-                                 colIndex === columns.length - 1 && 'overflow-visible',
-                                 isActionColumn(col) && 'w-px',
-                                 col.align === 'center' && 'text-center',
-                                 col.align === 'right' && 'text-right',
-                                 col.sortable &&
-                                    (darkMode
-                                       ? 'cursor-pointer hover:bg-neutral-200'
-                                       : 'cursor-pointer hover:bg-slate-200'),
-                                 !rowSelection && colIndex === 0 && 'rounded-tl-xl',
-                                 colIndex === columns.length - 1 && 'rounded-tr-xl',
-                                 getStickyLastColumnClass(colIndex, 'header'),
-                                 headerClassName
-                              )}
-                           >
-                              <div
-                                 className={cn(
-                                    'flex min-w-0 items-center gap-1',
-                                    col.align === 'center' && 'justify-center',
-                                    col.align === 'right' && 'justify-end'
-                                 )}
-                              >
-                                 <span className="min-w-0 truncate" title={col.title}>
-                                    {col.title}
-                                 </span>
-                                 {getSortIcon(col)}
-                              </div>
-                           </th>
-                        ))}
-                     </tr>
-                  </thead>
-                  <tbody className={cn(darkMode ? 'bg-neutral-300' : 'bg-white')}>
+                              {columns.map((col, colIndex) => (
+                                 <th
+                                    key={col.key}
+                                    onClick={() => handleSort(col)}
+                                    className={cn(
+                                       'px-4 py-3 text-left text-sm font-medium transition-colors align-middle',
+                                       darkMode ? 'text-neutral-50' : 'text-slate-700',
+                                       'overflow-hidden text-ellipsis whitespace-nowrap',
+                                       colIndex === columns.length - 1 && 'overflow-visible',
+                                       isActionColumn(col) && 'w-px',
+                                       col.align === 'center' && 'text-center',
+                                       col.align === 'right' && 'text-right',
+                                       col.sortable
+                                          ? darkMode
+                                             ? 'cursor-pointer hover:bg-neutral-200'
+                                             : 'cursor-pointer hover:bg-slate-200'
+                                          : 'cursor-default',
+                                       getStickyLastColumnClass(colIndex, 'header'),
+                                       headerClassName
+                                    )}
+                                 >
+                                    <div
+                                       className={cn(
+                                          'flex min-w-0 items-center gap-1',
+                                          col.align === 'center' && 'justify-center',
+                                          col.align === 'right' && 'justify-end'
+                                       )}
+                                    >
+                                       <span className="min-w-0 truncate" title={col.title}>
+                                          {col.title}
+                                       </span>
+                                       {getSortIcon(col)}
+                                    </div>
+                                 </th>
+                              ))}
+                           </tr>
+                        </thead>
+                     </table>
+                  </div>
+               </div>
+
+               <div className={bodyCardClass}>
+                  <div ref={bodyScrollRef} className={sectionScrollClass}>
+                     <table className={tableClass} style={{ minWidth: tableMinWidth }}>
+                        {renderColGroup()}
+                        <tbody>
                         {loading ? (
                            Array.from({ length: skeletonRows }).map((_, idx) => (
                               <tr key={idx}>
@@ -335,7 +410,9 @@ export default function MciTable<T extends Record<string, unknown>>({
                                              colIndex === 0 &&
                                              idx === skeletonRows - 1 &&
                                              'rounded-bl-xl',
-                                          getStickyLastColumnClass(colIndex, 'body'),
+                                          getStickyLastColumnClass(colIndex, 'body', {
+                                             isLastRow: idx === skeletonRows - 1,
+                                          }),
                                           colIndex === columns.length - 1 &&
                                              idx === skeletonRows - 1 &&
                                              'rounded-br-xl',
@@ -413,7 +490,9 @@ export default function MciTable<T extends Record<string, unknown>>({
                                                 col.align === 'center' && 'text-center',
                                                 col.align === 'right' && 'text-right',
                                                 !rowSelection && colIndex === 0 && isLastRow && 'rounded-bl-xl',
-                                                getStickyLastColumnClass(colIndex, 'body'),
+                                                getStickyLastColumnClass(colIndex, 'body', {
+                                                   isLastRow,
+                                                }),
                                                 colIndex === columns.length - 1 && isLastRow && 'rounded-br-xl',
                                                 isLastRow && 'border-b-0',
                                                 bodyClassName,
@@ -442,8 +521,10 @@ export default function MciTable<T extends Record<string, unknown>>({
                         )}
                      </tbody>
                   </table>
+                  </div>
                </div>
             </div>
+         </div>
       </div>
    )
 }

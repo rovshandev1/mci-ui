@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { cn } from '../../lib/utils.ts'
 import type { TabsProps } from '../../types/ui/tabs.types'
+import TabCountBadge from './TabCountBadge'
 
 const CONTAINER_CLASSES = {
    top: 'flex-col',
@@ -143,7 +144,7 @@ export default function FilledTabs({
                            }}
                            disabled={tab?.disabled}
                            className={cn(
-                              'relative z-10 flex items-center justify-center px-3 py-2 text-base font-normal whitespace-nowrap transition-colors duration-300 hover:cursor-pointer',
+                              'relative z-10 flex cursor-pointer items-center justify-center px-3 py-2 text-base font-normal whitespace-nowrap transition-colors duration-300',
                               darkMode ? 'text-white' : 'text-black',
                               tab?.disabled &&
                                  (darkMode
@@ -166,6 +167,7 @@ export default function FilledTabs({
                            <span className="relative z-10 truncate" title={tab?.label}>
                               {tab?.label}
                            </span>
+                           <TabCountBadge count={tab?.count} />
                         </button>
                      )
                   })}

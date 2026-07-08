@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { cn } from '../../lib/utils'
 import { TabsProps } from '../../types/ui'
+import TabCountBadge from './TabCountBadge'
 
 const OutlinedTabs = ({
    tabs,
@@ -52,7 +53,7 @@ const OutlinedTabs = ({
                   }}
                   onClick={() => handleTabChange(tab.id)}
                   className={cn(
-                     'cursor-pointer truncate border-b-2 px-3 py-2 text-sm font-medium transition-colors',
+                     'flex cursor-pointer items-center truncate border-b-2 px-3 py-2 text-sm font-medium transition-colors',
                      darkMode ? 'border-slate-200/20' : 'border-slate-200',
                      activeTab === tab.id
                         ? darkMode
@@ -64,7 +65,8 @@ const OutlinedTabs = ({
                      tabClassName
                   )}
                >
-                  {tab.label}
+                  <span className="truncate">{tab.label}</span>
+                  <TabCountBadge count={tab.count} />
                </button>
             ))}
             <span

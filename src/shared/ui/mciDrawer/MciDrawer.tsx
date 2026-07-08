@@ -153,7 +153,7 @@ export default function MciDrawer({
                                 className={cn(
                                     darkMode ? 'bg-neutral-300 text-slate-50' : 'bg-slate-100 text-black',
                                     darkMode ? theme.darkClose : theme.close,
-                                    'rounded-xl w-11 h-11 sm:w-12 sm:h-12 hover:cursor-pointer transition flex items-center justify-center group active:scale-95'
+                                    'flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl transition group active:scale-95 sm:h-12 sm:w-12'
                                 )}
                             >
                                 <CloseIcon

@@ -63,7 +63,7 @@ const MciTextarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
                     disabled={disabled}
                     placeholder={placeholder}
                     className={cn(
-                        'w-full resize-none rounded-xl border text-base font-normal transition-all duration-300 ease-in-out outline-none',
+                        'w-full resize-none rounded-xl border text-base font-normal transition-all duration-300 ease-in-out outline-none cursor-text',
                         darkMode
                             ? 'p-3 text-neutral-50 placeholder:text-neutral-100 focus:text-white disabled:cursor-not-allowed disabled:border-neutral-200 disabled:bg-neutral-300 disabled:text-neutral-100/50 disabled:placeholder:text-neutral-100/50'
                             : 'bg-white p-3 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400',

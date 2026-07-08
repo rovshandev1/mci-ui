@@ -87,7 +87,7 @@ function MciAccordion({ children, defaultValue = false, icon, darkMode = false, 
             aria-expanded={isOpen}
             aria-controls={contentId}
             className={cn(
-               'group flex w-full items-center justify-between gap-2 p-5 transition-all duration-300 hover:cursor-pointer',
+               'group flex w-full cursor-pointer items-center justify-between gap-2 p-5 transition-all duration-300',
                darkMode
                   ? [
                        'bg-neutral-300/70 hover:bg-neutral-200/80',
