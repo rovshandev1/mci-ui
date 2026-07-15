@@ -162,9 +162,7 @@ export default function FilledTabs({
                                     : 'cursor-not-allowed opacity-50'),
                               isVertical
                                  ? 'w-full justify-start'
-                                 : width
-                                   ? ''
-                                   : 'min-w-0 flex-1'
+                                 : 'min-w-0 flex-1'
                            )}
                         >
                            {tab?.icon && (
