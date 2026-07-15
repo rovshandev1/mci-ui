@@ -23,6 +23,7 @@ export type TabsProps = {
     position?: TabsPosition
     darkMode?: boolean
     className?: string
+    width?: string | number
     tabListClassName?: string
     tabClassName?: string
     contentClassName?: string

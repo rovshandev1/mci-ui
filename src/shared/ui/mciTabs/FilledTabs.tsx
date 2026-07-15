@@ -30,6 +30,7 @@ export default function FilledTabs({
    position = 'top',
    darkMode = false,
    className,
+   width,
    tabListClassName,
    contentClassName,
    extra,
@@ -106,7 +107,13 @@ export default function FilledTabs({
                isVertical ? 'flex-col items-start' : 'flex-row flex-wrap items-center'
             )}
          >
-            <div className={cn('flex-1', isVertical ? 'w-full' : 'min-w-[520px]')}>
+            <div
+               className={cn(
+                  width ? 'flex-none' : 'flex-1',
+                  isVertical ? 'w-full' : !width && 'min-w-[520px]'
+               )}
+               style={width !== undefined ? { width } : undefined}
+            >
                <div
                   ref={tabListRef}
                   className={cn(
