@@ -175,10 +175,10 @@ const MciCheck = memo(function MciCheck({
     }, [label, supportText, error, disabled, required, darkMode]);
 
     return (
-        <div className={cn('flex items-start', className)}>
+        <div className={cn('flex flex-col items-start', className)}>
             <label
                 className={cn(
-                    'flex items-start gap-2 select-none',
+                    'flex shrink-0 items-start gap-2 select-none',
                     disabled ? 'cursor-not-allowed' : 'cursor-pointer'
                 )}
             >
@@ -198,7 +198,7 @@ const MciCheck = memo(function MciCheck({
 
                 <div
                     className={cn(
-                        'relative flex items-center justify-center',
+                        'relative box-border flex h-5 w-5 shrink-0 items-center justify-center',
                         isRadio ? 'w-5 h-5 rounded-full' : 'w-5 h-5 rounded',
                         styles.container
                     )}
