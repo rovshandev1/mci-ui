@@ -93,6 +93,8 @@ export default function FilledTabs({
    }, [tabs])
 
    const isVertical = position === 'left' || position === 'right'
+   const widthClassName = typeof width === 'string' && width.startsWith('w-') ? width : undefined
+   const widthStyle = widthClassName ? undefined : width
 
    const ActiveContent = useMemo(
       () => tabs.find((tab) => tab.id === activeTab)?.content,
@@ -110,9 +112,10 @@ export default function FilledTabs({
             <div
                className={cn(
                   width ? 'flex-none' : 'flex-1',
-                  isVertical ? 'w-full' : !width && 'min-w-[520px]'
+                  isVertical ? 'w-full' : !width && 'min-w-[520px]',
+                  widthClassName
                )}
-               style={width !== undefined ? { width } : undefined}
+               style={widthStyle !== undefined ? { width: widthStyle } : undefined}
             >
                <div
                   ref={tabListRef}
@@ -120,7 +123,7 @@ export default function FilledTabs({
                      'relative flex rounded-xl p-1',
                      darkMode ? 'bg-neutral-300' : 'bg-slate-100',
                      TABS_CONTAINER_CLASSES[position],
-                     !isVertical && 'w-full overflow-hidden',
+                     !isVertical && [!width && 'w-full', 'overflow-hidden'],
                      isVertical ? 'min-w-48' : '',
                      tabListClassName
                   )}
@@ -157,7 +160,11 @@ export default function FilledTabs({
                                  (darkMode
                                     ? 'cursor-not-allowed text-neutral-100/50 opacity-60'
                                     : 'cursor-not-allowed opacity-50'),
-                              isVertical ? 'w-full justify-start' : 'min-w-0 flex-1'
+                              isVertical
+                                 ? 'w-full justify-start'
+                                 : width
+                                   ? ''
+                                   : 'min-w-0 flex-1'
                            )}
                         >
                            {tab?.icon && (
