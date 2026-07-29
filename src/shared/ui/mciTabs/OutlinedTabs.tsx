@@ -9,12 +9,15 @@ const OutlinedTabs = ({
    contentClassName,
    darkMode,
    defaultTab,
+   activeTab: activeTabProp,
    onChange,
    tabClassName,
    tabListClassName,
    color = 'orange',
 }: TabsProps) => {
-   const [activeTab, setActiveTab] = useState(defaultTab || tabs[0]?.id)
+   const [internalTab, setInternalTab] = useState(defaultTab || tabs[0]?.id)
+   const isControlled = activeTabProp !== undefined
+   const activeTab = isControlled ? activeTabProp : internalTab
    const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 })
    const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({})
    const containerRef = useRef<HTMLDivElement>(null)
@@ -33,7 +36,7 @@ const OutlinedTabs = ({
    }, [activeTab, tabs])
 
    const handleTabChange = (tabId: string) => {
-      setActiveTab(tabId)
+      if (!isControlled) setInternalTab(tabId)
       onChange?.(tabId)
    }
 
