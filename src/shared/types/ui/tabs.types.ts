@@ -20,6 +20,7 @@ export type TabsProps = {
     variant?: TabsVariant
     color?: TabsColor
     defaultTab?: string
+    activeTab?: string
     position?: TabsPosition
     darkMode?: boolean
     className?: string
