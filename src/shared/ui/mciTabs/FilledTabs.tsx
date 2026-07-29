@@ -27,6 +27,7 @@ const CONTENT_CLASSES = {
 export default function FilledTabs({
    tabs,
    defaultTab,
+   activeTab: activeTabProp,
    position = 'top',
    darkMode = false,
    className,
@@ -36,7 +37,9 @@ export default function FilledTabs({
    extra,
    onChange,
 }: TabsProps) {
-   const [activeTab, setActiveTab] = useState(defaultTab || tabs[0]?.id)
+   const [internalTab, setInternalTab] = useState(defaultTab || tabs[0]?.id)
+   const isControlled = activeTabProp !== undefined
+   const activeTab = isControlled ? activeTabProp : internalTab
    const [indicatorStyle, setIndicatorStyle] = useState<React.CSSProperties>({})
    const tabsRef = useRef<(HTMLButtonElement | null)[]>([])
    const tabListRef = useRef<HTMLDivElement>(null)
@@ -148,7 +151,7 @@ export default function FilledTabs({
                            }}
                            onClick={() => {
                               if (!tab?.disabled) {
-                                 setActiveTab(tab?.id)
+                                 if (!isControlled) setInternalTab(tab?.id)
                                  onChange?.(tab?.id)
                               }
                            }}
