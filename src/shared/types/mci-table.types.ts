@@ -4,6 +4,7 @@ export type Align = 'left' | 'center' | 'right'
 export type ColumnKey<T> = Extract<keyof T, string>
 export type MciTablePanelLocale = 'ru' | 'uz'
 export type MciTableVariant = 'blue' | 'yellow' | 'orange'
+export type MciTableSize = 'md'
 
 export type MciTableColumn<T> = {
     key: ColumnKey<T>
@@ -44,6 +45,7 @@ export interface MciTableProps<T extends Record<string, unknown>> {
     noDataText?: string
     darkMode?: boolean
     variant?: MciTableVariant
+    size?: MciTableSize
 
     sort?: MciTableSort<T> | null
     onSortChange?: (sort: MciTableSort<T> | null) => void

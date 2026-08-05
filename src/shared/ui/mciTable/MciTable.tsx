@@ -47,6 +47,7 @@ export default function MciTable<T extends Record<string, unknown>>({
    bodyClassName,
    darkMode = false,
    variant = 'orange',
+   size,
    rowKey = 'id' as keyof T,
    rowSelection,
 }: MciTableProps<T>) {
@@ -303,6 +304,7 @@ export default function MciTable<T extends Record<string, unknown>>({
    )
 
    const tableClass = 'w-full table-fixed border-separate border-spacing-0'
+   const bodyCellSizeClass = size === 'md' ? 'h-12 py-1' : 'h-16 py-3'
 
    return (
       <div className={cn('relative w-full min-w-0', className)}>
@@ -391,7 +393,8 @@ export default function MciTable<T extends Record<string, unknown>>({
                                  {rowSelection && (
                                     <td
                                        className={cn(
-                                          'w-12 border-b px-4 py-3 align-middle',
+                                          'w-12 border-b px-4 align-middle',
+                                          bodyCellSizeClass,
                                           rowBorderClass,
                                           idx === skeletonRows - 1 && 'rounded-bl-xl',
                                           idx === skeletonRows - 1 && 'border-b-0'
@@ -404,7 +407,8 @@ export default function MciTable<T extends Record<string, unknown>>({
                                     <td
                                        key={c.key}
                                        className={cn(
-                                          'border-b px-4 py-3 align-middle',
+                                          'border-b px-4 align-middle',
+                                          bodyCellSizeClass,
                                           rowBorderClass,
                                           !rowSelection &&
                                              colIndex === 0 &&
@@ -451,7 +455,8 @@ export default function MciTable<T extends Record<string, unknown>>({
                                     {rowSelection && (
                                        <td
                                           className={cn(
-                                             'w-12 border-b px-4 py-3 align-middle',
+                                             'w-12 border-b px-4 align-middle',
+                                             bodyCellSizeClass,
                                              rowBorderClass,
                                              isLastRow && 'rounded-bl-xl',
                                              isLastRow && 'border-b-0',
@@ -482,7 +487,8 @@ export default function MciTable<T extends Record<string, unknown>>({
                                           <td
                                              key={col.key}
                                              className={cn(
-                                                'overflow-hidden border-b px-4 py-3 text-sm font-normal align-middle',
+                                                'overflow-hidden border-b px-4 text-sm font-normal align-middle',
+                                                bodyCellSizeClass,
                                                 rowBorderClass,
                                                 darkMode ? 'text-neutral-50' : 'text-black',
                                                 'min-w-0 whitespace-normal',

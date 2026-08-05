@@ -196,6 +196,15 @@ function DemoTable({ data }: { data: Row[] }) {
   footer={<MciButton>OK</MciButton>}
 />
 
+<MciModal
+  show={isEmptyModalOpen}
+  setShow={setEmptyModalOpen}
+  variant="empty"
+  headerClassName="p-4"
+  closeButtonClassName="p-2"
+  Body={<div>Custom modal content</div>}
+/>
+
 <MciDrawer
   isOpen={isDrawerOpen}
   onClose={() => setDrawerOpen(false)}

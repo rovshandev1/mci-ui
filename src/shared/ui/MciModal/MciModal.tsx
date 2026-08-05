@@ -6,6 +6,7 @@ import type { ModalProps } from '../../types/ui/modal.types'
 export default function MciModal({
     show,
     setShow,
+    variant = 'default',
     title,
     description,
     Header,
@@ -17,6 +18,8 @@ export default function MciModal({
     darkMode = false,
     overlayClassName,
     containerClassName,
+    headerClassName,
+    closeButtonClassName,
     bodyClassName,
     footerClassName,
 }: ModalProps) {
@@ -38,7 +41,11 @@ export default function MciModal({
         return () => { document.body.style.overflow = 'unset' }
     }, [show])
 
-    const shouldRenderHeader = showHeader && Boolean(Header || title || description)
+    const isEmpty = variant === 'empty'
+    const hasSingleHeaderText = Boolean(title) !== Boolean(description)
+    const shouldRenderHeader = showHeader && Boolean(
+        Header || title || description || (isEmpty && showCloseIcon)
+    )
 
     return (
         <div
@@ -74,8 +81,14 @@ export default function MciModal({
                 {shouldRenderHeader && (
                     <div
                         className={cn(
-                            'flex items-start justify-between border-b shrink-0 p-4 sm:p-6',
-                            darkMode ? 'border-neutral-700' : 'border-slate-200'
+                            'flex justify-between shrink-0',
+                            hasSingleHeaderText ? 'items-center' : 'items-start',
+                            isEmpty
+                                ? 'border-0 p-0'
+                                : 'border-b p-4 sm:p-6',
+                            !isEmpty && (darkMode ? 'border-neutral-700' : 'border-slate-200'),
+                            !Header && !title && !description && 'justify-end',
+                            headerClassName
                         )}
                     >
                         {Header || (
@@ -113,7 +126,8 @@ export default function MciModal({
                                     'rounded-xl w-11 h-11 sm:w-12 sm:h-12',
                                     'flex items-center justify-center shrink-0',
                                     'cursor-pointer transition group active:scale-95',
-                                    darkMode ? 'bg-neutral-800 text-slate-50' : 'bg-slate-100 text-black'
+                                    darkMode ? 'bg-neutral-800 text-slate-50' : 'bg-slate-100 text-black',
+                                    closeButtonClassName
                                 )}
                             >
                                 <CloseIcon className="h-5 w-5 sm:h-6 sm:w-6 transition-transform duration-300 group-hover:rotate-180" />
@@ -127,7 +141,7 @@ export default function MciModal({
                         className={cn(
                             'flex-1 min-h-0 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200',
                             'max-h-[70dvh] sm:max-h-96',
-                            'p-4 sm:p-6',
+                            isEmpty ? 'p-0' : 'p-4 sm:p-6',
                             bodyClassName
                         )}
                     >
@@ -139,8 +153,8 @@ export default function MciModal({
                     <div
                         className={cn(
                             'shrink-0 flex items-center justify-end gap-3 border-t',
-                            darkMode ? 'border-neutral-700' : 'border-slate-200',
-                            'p-4 sm:p-6',
+                            isEmpty ? 'border-0 p-0' : 'p-4 sm:p-6',
+                            !isEmpty && (darkMode ? 'border-neutral-700' : 'border-slate-200'),
                             footerClassName
                         )}
                     >

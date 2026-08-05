@@ -4,7 +4,7 @@ import type {ButtonProps} from '../../types/ui/button.types'
 
 const BUTTON_SIZES = {
     sm: 'h-9 px-2 text-sm gap-1.5 rounded-lg leading-9 min-w-9',
-    md: 'h-10 px-2 text-base gap-2 rounded-lg leading-10 min-w-10',
+    md: 'h-10 w-10 min-w-10 px-2 text-base gap-2 rounded-lg leading-10',
     base: 'h-12 px-4 text-base gap-2 rounded-xl leading-12 min-w-12',
 } as const
 
