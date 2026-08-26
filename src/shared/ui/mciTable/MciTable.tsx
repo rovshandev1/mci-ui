@@ -40,6 +40,10 @@ export default function MciTable<T extends Record<string, unknown>>({
    loading = false,
    skeletonRows = 5,
    noDataText = '',
+   noDataImage,
+   noDataImageSrc,
+   noDataInfo,
+   acceptLanguage = 'uz',
    sort: externalSort,
    onSortChange,
    className,
@@ -434,7 +438,13 @@ export default function MciTable<T extends Record<string, unknown>>({
                                  colSpan={columns.length + (rowSelection ? 1 : 0)}
                                  className="py-20 align-middle"
                               >
-                                 <MciEmpty title={noDataText || undefined} />
+                                 <MciEmpty
+                                    title={noDataText || undefined}
+                                    image={noDataImage}
+                                    imageSrc={noDataImageSrc}
+                                    description={noDataInfo}
+                                    locale={acceptLanguage}
+                                 />
                               </td>
                            </tr>
                         ) : (

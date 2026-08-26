@@ -43,6 +43,10 @@ export interface MciTableProps<T extends Record<string, unknown>> {
     loading?: boolean
     skeletonRows?: number
     noDataText?: string
+    noDataImage?: ReactNode
+    noDataImageSrc?: string
+    noDataInfo?: string
+    acceptLanguage?: MciTablePanelLocale
     darkMode?: boolean
     variant?: MciTableVariant
     size?: MciTableSize
