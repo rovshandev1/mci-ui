@@ -29,6 +29,19 @@ select {
     --color-yellow-900: #733E0A;
     --color-yellow-950: #432004;
 
+    /* Amber */
+    --color-amber-50: #FFFBEB;
+    --color-amber-100: #FEF3C7;
+    --color-amber-200: #FDE68A;
+    --color-amber-300: #FCD34D;
+    --color-amber-400: #FBBF24;
+    --color-amber-500: #F59E0B;
+    --color-amber-600: #D08700;
+    --color-amber-700: #B45309;
+    --color-amber-800: #92400E;
+    --color-amber-900: #78350F;
+    --color-amber-950: #451A03;
+
     /* Slate */
     --color-slate-base: #62748E;
     --color-slate-50: #F8FAFC;

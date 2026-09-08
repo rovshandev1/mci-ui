@@ -68,6 +68,15 @@ const TIME_PICKER_VARIANTS = {
         darkStep: 'text-orange-300 hover:bg-orange-500/10',
         input: 'focus:border-orange-500 focus:ring-orange-500/20',
     },
+    amber: {
+        button:
+            'bg-amber-600 text-white hover:bg-amber-700 focus:ring-[rgba(208,135,0,0.25)]',
+        darkButton:
+            'bg-amber-500 text-black hover:bg-amber-400 focus:ring-[rgba(208,135,0,0.25)]',
+        step: 'text-amber-600 hover:bg-amber-50',
+        darkStep: 'text-amber-300 hover:bg-amber-500/10',
+        input: 'focus:border-amber-500 focus:ring-amber-500/20',
+    },
 } as const satisfies Record<MciTimePickerVariant, unknown>
 
 const formatTime = (hours: number, minutes: number) => {

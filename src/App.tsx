@@ -133,23 +133,23 @@ const DEMO_ROWS: DemoRow[] = [
    },
 ]
 
-const BREADCRUMB_VARIANTS = ['orange', 'blue', 'yellow'] as const
+const BREADCRUMB_VARIANTS = ['orange', 'blue', 'yellow', 'amber'] as const
 const BUTTON_VARIANTS = ['primary', 'secondary', 'outline', 'danger', 'tertiary'] as const
-const BUTTON_COLORS = ['orange', 'blue', 'yellow'] as const
+const BUTTON_COLORS = ['orange', 'blue', 'yellow', 'amber'] as const
 const FIELD_SIZES = ['sm', 'md', 'base'] as const
-const TIME_PICKER_VARIANTS = ['orange', 'blue', 'yellow'] as const
+const TIME_PICKER_VARIANTS = ['orange', 'blue', 'yellow', 'amber'] as const
 const TIME_PICKER_LOCALES = ['uz', 'ru', 'en'] as const
 const EMPTY_LOCALES = ['uz', 'ru'] as const
 const TAG_VARIANTS = ['success', 'warning', 'error', 'gray', 'blue'] as const
 const TAG_SIZES = ['sm', 'md', 'lg'] as const
-const TONE_VARIANTS = ['orange', 'blue', 'yellow'] as const
+const TONE_VARIANTS = ['orange', 'blue', 'yellow', 'amber'] as const
 const SKELETON_VARIANTS = ['default', 'rounded', 'circle'] as const
-const PAGINATION_VARIANTS = ['orange', 'blue', 'yellow'] as const
+const PAGINATION_VARIANTS = ['orange', 'blue', 'yellow', 'amber'] as const
 const PAGINATION_SIZES = ['medium', 'large'] as const
 const PER_PAGE_OPTIONS = ['5', '10', '15'] as const
-const UPLOAD_VARIANTS = ['orange', 'yellow', 'blue'] as const
-const DRAWER_VARIANTS = ['orange', 'blue', 'yellow'] as const
-const TABS_COLORS = ['orange', 'blue', 'yellow'] as const
+const UPLOAD_VARIANTS = ['orange', 'yellow', 'blue', 'amber'] as const
+const DRAWER_VARIANTS = ['orange', 'blue', 'yellow', 'amber'] as const
+const TABS_COLORS = ['orange', 'blue', 'yellow', 'amber'] as const
 const TABS_VARIANTS = ['filled', 'outlined'] as const
 const TABS_DATA = [
    {
@@ -197,7 +197,7 @@ const STEPS: Step[] = [
    { key: 3, label: 'Step 3', value: 'Step 3 value' },
    { key: 4, label: 'Step 4', value: 'Step 4 value' },
 ] as const
-const STEPPER_COLORS = ['orange', 'blue', 'yellow'] as const
+const STEPPER_COLORS = ['orange', 'blue', 'yellow', 'amber'] as const
 
 function ControlSelect({
    label,

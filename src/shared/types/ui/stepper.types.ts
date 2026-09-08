@@ -4,7 +4,7 @@ export interface Step {
     value: string
 }
 
-export type StepperColors ='orange' | 'blue' | 'yellow'
+export type StepperColors = 'orange' | 'blue' | 'yellow' | 'amber'
 
 export interface StepperProps {
     steps: Step[]

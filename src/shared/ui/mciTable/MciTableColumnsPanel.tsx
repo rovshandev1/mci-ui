@@ -59,6 +59,12 @@ const PANEL_THEME: Record<
         close: 'hover:bg-orange-50 hover:text-orange-600 focus-visible:ring-2 focus-visible:ring-[rgba(227,98,12,0.25)]',
         darkClose: 'hover:bg-orange-600/20 hover:text-orange-400 focus-visible:ring-2 focus-visible:ring-[rgba(227,98,12,0.25)]',
     },
+    amber: {
+        dropIndicator: 'bg-amber-400',
+        darkDropIndicator: 'bg-amber-600',
+        close: 'hover:bg-amber-50 hover:text-amber-600 focus-visible:ring-2 focus-visible:ring-[rgba(208,135,0,0.25)]',
+        darkClose: 'hover:bg-amber-600/20 hover:text-amber-400 focus-visible:ring-2 focus-visible:ring-[rgba(208,135,0,0.25)]',
+    },
 }
 
 type Props<T extends Record<string, unknown>> = {

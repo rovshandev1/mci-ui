@@ -1,6 +1,6 @@
 export type MciTimePickerValue = string | null
 export type MciTimePickerMode = 'time' | 'duration'
-export type MciTimePickerVariant = 'blue' | 'yellow' | 'orange'
+export type MciTimePickerVariant = 'blue' | 'yellow' | 'orange' | 'amber'
 export type MciTimePickerLocale = 'uz' | 'ru' | 'en'
 export type MciTimePickerDurationFormat = 'text' | 'dot'
 

@@ -21,6 +21,12 @@ const BREADCRUMB_THEME = {
         darkHover: 'hover:text-orange-400',
         darkActive: 'text-orange-400',
     },
+    amber: {
+        hover: 'hover:text-amber-600',
+        active: 'text-amber-600',
+        darkHover: 'hover:text-amber-400',
+        darkActive: 'text-amber-400',
+    },
 } as const
 
 export default function MciBreadcrumb({

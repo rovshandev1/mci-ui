@@ -26,7 +26,7 @@ export interface UseMciUploadOptions {
     onValueChange?: (files: MciUploadFileValue[]) => void
     onUpload?: (files: FileInfo[]) => Promise<void>
     locale?: UploadLocale
-    variant?: 'yellow' | 'blue' | 'orange'
+    variant?: 'yellow' | 'blue' | 'orange' | 'amber'
     darkMode?: boolean
     customValidator?: (file: File) => string | null
 }

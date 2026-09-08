@@ -6,7 +6,7 @@ export type ButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'color'>
     iconPosition?: 'left' | 'right'
     size?: 'sm' | 'md' | 'base'
     variant?: 'primary' | 'secondary' | 'outline' | 'danger' | 'tertiary'
-    color?: 'blue' | 'yellow' | 'orange'
+    color?: 'blue' | 'yellow' | 'orange' | 'amber'
     darkMode?: boolean
     loading?: boolean
 }

@@ -24,6 +24,11 @@ const BUTTON_COLOR_VARIANTS = {
         secondary: 'border border-transparent bg-orange-100 text-orange-600 hover:bg-orange-200 active:border-orange-600 active:bg-orange-200 focus:bg-orange-100 focus:ring-2 focus:ring-[rgba(227,98,12,0.25)]',
         outline: 'border border-orange-600 bg-white text-orange-600 hover:border-orange-700 hover:text-orange-700 active:border-orange-800 active:text-orange-800 focus:border-orange-600 focus:bg-white focus:ring-2 focus:ring-[rgba(227,98,12,0.25)]',
     },
+    amber: {
+        primary: 'bg-amber-600 text-white hover:bg-amber-700 active:bg-amber-800 focus:bg-amber-600 focus:ring-2 focus:ring-[rgba(208,135,0,0.25)]',
+        secondary: 'border border-transparent bg-amber-100 text-amber-600 hover:bg-amber-200 active:border-amber-600 active:bg-amber-200 focus:bg-amber-100 focus:ring-2 focus:ring-[rgba(208,135,0,0.25)]',
+        outline: 'border border-amber-600 bg-white text-amber-600 hover:border-amber-700 hover:text-amber-700 active:border-amber-800 active:text-amber-800 focus:border-amber-600 focus:bg-white focus:ring-2 focus:ring-[rgba(208,135,0,0.25)]',
+    },
 } as const
 
 const BUTTON_DARK_COLOR_VARIANTS = {
@@ -41,6 +46,11 @@ const BUTTON_DARK_COLOR_VARIANTS = {
         primary: 'bg-orange-500 text-black hover:bg-orange-400 active:bg-orange-300 focus:bg-orange-600 focus:ring-2 focus:ring-[rgba(227,98,12,0.25)]',
         secondary: 'border border-slate-700 bg-slate-800 text-orange-300 hover:bg-slate-700 active:border-orange-600 active:bg-slate-600 focus:bg-slate-800 focus:ring-2 focus:ring-[rgba(227,98,12,0.25)]',
         outline: 'border border-orange-500 text-orange-300 hover:bg-orange-500/10 hover:border-orange-400 hover:text-orange-200 active:bg-orange-500/20 active:border-orange-300 focus:border-orange-500 focus:ring-2 focus:ring-[rgba(227,98,12,0.25)]',
+    },
+    amber: {
+        primary: 'bg-amber-500 text-black hover:bg-amber-400 active:bg-amber-300 focus:bg-amber-600 focus:ring-2 focus:ring-[rgba(208,135,0,0.25)]',
+        secondary: 'border border-slate-700 bg-slate-800 text-amber-300 hover:bg-slate-700 active:border-amber-600 active:bg-slate-600 focus:bg-slate-800 focus:ring-2 focus:ring-[rgba(208,135,0,0.25)]',
+        outline: 'border border-amber-500 text-amber-300 hover:bg-amber-500/10 hover:border-amber-400 hover:text-amber-200 active:bg-amber-500/20 active:border-amber-300 focus:border-amber-500 focus:ring-2 focus:ring-[rgba(208,135,0,0.25)]',
     },
 } as const
 

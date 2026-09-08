@@ -23,6 +23,13 @@ const TOGGLE_COLORS = {
         darkActive: 'bg-orange-600',
         darkHover: 'hover:bg-orange-600',
     },
+    amber: {
+        active: 'bg-amber-600',
+        hover: 'hover:bg-amber-600',
+        focus: 'focus:ring-2 focus:ring-[rgba(208,135,0,0.25)]',
+        darkActive: 'bg-amber-600',
+        darkHover: 'hover:bg-amber-600',
+    },
 } as const
 
 export default function MciToggle({
@@ -71,6 +78,7 @@ export default function MciToggle({
                     darkMode && !disabled && variant === 'blue' && 'focus-visible:shadow-[0_0_0_2px_var(--opacity-25,rgba(21,93,252,0.25))]',
                     darkMode && !disabled && variant === 'yellow' && 'focus-visible:ring-2 focus-visible:ring-yellow-300/40',
                     darkMode && !disabled && variant === 'orange' && 'focus-visible:ring-2 focus-visible:ring-[rgba(227,98,12,0.25)]',
+                    darkMode && !disabled && variant === 'amber' && 'focus-visible:ring-2 focus-visible:ring-[rgba(208,135,0,0.25)]',
                     disabled && (darkMode ? 'bg-neutral-200/60' : 'bg-slate-100')
                 )}
             >

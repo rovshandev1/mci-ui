@@ -11,7 +11,7 @@ export type Tab = {
 
 export type TabsVariant = 'filled' | 'outlined'
 
-export type TabsColor = 'blue' | 'yellow' | 'orange'
+export type TabsColor = 'blue' | 'yellow' | 'orange' | 'amber'
 
 export type TabsPosition = 'top' | 'bottom' | 'left' | 'right'
 

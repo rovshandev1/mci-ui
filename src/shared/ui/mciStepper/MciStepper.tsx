@@ -35,6 +35,12 @@ const COLOR_MAP: Record<StepperColors, ColorConfig> = {
       { dark: 'ring-yellow-400', light: 'ring-yellow-500' },
       { dark: '#FCC800', light: '#EFB100' }
    ),
+   amber: createColorConfig(
+      { dark: 'bg-amber-500', light: 'bg-amber-600' },
+      { dark: 'text-amber-500', light: 'text-amber-600' },
+      { dark: 'ring-amber-500', light: 'ring-amber-600' },
+      { dark: '#F59E0B', light: '#D08700' }
+   ),
 }
 
 const MciStepper = ({ steps, activeStep, color = 'orange', darkMode, className }: StepperProps) => {

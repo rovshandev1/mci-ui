@@ -40,6 +40,16 @@ const PAGINATION_THEME = {
         darkDisabled: 'text-neutral-100/50 border-neutral-200 bg-neutral-300/60',
         darkArrow: 'text-neutral-50',
     },
+    amber: {
+        active: 'bg-amber-600 text-white border-amber-600',
+        inactive: 'bg-slate-100 border-slate-200 text-black hover:bg-slate-200',
+        disabled: 'text-slate-400 border-slate-300',
+        arrow: 'text-black',
+        darkActive: 'bg-amber-600 text-white border-amber-600',
+        darkInactive: 'bg-neutral-300 border-neutral-200 text-white hover:bg-neutral-200',
+        darkDisabled: 'text-neutral-100/50 border-neutral-200 bg-neutral-300/60',
+        darkArrow: 'text-neutral-50',
+    },
 } as const
 
 export default function MciPagination({

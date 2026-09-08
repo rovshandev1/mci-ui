@@ -43,7 +43,7 @@ export interface MciUploadProps {
     locale?: UploadLocale
     showFileTypeIcon?: boolean
     customValidator?: (file: File) => string | null
-    variant?: 'yellow' | 'blue' | 'orange'
+    variant?: 'yellow' | 'blue' | 'orange' | 'amber'
     darkMode?: boolean
 }
 

@@ -104,6 +104,12 @@ const COLOR_CLASSES = {
       darkBg: 'bg-yellow-400',
       lightBg: 'bg-yellow-500',
    },
+   amber: {
+      darkText: 'text-white',
+      lightText: 'text-amber-600',
+      darkBg: 'bg-amber-400',
+      lightBg: 'bg-amber-600',
+   },
 } as const
 
 export default OutlinedTabs

@@ -32,7 +32,9 @@ export default function MciLoader({
                         ? "text-blue-600"
                         : variant === 'orange'
                             ? "text-orange-600"
-                            : "text-yellow-500"),
+                            : variant === 'amber'
+                                ? "text-amber-600"
+                                : "text-yellow-500"),
                     iconClassName
                 )}
                 style={{ fill: 'currentColor', stroke: 'currentColor' }}

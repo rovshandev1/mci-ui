@@ -3,7 +3,7 @@ import type {ReactNode} from 'react'
 export type Align = 'left' | 'center' | 'right'
 export type ColumnKey<T> = Extract<keyof T, string>
 export type MciTablePanelLocale = 'ru' | 'uz'
-export type MciTableVariant = 'blue' | 'yellow' | 'orange'
+export type MciTableVariant = 'blue' | 'yellow' | 'orange' | 'amber'
 export type MciTableSize = 'md'
 
 export type MciTableColumn<T> = {
