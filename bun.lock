@@ -1,8 +1,13 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "@mci-ui/mci-ui",
+      "dependencies": {
+        "clsx": "^2.1.1",
+        "tailwind-merge": "^3.4.0",
+      },
       "devDependencies": {
         "@eslint/js": "^9.39.1",
         "@solar-icons/react": "^1.0.1",
@@ -30,11 +35,8 @@
         "vite-plugin-svgr": "^4.5.0",
       },
       "peerDependencies": {
-        "@solar-icons/react": "^1.0.1",
-        "clsx": "^2.1.1",
         "react": ">=19",
         "react-dom": ">=19",
-        "tailwind-merge": "^3.4.0",
       },
     },
   },

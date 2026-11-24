@@ -66,7 +66,8 @@ export function shiftYear(date: Date, offset: number) {
 export function getCalendarDays(monthDate: Date) {
     const year = monthDate.getFullYear()
     const month = monthDate.getMonth()
-    const firstDay = new Date(year, month, 1).getDay()
+    // Week starts on Monday: Mon=0 ... Sun=6
+    const firstDay = (new Date(year, month, 1).getDay() + 6) % 7
     const daysInMonth = new Date(year, month + 1, 0).getDate()
     const days: Array<{ date: Date; isCurrentMonth: boolean }> = []
 

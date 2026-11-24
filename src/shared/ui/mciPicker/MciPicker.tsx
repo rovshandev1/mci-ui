@@ -424,7 +424,7 @@ const MciPicker = forwardRef<HTMLDivElement, MciPickerProps>(
                             'mb-1 grid grid-cols-7 text-center text-[11px] font-bold uppercase',
                             darkMode ? 'text-blue-500' : 'text-blue-600'
                         )}
-                    >{t.weekdaysShort.map(day => <div key={day} className="py-1">{day}</div>)}</div>
+                    >{[...t.weekdaysShort.slice(1), t.weekdaysShort[0]].map(day => <div key={day} className="py-1">{day}</div>)}</div>
                     <div className="grid grid-cols-7 gap-y-1 relative">
                         {days.map((item, idx) => {
                             const date = item.date, disabled = isDisabled(date), isStart = isSelectedStart(date), isEnd = isSelectedEnd(date), isBetween = isInRange(date)
